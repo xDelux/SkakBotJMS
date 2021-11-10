@@ -1,30 +1,19 @@
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
-import org.w3c.dom.ls.LSOutput;
-
 import java.util.Scanner;
 
-public class Main {
+public class Game {
+    private static char[][] board;
+    private boolean whiteNext;
 
-    public static char[][] board;
-    public static void main(String[] args) {
-        Game game = new Game();
-        GUI gui = new GUI(game);
-
-        /*board = newSetupBoard();
-        boolean whiteNext = true;
-        Scanner scanner = new Scanner(System.in);
-        String input;
-        GUI gui = new GUI();
-        while(true){
-            print(board);
-            gui.setBoard(board);
-            System.out.println("input move in format like: e2e4 (moving e2 to e4)");
-            input = scanner.nextLine();
-            move(input);
-        }*/
+    public Game(){
+        board = newSetupBoard();
+        whiteNext = true;
     }
 
-    public static char[][] newSetupBoard() {
+    public char[][] getBoard(){
+        return board;
+    }
+
+    public char[][] newSetupBoard() {
         /*
         * Unicode for pieces
                         "\u2654 " + // white king
@@ -65,7 +54,17 @@ public class Main {
                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}
         };*/
     }
-    public static void move(String input){
+
+    public char[][] moveByIndex(int colFrom, int rowFrom, int colTo, int rowTo){
+
+        //TODO: check if legal
+
+        board[rowTo][colTo] = board[rowFrom][colFrom];
+        board[rowFrom][colFrom] = ' ';
+        return board;
+    }
+
+    public void move(String input){
         int xFrom = input.charAt(0) - 'a';
         int yFrom = input.charAt(1) - '1';
         int xTo = input.charAt(2) - 'a';
@@ -76,6 +75,7 @@ public class Main {
         board[yTo][xTo] = board[yFrom][xFrom];
         board[yFrom][xFrom] = ' ';
     }
+
     public static void print(char[][] board){
         System.out.println("__A_B_C_D_E_F_G_H");;
         for (int i = 7; i >= 0; i--) {
