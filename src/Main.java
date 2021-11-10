@@ -1,15 +1,18 @@
 import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import org.w3c.dom.ls.LSOutput;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
 
     public static char[][] board;
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Game game = new Game();
         GUI gui = new GUI(game);
-
+        System.out.println("Make sure to keep backend using simple letters as unicode letters are encoded as multiple bytes");
+        System.out.println("binary of \u2656: " + Integer.toBinaryString('\u2656'));
+        System.out.println("binary of R: " + Integer.toBinaryString('R'));
         /*board = newSetupBoard();
         boolean whiteNext = true;
         Scanner scanner = new Scanner(System.in);
@@ -43,7 +46,7 @@ public class Main {
                         "\n" ;*/
         return new char[][]{
                 //white side (row 0 and 1)
-                {/*'\u2656'*/'x', '\u2658', '\u2657', '\u2655', '\u2654', '\u2657', '\u2658', '\u2656'},
+                {'\u2656', '\u2658', '\u2657', '\u2655', '\u2654', '\u2657', '\u2658', '\u2656'},
                 {'\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659'},
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},

@@ -4,28 +4,36 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class GUI {
+    //GUI general values
     private final JFrame gameFrame;
     private static Dimension FRAME_DIMENSION = new Dimension(800,800);
+    private final Font FONT_DEFAULT = new Font("Serif", Font.PLAIN, 50);
+
+    //boardtiles
     private TilePanel[][] tiles = new TilePanel[8][8];
 
+    //for moves
     private boolean pickedMovePiece;
     private TilePanel fromTile;
+    private JLabel statusLabel;
 
     private Game game;
 
+    //constructor
     public GUI(Game game){
         this.game = game;
 
         //setup frame
         this.gameFrame = new JFrame("Jacobs super pro chess gui");
         this.gameFrame.setSize(FRAME_DIMENSION);
-        this.gameFrame.setLayout(new GridLayout(8,8));
+        this.gameFrame.setLayout(new GridLayout(9,9));
 
         //create tiles for board
         boolean nextTileWhite = true;
         Color white = Color.WHITE;
         Color black = Color.LIGHT_GRAY;
         Listener listener = new Listener();
+
         for (int i = 7; i>=0 ; i--) {
             for (int j = 0; j < 8; j++) {
                 if(nextTileWhite){
@@ -39,8 +47,22 @@ public class GUI {
                     this.gameFrame.add(tiles[i][j]);
                 }
             }
+
+            JLabel tempLabel = new JLabel(" " + (i+1));
+            tempLabel.setFont(FONT_DEFAULT);
+            this.gameFrame.add(tempLabel);
             nextTileWhite = !nextTileWhite;
         }
+        //add bottom line letters
+        char tempChar = 'A';
+        for (int i = 0; i < 8; i++) {
+            JLabel tempLabel = new JLabel(" " + tempChar++);
+            tempLabel.setFont(FONT_DEFAULT);
+            this.gameFrame.add(tempLabel);
+        }
+        //add statuspanel
+        statusLabel = new JLabel("Next: white");
+        this.gameFrame.add(statusLabel);
 
         //set board at start
         setBoard(game.getBoard());
@@ -50,21 +72,62 @@ public class GUI {
     }
     
     public void setBoard(char[][] board){
+        //converting letter representation from backend to unicode representation for GUI
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                tiles[i][j].setIcon(board[i][j]);
+                switch (board[i][j]){
+                    case ' ':
+                        tiles[i][j].setIcon(' ');
+                        break;
+                    case 'R':
+                        tiles[i][j].setIcon('\u2656');
+                        break;
+                    case 'N':
+                        tiles[i][j].setIcon('\u2658');
+                        break;
+                    case 'B':
+                        tiles[i][j].setIcon('\u2657');
+                        break;
+                    case 'Q':
+                        tiles[i][j].setIcon('\u2655');
+                        break;
+                    case 'K':
+                        tiles[i][j].setIcon('\u2654');
+                        break;
+                    case 'P':
+                        tiles[i][j].setIcon('\u2659');
+                        break;
+                    case 'p':
+                        tiles[i][j].setIcon('\u265F');
+                        break;
+                    case 'r':
+                        tiles[i][j].setIcon('\u265C');
+                        break;
+                    case 'n':
+                        tiles[i][j].setIcon('\u265E');
+                        break;
+                    case 'b':
+                        tiles[i][j].setIcon('\u265D');
+                        break;
+                    case 'q':
+                        tiles[i][j].setIcon('\u265B');
+                        break;
+                    case 'k':
+                        tiles[i][j].setIcon('\u265A');
+                        break;
+                }
             }
         }
     }
 
     private class TilePanel extends JPanel{
         int row, column;
-        JLabel label = new JLabel("null");
+        JLabel label = new JLabel("you shouldnt see this");
         Color defaultColor;
 
         TilePanel(int i, int j, Color color, Listener listener){
             //set label
-            this.label.setFont(new Font("Serif", Font.PLAIN, 50));
+            this.label.setFont(FONT_DEFAULT);
             this.label.setForeground(Color.BLACK);
             this.add(label);
             //set tile values
@@ -72,7 +135,7 @@ public class GUI {
             this.column = j;
             this.defaultColor = color;
             this.setBackground(color);
-            this.setSize(100,100);
+            //this.setSize(100,100);
             this.addMouseListener(listener);
             this.add(label);
             setVisible(true);
@@ -92,22 +155,38 @@ public class GUI {
 
     }
 
+    //onClickListener added to all tiles
     private class Listener implements MouseListener{
         @Override
         public void mouseClicked(MouseEvent e) {
             TilePanel tileClicked = (TilePanel) e.getSource();
             if(pickedMovePiece){
                 if(fromTile == tileClicked){
+                    //undo selection
                     fromTile.setPicked(false);
                     pickedMovePiece = false;
                 }
                 else{
+                    //make move
                     setBoard(game.moveByIndex(fromTile.column, fromTile.row, tileClicked.column, tileClicked.row));
                     fromTile.setPicked(false);
                     pickedMovePiece = false;
+                    //update status
+                    if(game.isWhiteNext()){
+                        statusLabel.setText("Next: white");
+                    }
+                    else{
+                        statusLabel.setText("Next: black");
+                    }
+
                 }
             }
             else{
+                // if clicked on empty tile then return cause you cant move it.
+                if(tileClicked.label.getText().equals(" ")){
+                    return;
+                }
+                //select move piece
                 tileClicked.setPicked(true);
                 pickedMovePiece = true;
                 fromTile = tileClicked;

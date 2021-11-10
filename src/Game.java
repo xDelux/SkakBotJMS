@@ -13,6 +13,10 @@ public class Game {
         return board;
     }
 
+    public boolean isWhiteNext(){
+        return whiteNext;
+    }
+
     public char[][] newSetupBoard() {
         /*
         * Unicode for pieces
@@ -30,7 +34,7 @@ public class Game {
                         "\u265E " + // black knight
                         "\u265F " + // black pawn
                         "\n" ;*/
-        return new char[][]{
+        /*return new char[][]{
                 //white side (row 0 and 1)
                 {'\u2656', '\u2658', '\u2657', '\u2655', '\u2654', '\u2657', '\u2658', '\u2656'},
                 {'\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659'},
@@ -41,18 +45,18 @@ public class Game {
                 {'\u265F', '\u265F', '\u265F', '\u265F', '\u265F', '\u265F', '\u265F', '\u265F'},
                 {'\u265C', '\u265E', '\u265D', '\u265B', '\u265A', '\u265D', '\u265E', '\u265C'}
                 //black side (row 6 and 7)
-        };
+        };*/
 
-        /*return new char[][]{
+        return new char[][]{
                 {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
                 {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-                {'-', '-', '-', '-', '-', '-', '-', '-'},
-                {'-', '-', '-', '-', '-', '-', '-', '-'},
-                {'-', '-', '-', '-', '-', '-', '-', '-'},
-                {'-', '-', '-', '-', '-', '-', '-', '-'},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                 {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}
-        };*/
+        };
     }
 
     public char[][] moveByIndex(int colFrom, int rowFrom, int colTo, int rowTo){
@@ -61,6 +65,9 @@ public class Game {
 
         board[rowTo][colTo] = board[rowFrom][colFrom];
         board[rowFrom][colFrom] = ' ';
+
+        whiteNext = !whiteNext;
+
         return board;
     }
 
