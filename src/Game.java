@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 public class Game {
-    private static char[][] board;
+    private static char[] board;
     private boolean whiteNext;
 
     public Game(){
@@ -9,7 +9,7 @@ public class Game {
         whiteNext = true;
     }
 
-    public char[][] getBoard(){
+    public char[] getBoard(){
         return board;
     }
 
@@ -17,7 +17,7 @@ public class Game {
         return whiteNext;
     }
 
-    public char[][] newSetupBoard() {
+    public char[] newSetupBoard() {
         /*
         * Unicode for pieces
                         "\u2654 " + // white king
@@ -47,7 +47,7 @@ public class Game {
                 //black side (row 6 and 7)
         };*/
 
-        return new char[][]{
+        /*return new char[][]{
                 {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
                 {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -56,22 +56,39 @@ public class Game {
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                 {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}
+        };*/
+
+        return new char[] {
+                'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R',
+                'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
+                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',
+                'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'
         };
     }
 
-    public char[][] moveByIndex(int colFrom, int rowFrom, int colTo, int rowTo){
-
+    /*public char[] moveByIndex(int colFrom, int rowFrom, int colTo, int rowTo){
         //TODO: check if legal
-
         board[rowTo][colTo] = board[rowFrom][colFrom];
         board[rowFrom][colFrom] = ' ';
 
         whiteNext = !whiteNext;
+        return board;
+    }*/
 
+    public char[] moveByIndex(int colFrom, int target){
+        //TODO: check if legal
+//        board[rowTo][colTo] = board[rowFrom][colFrom];
+//        board[rowFrom][colFrom] = ' ';
+
+        whiteNext = !whiteNext;
         return board;
     }
 
-    public void move(String input){
+    /*public void move(String input){
         int xFrom = input.charAt(0) - 'a';
         int yFrom = input.charAt(1) - '1';
         int xTo = input.charAt(2) - 'a';
@@ -81,7 +98,7 @@ public class Game {
 
         board[yTo][xTo] = board[yFrom][xFrom];
         board[yFrom][xFrom] = ' ';
-    }
+    }*/
 
     public static void print(char[][] board){
         System.out.println("__A_B_C_D_E_F_G_H");;
