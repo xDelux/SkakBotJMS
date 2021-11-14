@@ -39,13 +39,12 @@ public class GUI {
                 if(nextTileWhite){
                     nextTileWhite = false;
                     tiles[i][j] = new TilePanel(i, j, white, listener);
-                    this.gameFrame.add(tiles[i][j]);
                 }
                 else{
                     nextTileWhite = true;
                     tiles[i][j] = new TilePanel(i, j, black, listener);
-                    this.gameFrame.add(tiles[i][j]);
                 }
+                this.gameFrame.add(tiles[i][j]);
             }
 
             JLabel tempLabel = new JLabel(" " + (i+1));
