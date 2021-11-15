@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Game {
@@ -57,7 +58,6 @@ public class Game {
                 {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}
         };*/
-
         return new char[] {
                 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R',
                 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
@@ -79,13 +79,14 @@ public class Game {
         return board;
     }*/
 
-    public char[] moveByIndex(int colFrom, int target){
+    public void moveByIndex(int colFrom, int target){
         //TODO: check if legal
 //        board[rowTo][colTo] = board[rowFrom][colFrom];
 //        board[rowFrom][colFrom] = ' ';
-
+        board[colFrom] = board[target];
+        board[colFrom] = ' ';
         whiteNext = !whiteNext;
-        return board;
+//        return board;
     }
 
     /*public void move(String input){

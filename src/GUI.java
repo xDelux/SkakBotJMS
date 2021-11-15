@@ -2,17 +2,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 public class GUI {
     //GUI general values
-    private final JFrame gameFrame;
+    private final JFrame window;
+    private final JPanel numberPanel;
+    private final JPanel letterPanel;
+    private final JPanel gamePanel;
     private static Dimension FRAME_DIMENSION;
     private static final Color LIGHT = new Color(252,194,142);
     private static final Color DARK = new Color(149,84,28);
 //    private final Font FONT_DEFAULT = new Font("Serif", Font.PLAIN, 70);
 
     //boardtiles
-    private TilePanel[] tiles = new TilePanel[64];
+    final ArrayList<TilePanel> tilesA = new ArrayList<>(64);
+    private final TilePanel[] tiles = new TilePanel[64];
 
     //for moves
     private boolean pickedMovePiece;
@@ -20,16 +25,34 @@ public class GUI {
     private JLabel statusLabel;
 
     private Game game;
+    private char board[];
 
     //constructor
     public GUI(Game game){
         this.game = game;
+        this.board = game.getBoard();
 
-        //setup frame
+        //setup all frames and panels
         FRAME_DIMENSION = new Dimension(800,800);
-        this.gameFrame = new JFrame("Jacobs super pro chess gui");
-        this.gameFrame.setSize(FRAME_DIMENSION);
-        this.gameFrame.setLayout(new GridLayout(9,9));
+        window = new JFrame("Jacobs super pro chess gui");
+        window.setSize(FRAME_DIMENSION);
+        window.setLayout(new BorderLayout());
+//        window.setLayout(new GridLayout(9,9));
+
+        //panels
+        letterPanel = new JPanel();
+        letterPanel.setLayout(new BoxLayout(letterPanel,BoxLayout.X_AXIS));
+//        letterPanel.setSize(300,500);
+
+        numberPanel = new JPanel();
+        numberPanel.setLayout(new BoxLayout(numberPanel,BoxLayout.Y_AXIS));
+//        numberPanel.setSize(800,300);
+
+        gamePanel = new JPanel(new GridLayout(8,8));
+//        gamePanel.setPreferredSize(new Dimension(600,600));
+//        gamePanel.setBounds(0,0,window.getWidth(),window.getHeight());
+
+
 
 
         //create tiles for board
@@ -39,187 +62,137 @@ public class GUI {
 //        Color black = Color.LIGHT_GRAY;
         Listener listener = new Listener();
 
-        int counter = 63;
-        for (int i = 7; i >= 0 ; i--) {
-            System.out.println(i);
-            this.gameFrame.add(new JLabel(" " + (i+1)));
-
-            for (int j = counter; j > counter-8; j--) {
-                System.out.println("SOUTING COUNTER: " + counter);
-                System.out.println("TILE: " + j);
-                tiles[j] = new TilePanel(j,nextTileBright,listener);
-                this.gameFrame.add(tiles[j]);
-                nextTileBright = !nextTileBright;
-            }
-            counter -= 8;
-            nextTileBright = !nextTileBright;
+        JLabel tempLabel = new JLabel();
+        for (int i = 8; i > 0; i--) {
+            tempLabel.setText("" + i);
+            tempLabel.setMinimumSize(new Dimension(100,100));
+            numberPanel.add(tempLabel);
+//            numberPanel.setMinimumSize(new Dimension(50,50));
         }
 
-        /*for (int i = 70; i >= 0; i--) {
-            if(i%9 == 8) {
-                System.out.println(i);
-                this.gameFrame.add(new JLabel(" " + (counter)));
-                counter--;
-
-            } else {
-                tiles[i] = new TilePanel(i,nextTileBright,listener);
-                this.gameFrame.add(tiles[i]);
+        TilePanel temp;
+        int counter = 0;
+        for (int i = 63; i >= 0; i--) {
+            System.out.println("TILE: " + i);
+            temp = new TilePanel(i,nextTileBright, listener);
+            tilesA.add(temp);
+            setBoard(temp);
+            gamePanel.add(temp.getTile());
+            if(counter==7)
+                counter = 0;
+            else {
+                counter++;
                 nextTileBright = !nextTileBright;
             }
-        }*/
+        };
 
 
-        /*for (int i = 7; i>=0 ; i--) {
-            for (int j = 0; j < 8; j++) {
-                if(nextTileBright){
-                    nextTileBright = false;
-                    tiles[i][j] = new TilePanel(i, j, white, listener);
-                    this.gameFrame.add(tiles[i][j]);
-                }
-                else{
-                    nextTileBright = true;
-                    tiles[i][j] = new TilePanel(i, j, black, listener);
-                    this.gameFrame.add(tiles[i][j]);
-                }
-            }
-
-            JLabel tempLabel = new JLabel(" " + (i+1));
-//            tempLabel.setFont(FONT_DEFAULT);
-            this.gameFrame.add(tempLabel);
-            nextTileBright = !nextTileBright;
-        }*/
-//        for (int i = 0; i < 8; i++) {
-//            this.gameFrame.add(new JLabel(" " + (i+1)));
-//        }
-
-        //add bottom line letters
-        char tempChar = 'A';
-//        this.gameFrame.add(new JLabel(" "));
-        for (int i = 0; i < 8; i++) {
-            JLabel tempLabel = new JLabel(" " + tempChar++);
-//            tempLabel.setFont(FONT_DEFAULT);
-            this.gameFrame.add(tempLabel);
+        for (char a = 'a'; a < 'i'; a++ ) {
+            letterPanel.add(new JLabel(String.valueOf(a)));
         }
-        //add statuspanel
-        statusLabel = new JLabel("Next: white");
-        this.gameFrame.add(statusLabel);
 
-        //set board at start
-        setBoard(game.getBoard());
+        /* Adding all the panels to the frame */
+        window.add(numberPanel, BorderLayout.LINE_START);
+        window.add(gamePanel, BorderLayout.CENTER);
+        window.add(letterPanel, BorderLayout.PAGE_END);
 
         //show frame
-        this.gameFrame.setVisible(true);
+        window.pack();
+        this.window.setVisible(true);
     }
-    
-    /*public void setBoard(char[][] board){
-        //converting letter representation from backend to unicode representation for GUI
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                switch (board[i][j]){
-                    case ' ':
-                        tiles[i][j].setPieceIcon(' ');
-                        break;
-                    case 'R':
-                        tiles[i][j].setPieceIcon('\u2656');
-                        break;
-                    case 'N':
-                        tiles[i][j].setPieceIcon('\u2658');
-                        break;
-                    case 'B':
-                        tiles[i][j].setPieceIcon('\u2657');
-                        break;
-                    case 'Q':
-                        tiles[i][j].setPieceIcon('\u2655');
-                        break;
-                    case 'K':
-                        tiles[i][j].setPieceIcon('\u2654');
-                        break;
-                    case 'P':
-                        tiles[i][j].setPieceIcon('\u2659');
-                        break;
-                    case 'p':
-                        tiles[i][j].setPieceIcon('\u265F');
-                        break;
-                    case 'r':
-                        tiles[i][j].setPieceIcon('\u265C');
-                        break;
-                    case 'n':
-                        tiles[i][j].setPieceIcon('\u265E');
-                        break;
-                    case 'b':
-                        tiles[i][j].setPieceIcon('\u265D');
-                        break;
-                    case 'q':
-                        tiles[i][j].setPieceIcon('\u265B');
-                        break;
-                    case 'k':
-//                        tiles[i][j].setIcon('\u265A');
-                        tiles[i][j].setPieceIcon("k");
 
-                        break;
-                }
-            }
+    /*public void updateBoard(char) {
+        switch (board[tile.getPosition()]) {
+            case ' ' -> tile.setPieceIcon("k");
+            case 'R' -> tile.setPieceIcon("k");
+            case 'N' -> tile.setPieceIcon("k");
+            case 'B' -> tile.setPieceIcon("");
+            case 'Q' -> tile.setPieceIcon("k");
+            case 'K' -> tile.setPieceIcon("k");
+            case 'P' -> tile.setPieceIcon("");
+            case 'p' -> tile.setPieceIcon("k");
+            case 'r' -> tile.setPieceIcon("");
+            case 'n' -> tile.setPieceIcon("k");
+            case 'b' -> tile.setPieceIcon("k");
+            case 'q' -> tile.setPieceIcon("k");
+            case 'k' -> tile.setPieceIcon("k");
         }
     }*/
-    public void setBoard(char[] board){
+    public void setBoard(TilePanel tile){
         //converting letter representation from backend to unicode representation for GUI
-        for (int i = 0; i < 64; i++) {
-            switch (board[i]) {
-                case ' ' -> tiles[i].setPieceIcon(' ');
-                case 'R' -> tiles[i].setPieceIcon('\u2656');
-                case 'N' -> tiles[i].setPieceIcon('\u2658');
-                case 'B' -> tiles[i].setPieceIcon('\u2657');
-                case 'Q' -> tiles[i].setPieceIcon('\u2655');
-                case 'K' -> tiles[i].setPieceIcon('\u2654');
-                case 'P' -> tiles[i].setPieceIcon('\u2659');
-                case 'p' -> tiles[i].setPieceIcon('\u265F');
-                case 'r' -> tiles[i].setPieceIcon('\u265C');
-                case 'n' -> tiles[i].setPieceIcon('\u265E');
-                case 'b' -> tiles[i].setPieceIcon('\u265D');
-                case 'q' -> tiles[i].setPieceIcon('\u265B');
-                case 'k' -> tiles[i].setPieceIcon('k');
+        switch (board[tile.getPosition()]) {
+            case ' ' -> tile.setTileIcon("transparent");
+            case 'R' -> tile.setTileIcon("Rw");
+            case 'N' -> tile.setTileIcon("KTw");
+            case 'B' -> tile.setTileIcon("Bw");
+            case 'Q' -> tile.setTileIcon("Qw");
+            case 'K' -> tile.setTileIcon("Kw");
+            case 'P' -> tile.setTileIcon("Pw");
+            case 'p' -> tile.setTileIcon("pb");
+            case 'r' -> tile.setTileIcon("rb");
+            case 'n' -> tile.setTileIcon("ktb");
+            case 'b' -> tile.setTileIcon("bb");
+            case 'q' -> tile.setTileIcon("qb");
+            case 'k' -> tile.setTileIcon("kb");
 //                        tiles[i]].setIcon('\u265A');
-
-            }
         }
+    }
+
+    public void setGUI(TilePanel source, TilePanel target) {
+        Container parent = source.getParent();
+        TilePanel temp = source;
+
+        System.out.println(parent.getComponent(source.position));
     }
 
 
     private class TilePanel extends JPanel{
         Icon displayPiece;
         int position;
+        JPanel tile = new JPanel(new BorderLayout());
         JLabel label = new JLabel();
+        boolean transparent = false;
         Color defaultColor;
 
         TilePanel(int i, boolean isBright, Listener listener){
-            //set label
-//            this.label.setFont(FONT_DEFAULT);
-            this.label.setForeground(Color.BLACK);
-            this.add(label);
-//            this.label.setSize(200,200);
-            label.setHorizontalAlignment(JLabel.LEFT);
-            label.setVerticalAlignment(JLabel.CENTER);
+            setLayout(new BorderLayout());
             //set tile values
-            this.position = i;
-//            this.column = j;
-            this.defaultColor = isBright ? LIGHT : DARK;
-            this.setBackground(defaultColor);
-            //this.setSize(100,100);
-            this.addMouseListener(listener);
-//            this.add(label);
-            setVisible(true);
-        }
-//        public void setPieceIcon(char icon){
-//            this.label.setText(icon + "");
-//        }
+            position = i;
+            defaultColor = isBright ? LIGHT : DARK;
+//            tile.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+//            tile.setBackground(defaultColor);
+             setBackground(defaultColor);
+             addMouseListener(listener);
+//            tile.addMouseListener(listener);
 
-        public void setPieceIcon(char icon){
+        }
+
+        public TilePanel getTile () {
+            return this;
+        }
+        public JLabel getLabel () {
+            return label;
+        }
+        public boolean getTransparency() {
+            return transparent;
+        }
+
+        public void setTileIcon(String icon){
             //label.getWidth & getHeight
             ImageIcon imageIcon = new ImageIcon(new ImageIcon("src/ressources/" + icon + ".png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
+            if(icon.equals("transparent"))
+                transparent = true;
             label.setIcon(imageIcon);
-//            System.out.println(new java.io.File("src/ressources/k.png").exists());
-//
-//            this.label.setIcon(new ImageIcon("src/ressources/k.png"));
+            add(label);
+//            System.out.println(new java.io.File("src/ressources/kb.png").exists());
+        }
+        public void setTileIcon(Icon icon){
+            transparent = false;
+            getLabel().setIcon(icon);
+        }
+
+        public Icon getTileIcon () {
+            return getLabel().getIcon();
         }
 
         public void setPicked(boolean isPicked){
@@ -227,7 +200,7 @@ public class GUI {
                 this.setBackground(new Color(124, 225, 124));
             }
             else{
-                this.setBackground(this.defaultColor);
+                this.setBackground(defaultColor);
             }
         }
 
@@ -240,16 +213,37 @@ public class GUI {
     private class Listener implements MouseListener{
         @Override
         public void mouseClicked(MouseEvent e) {
+            /*Component test = gamePanel.findComponentAt(e.getX(),e.getY());
+            System.out.println(test);
+            Point parentLoc = test.getParent().getLocation();
+            System.out.println(parentLoc);*/
+
+
             TilePanel tileClicked = (TilePanel) e.getSource();
+//            fromTile = tileClicked;
+
+            System.out.println("\nTILE CLICKED: " + tileClicked);
+            Container parent = tileClicked.getParent();
+
+            System.out.println("\nPARENT CONTAINER LOOKING FOR CHILD: " + parent.getComponentAt(tileClicked.getLocation()));
+            System.out.println("\nPARENT CONTAINER: " + parent);
+//            System.out.println(Arrays.toString(parent.getComponents()));
+
+
             if(pickedMovePiece){
                 if(fromTile == tileClicked){
                     //undo selection
                     fromTile.setPicked(false);
                     pickedMovePiece = false;
-                }
-                else{
+                } else{
                     //make move
-                    setBoard(game.moveByIndex(fromTile.position, tileClicked.position));
+                    game.moveByIndex(fromTile.position, tileClicked.position);
+
+                    tileClicked.setTileIcon(fromTile.getTileIcon());
+                    fromTile.setTileIcon("transparent");
+
+                    System.out.println(game.getBoard());
+
                     fromTile.setPicked(false);
                     pickedMovePiece = false;
                     //update status
@@ -261,10 +255,9 @@ public class GUI {
                     }
 
                 }
-            }
-            else{
+            } else{
                 // if clicked on empty tile then return cause you cant move it.
-                if(tileClicked.label.getText().equals(" ")){
+                if(tileClicked.getTransparency()){
                     return;
                 }
                 //select move piece
@@ -274,7 +267,7 @@ public class GUI {
             }
 
 
-            System.out.println(tileClicked + ", " + tileClicked);
+//            System.out.println(tileClicked + ", " + tileClicked);
         }
         @Override
         public void mousePressed(MouseEvent e) {
