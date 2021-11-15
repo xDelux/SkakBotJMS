@@ -41,16 +41,24 @@ public class GUI {
 
         //panels
         letterPanel = new JPanel();
-        letterPanel.setLayout(new BoxLayout(letterPanel,BoxLayout.X_AXIS));
+        letterPanel.setLayout(new GridLayout(1,8));
+//        letterPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+//        letterPanel.setLayout(new BoxLayout(letterPanel,BoxLayout.X_AXIS));
 //        letterPanel.setSize(300,500);
 
         numberPanel = new JPanel();
-        numberPanel.setLayout(new BoxLayout(numberPanel,BoxLayout.Y_AXIS));
+        numberPanel.setLayout(new GridLayout(8,1));
+//        numberPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+//        numberPanel.setLayout(new BoxLayout(numberPanel,BoxLayout.Y_AXIS));
 //        numberPanel.setSize(800,300);
 
         gamePanel = new JPanel(new GridLayout(8,8));
 //        gamePanel.setPreferredSize(new Dimension(600,600));
 //        gamePanel.setBounds(0,0,window.getWidth(),window.getHeight());
+
+        JPanel smallBox = new JPanel(new GridLayout(1,1));
+        smallBox.add(new JLabel("T"));
+        window.add(smallBox, BorderLayout.SOUTH);
 
 
 
@@ -62,13 +70,19 @@ public class GUI {
 //        Color black = Color.LIGHT_GRAY;
         Listener listener = new Listener();
 
-        JLabel tempLabel = new JLabel();
+        JLabel tempLabel;
         for (int i = 8; i > 0; i--) {
-            tempLabel.setText("" + i);
-            tempLabel.setMinimumSize(new Dimension(100,100));
+            tempLabel = new JLabel(String.valueOf(i), SwingConstants.CENTER);
+//            tempLabel.setText("" + i);
+            tempLabel.setFont(new Font("Verdana",Font.BOLD, 20));
+            tempLabel.setPreferredSize(new Dimension(50,50));
+            tempLabel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
             numberPanel.add(tempLabel);
 //            numberPanel.setMinimumSize(new Dimension(50,50));
         }
+
+        //small left corner box
+
 
         TilePanel temp;
         int counter = 0;
@@ -86,9 +100,13 @@ public class GUI {
             }
         };
 
-
         for (char a = 'a'; a < 'i'; a++ ) {
-            letterPanel.add(new JLabel(String.valueOf(a)));
+            tempLabel = new JLabel(String.valueOf(a),SwingConstants.CENTER);
+//            tempLabel.setText(String.valueOf(a));
+            tempLabel.setFont(new Font("Verdana",Font.BOLD, 20));
+            tempLabel.setPreferredSize(new Dimension(50,50));
+            tempLabel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+            letterPanel.add(tempLabel);
         }
 
         /* Adding all the panels to the frame */
@@ -101,23 +119,6 @@ public class GUI {
         this.window.setVisible(true);
     }
 
-    /*public void updateBoard(char) {
-        switch (board[tile.getPosition()]) {
-            case ' ' -> tile.setPieceIcon("k");
-            case 'R' -> tile.setPieceIcon("k");
-            case 'N' -> tile.setPieceIcon("k");
-            case 'B' -> tile.setPieceIcon("");
-            case 'Q' -> tile.setPieceIcon("k");
-            case 'K' -> tile.setPieceIcon("k");
-            case 'P' -> tile.setPieceIcon("");
-            case 'p' -> tile.setPieceIcon("k");
-            case 'r' -> tile.setPieceIcon("");
-            case 'n' -> tile.setPieceIcon("k");
-            case 'b' -> tile.setPieceIcon("k");
-            case 'q' -> tile.setPieceIcon("k");
-            case 'k' -> tile.setPieceIcon("k");
-        }
-    }*/
     public void setBoard(TilePanel tile){
         //converting letter representation from backend to unicode representation for GUI
         switch (board[tile.getPosition()]) {
@@ -151,19 +152,19 @@ public class GUI {
         int position;
         JPanel tile = new JPanel(new BorderLayout());
         JLabel label = new JLabel();
+
         boolean transparent = false;
         Color defaultColor;
 
         TilePanel(int i, boolean isBright, Listener listener){
             setLayout(new BorderLayout());
+            label.setHorizontalAlignment(JLabel.CENTER);
+
             //set tile values
             position = i;
             defaultColor = isBright ? LIGHT : DARK;
-//            tile.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-//            tile.setBackground(defaultColor);
-             setBackground(defaultColor);
-             addMouseListener(listener);
-//            tile.addMouseListener(listener);
+            setBackground(defaultColor);
+            addMouseListener(listener);
 
         }
 
@@ -213,14 +214,8 @@ public class GUI {
     private class Listener implements MouseListener{
         @Override
         public void mouseClicked(MouseEvent e) {
-            /*Component test = gamePanel.findComponentAt(e.getX(),e.getY());
-            System.out.println(test);
-            Point parentLoc = test.getParent().getLocation();
-            System.out.println(parentLoc);*/
-
 
             TilePanel tileClicked = (TilePanel) e.getSource();
-//            fromTile = tileClicked;
 
             System.out.println("\nTILE CLICKED: " + tileClicked);
             Container parent = tileClicked.getParent();
@@ -246,6 +241,7 @@ public class GUI {
 
                     fromTile.setPicked(false);
                     pickedMovePiece = false;
+
                     //update status
                     if(game.isWhiteNext()){
                         statusLabel.setText("Next: white");
