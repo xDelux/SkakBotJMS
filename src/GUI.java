@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.jar.JarEntry;
 
 public class GUI {
     //GUI general values
@@ -33,35 +34,36 @@ public class GUI {
         this.board = game.getBoard();
 
         //setup all frames and panels
-        FRAME_DIMENSION = new Dimension(800,800);
+        FRAME_DIMENSION = new Dimension(900,900);
         window = new JFrame("Jacobs super pro chess gui");
-        window.setSize(FRAME_DIMENSION);
+//        window.setSize(FRAME_DIMENSION);
         window.setLayout(new BorderLayout());
 //        window.setLayout(new GridLayout(9,9));
 
         //panels
         letterPanel = new JPanel();
         letterPanel.setLayout(new GridLayout(1,8));
+//        letterPanel.setSize(new Dimension(,200));
 //        letterPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 //        letterPanel.setLayout(new BoxLayout(letterPanel,BoxLayout.X_AXIS));
 //        letterPanel.setSize(300,500);
 
         numberPanel = new JPanel();
-        numberPanel.setLayout(new GridLayout(8,1));
+        numberPanel.setLayout(new GridLayout(9  ,1));
+//        numberPanel.setSize(new Dimension(200,200));
 //        numberPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 //        numberPanel.setLayout(new BoxLayout(numberPanel,BoxLayout.Y_AXIS));
 //        numberPanel.setSize(800,300);
 
-        gamePanel = new JPanel(new GridLayout(8,8));
+        gamePanel = new JPanel();
+        gamePanel.setLayout(new GridLayout(9,8));
+//        gamePanel.setSize(new Dimension(500,500));
+
 //        gamePanel.setPreferredSize(new Dimension(600,600));
 //        gamePanel.setBounds(0,0,window.getWidth(),window.getHeight());
 
         JPanel smallBox = new JPanel(new GridLayout(1,1));
         smallBox.add(new JLabel("T"));
-        window.add(smallBox, BorderLayout.SOUTH);
-
-
-
 
         //create tiles for board
         boolean nextTileBright = true;
@@ -70,20 +72,20 @@ public class GUI {
 //        Color black = Color.LIGHT_GRAY;
         Listener listener = new Listener();
 
+
+        //Setting up files
         JLabel tempLabel;
         for (int i = 8; i > 0; i--) {
             tempLabel = new JLabel(String.valueOf(i), SwingConstants.CENTER);
 //            tempLabel.setText("" + i);
-            tempLabel.setFont(new Font("Verdana",Font.BOLD, 20));
+            tempLabel.setFont(new Font("Verdana",Font.BOLD, 15));
             tempLabel.setPreferredSize(new Dimension(50,50));
-            tempLabel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+//            tempLabel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
             numberPanel.add(tempLabel);
 //            numberPanel.setMinimumSize(new Dimension(50,50));
         }
 
-        //small left corner box
-
-
+        //Setting up main chess board
         TilePanel temp;
         int counter = 0;
         for (int i = 63; i >= 0; i--) {
@@ -100,17 +102,22 @@ public class GUI {
             }
         };
 
+        //Setting up ranks
+
         for (char a = 'a'; a < 'i'; a++ ) {
             tempLabel = new JLabel(String.valueOf(a),SwingConstants.CENTER);
 //            tempLabel.setText(String.valueOf(a));
             tempLabel.setFont(new Font("Verdana",Font.BOLD, 20));
-            tempLabel.setPreferredSize(new Dimension(50,50));
-            tempLabel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-            letterPanel.add(tempLabel);
+//            tempLabel.setPreferredSize(new Dimension(5,40));
+//            tempLabel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+            gamePanel.add(tempLabel);
         }
+        /*tempLabel = new JLabel(" ", SwingConstants.CENTER);
+        tempLabel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+        letterPanel.add(tempLabel);*/
 
         /* Adding all the panels to the frame */
-        window.add(numberPanel, BorderLayout.LINE_START);
+        window.add(numberPanel, BorderLayout.LINE_END);
         window.add(gamePanel, BorderLayout.CENTER);
         window.add(letterPanel, BorderLayout.PAGE_END);
 
@@ -180,7 +187,7 @@ public class GUI {
 
         public void setTileIcon(String icon){
             //label.getWidth & getHeight
-            ImageIcon imageIcon = new ImageIcon(new ImageIcon("src/ressources/" + icon + ".png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
+            ImageIcon imageIcon = new ImageIcon(new ImageIcon("src/res/" + icon + ".png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
             if(icon.equals("transparent"))
                 transparent = true;
             label.setIcon(imageIcon);
