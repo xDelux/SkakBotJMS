@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 public class GUI {
     //GUI general values
@@ -22,7 +23,6 @@ public class GUI {
     //constructor
     public GUI(Game game){
         this.game = game;
-
         //setup frame
         this.gameFrame = new JFrame("Jacobs super pro chess gui");
         this.gameFrame.setSize(FRAME_DIMENSION);
@@ -147,9 +147,11 @@ public class GUI {
         public void setPicked(boolean isPicked){
             if(isPicked){
                 this.setBackground(new Color(124, 225, 124));
+                colorPossibleTiles(fromTile.row, fromTile.column, true);
             }
             else{
                 this.setBackground(this.defaultColor);
+                colorPossibleTiles(fromTile.row, fromTile.column, false);
             }
         }
 
@@ -168,9 +170,11 @@ public class GUI {
                 }
                 else{
                     //make move
-                    setBoard(game.moveByIndex(fromTile.column, fromTile.row, tileClicked.column, tileClicked.row));
                     fromTile.setPicked(false);
+                    setBoard(game.moveByIndex(fromTile.column, fromTile.row, tileClicked.column, tileClicked.row));
+
                     pickedMovePiece = false;
+
                     //update status
                     if(game.isWhiteNext()){
                         statusLabel.setText("Next: white");
@@ -186,10 +190,13 @@ public class GUI {
                 if(tileClicked.label.getText().equals(" ")){
                     return;
                 }
+
                 //select move piece
+                fromTile = tileClicked;
                 tileClicked.setPicked(true);
                 pickedMovePiece = true;
-                fromTile = tileClicked;
+
+                ;
             }
 
 
@@ -207,6 +214,22 @@ public class GUI {
         @Override
         public void mouseExited(MouseEvent e) {
         }
+    }
+
+    private void colorPossibleTiles(int row, int column, boolean possible) {
+        System.out.println("colorPossibleTiles: " + row + " " + column + " " + possible);
+        ArrayList<byte[]> moves = game.getMoves(row, column);
+        if(possible){
+            for (byte[] move: moves) {
+                tiles[move[2]][move[3]].setBackground(new Color(217, 225, 129));
+            }
+        }
+        else{
+            for (byte[] move: moves) {
+                tiles[move[2]][move[3]].setBackground(tiles[move[2]][move[3]].defaultColor);
+            }
+        }
+
     }
 }
 
