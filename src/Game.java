@@ -208,7 +208,7 @@ public class Game {
     }
 
     private ArrayList<byte[]> generateKnightMoves(byte i, byte j) {
-        moves = new ArrayList<>();
+        ArrayList<byte[]> knightmoves = new ArrayList<>();
         boolean[][] enemyPositions;
         if(whiteNext){
             enemyPositions = blackPieces;
@@ -227,10 +227,10 @@ public class Game {
                 ito = (byte) (i-2);
                 jto = (byte) (j-1);
                 if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
                 else if(enemyPositions[ito][jto]){
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
             }
             //right
@@ -239,10 +239,10 @@ public class Game {
                 ito = (byte) (i-2);
                 jto = (byte) (j+1);
                 if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
                 else if(enemyPositions[ito][jto]){
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
             }
         }
@@ -255,10 +255,10 @@ public class Game {
                 ito = (byte) (i+2);
                 jto = (byte) (j-1);
                 if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
                 else if(enemyPositions[ito][jto]){
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
             }
             //right
@@ -267,10 +267,10 @@ public class Game {
                 ito = (byte) (i+2);
                 jto = (byte) (j+1);
                 if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
                 else if(enemyPositions[ito][jto]){
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
             }
         }
@@ -281,10 +281,10 @@ public class Game {
                 ito = (byte) (i-1);
                 jto = (byte) (j-2);
                 if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
                 else if(enemyPositions[ito][jto]){
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
             }
             //up
@@ -292,10 +292,10 @@ public class Game {
                 ito = (byte) (i+1);
                 jto = (byte) (j-2);
                 if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
                 else if(enemyPositions[ito][jto]){
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
             }
         }
@@ -306,10 +306,10 @@ public class Game {
                 ito = (byte) (i-1);
                 jto = (byte) (j+2);
                 if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
                 else if(enemyPositions[ito][jto]){
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
             }
             //up
@@ -317,15 +317,17 @@ public class Game {
                 ito = (byte) (i+1);
                 jto = (byte) (j+2);
                 if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
                 else if(enemyPositions[ito][jto]){
-                    moves.add(new byte[]{i, j, ito, jto});
+                    knightmoves.add(new byte[]{i, j, ito, jto});
                 }
             }
         }
 
-        return moves;
+        ;
+
+        return knightmoves;
     }
 
     //rook move generator working
