@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -126,33 +127,6 @@ public class Game {
         return board;
     }
 
-    public void move(String input){
-        int xFrom = input.charAt(0) - 'a';
-        int yFrom = input.charAt(1) - '1';
-        int xTo = input.charAt(2) - 'a';
-        int yTo = input.charAt(3) - '1';
-
-        System.out.println("moving from:" + xFrom + " " + yFrom + " to: " + xTo + " " + yTo);
-
-        board[yTo][xTo] = board[yFrom][xFrom];
-        board[yFrom][xFrom] = ' ';
-    }
-
-    public static void print(char[][] board){
-        System.out.println("__A_B_C_D_E_F_G_H");;
-        for (int i = 7; i >= 0; i--) {
-            System.out.print((i+1) + "|");
-            for (int j = 0; j < 8; j++) {
-                System.out.print(board[i][j] + " ");
-            }
-            System.out.println("");
-        }
-        System.out.println('\u2654' + "\u265A ");
-    }
-
-    private char[] whiteChars = new char[]{'R', 'N', 'B', 'Q', 'K', 'P'};
-    private char[] blackChars = new char[]{'r', 'n', 'b', 'q', 'k', 'p'};
-
     public void generateMoves(){
         moves.clear();
         char fromTile;
@@ -173,9 +147,19 @@ public class Game {
                             moves.addAll(generateKnightMoves(i, j));
                             break;
                         case 'B':
-
+                            moves.addAll(generateBishopMoves(i,j));
                             break;
-
+                        case 'Q':
+                            //queen moves like a rook and a bishop connected
+                            moves.addAll(generateRookMoves(i, j));
+                            moves.addAll(generateBishopMoves(i, j));
+                            break;
+                        case 'K':
+                            moves.addAll(generateKingMoves(i,j));
+                            break;
+                        case 'P':
+                        moves.addAll(generatePawnMoves(i,j));
+                            break;
                     }
                 }
             }
@@ -195,6 +179,18 @@ public class Game {
                             moves.addAll(generateKnightMoves(i, j));
                             break;
                         case 'b':
+                            moves.addAll(generateBishopMoves(i,j));
+                            break;
+                        case 'q':
+                            //queen moves like a rook and a bishop connected
+                            moves.addAll(generateRookMoves(i, j));
+                            moves.addAll(generateBishopMoves(i, j));
+                            break;
+                        case 'k':
+                            moves.addAll(generateKingMoves(i,j));
+                            break;
+                        case 'p':
+                            moves.addAll(generatePawnMoves(i,j));
                             break;
                     }
                 }
@@ -207,6 +203,250 @@ public class Game {
         }
     }
 
+    private ArrayList<byte[]> generatePawnMoves(byte i, byte j) {
+        ArrayList<byte[]> pawnMoves = new ArrayList<>();
+        boolean[][] enemyPositions;
+        byte ito, jto;
+        if(whiteNext){
+            enemyPositions = blackPieces;
+           //up
+            if(i<7){
+                ito = (byte) (i+1);
+                //upleft attack
+                if(j > 0){
+                    jto = (byte) (j-1);
+                    if(enemyPositions[ito][jto]){
+                        pawnMoves.add(new byte[]{i, j, ito, jto});
+                    }
+                }
+                //upright attack
+                if(j < 7){
+                    jto = (byte) (j+1);
+                    if(enemyPositions[ito][jto]){
+                        pawnMoves.add(new byte[]{i, j, ito, jto});
+                    }
+                }
+                //up 1 nonattack
+                if(board[ito][j] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                    pawnMoves.add(new byte[]{i, j, ito, j});
+                    //up 2 if not moved yet and noone in front(non attack)
+                    if(i == 1){
+                        ito = 3;
+                        if(board[ito][j] == ' '){
+                            pawnMoves.add(new byte[]{i, j, ito, j});
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            enemyPositions = whitePieces;
+            //down
+            if(i>0){
+                ito = (byte) (i-1);
+                //downleft attack
+                if(j > 0){
+                    jto = (byte) (j-1);
+                    if(enemyPositions[ito][jto]){
+                        pawnMoves.add(new byte[]{i, j, ito, jto});
+                    }
+                }
+                //downright attack
+                if(j < 7){
+                    jto = (byte) (j+1);
+                    if(enemyPositions[ito][jto]){
+                        pawnMoves.add(new byte[]{i, j, ito, jto});
+                    }
+                }
+                //down 1 non-attack
+                if(board[ito][j] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                    pawnMoves.add(new byte[]{i, j, ito, j});
+                    //down 2 if not moved yet and noone in front(non attack)
+                    if(i == 6){
+                        ito = 4;
+                        if(board[ito][j] == ' '){
+                            pawnMoves.add(new byte[]{i, j, ito, j});
+                        }
+                    }
+                }
+            }
+        }
+        return pawnMoves;
+    }
+
+    //king move generator. working.
+    private ArrayList<byte[]> generateKingMoves(byte i, byte j) {
+        ArrayList<byte[]> kingMoves = new ArrayList<>();
+        boolean[][] enemyPositions;
+        if(whiteNext){
+            enemyPositions = blackPieces;
+        }
+        else{
+            enemyPositions = whitePieces;
+        }
+        byte ito, jto;
+        //down
+        if(i>0){
+            ito = (byte) (i-1);
+            if(board[ito][j] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                kingMoves.add(new byte[]{i, j, ito, j});
+            }
+            else if(enemyPositions[ito][j]){
+                kingMoves.add(new byte[]{i, j, ito, j});
+            }
+            //downleft
+            if(j>0){
+                jto = (byte) (j-1);
+                if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                    kingMoves.add(new byte[]{i, j, ito, jto});
+                }
+                else if(enemyPositions[ito][jto]){
+                    kingMoves.add(new byte[]{i, j, ito, jto});
+                }
+            }
+            //downright
+            if(j<7){
+                jto = (byte) (j+1);
+                if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                    kingMoves.add(new byte[]{i, j, ito, jto});
+                }
+                else if(enemyPositions[ito][jto]){
+                    kingMoves.add(new byte[]{i, j, ito, jto});
+                }
+            }
+
+        }
+        //up
+        if(i<7){
+            ito = (byte) (i+1);
+            if(board[ito][j] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                kingMoves.add(new byte[]{i, j, ito, j});
+            }
+            else if(enemyPositions[ito][j]){
+                kingMoves.add(new byte[]{i, j, ito, j});
+            }
+            //upleft
+            if(j>0){
+                jto = (byte) (j-1);
+                if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                    kingMoves.add(new byte[]{i, j, ito, jto});
+                }
+                else if(enemyPositions[ito][jto]){
+                    kingMoves.add(new byte[]{i, j, ito, jto});
+                }
+            }
+            //upright
+            if(j<7){
+                jto = (byte) (j+1);
+                if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                    kingMoves.add(new byte[]{i, j, ito, jto});
+                }
+                else if(enemyPositions[ito][jto]){
+                    kingMoves.add(new byte[]{i, j, ito, jto});
+                }
+            }
+
+        }
+        //left
+        if(j>0){
+            jto = (byte) (j-1);
+            if(board[i][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                kingMoves.add(new byte[]{i, j, i, jto});
+            }
+            else if(enemyPositions[i][jto]){
+                kingMoves.add(new byte[]{i, j, i, jto});
+            }
+        }
+        //right
+        if(j<7){
+            jto = (byte) (j+1);
+            if(board[i][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                kingMoves.add(new byte[]{i, j, i, jto});
+            }
+            else if(enemyPositions[i][jto]){
+                kingMoves.add(new byte[]{i, j, i, jto});
+            }
+        }
+
+        return kingMoves;
+    }
+
+    //bishop move generator. working.
+    private ArrayList<byte[]> generateBishopMoves(byte i, byte j) {
+        ArrayList<byte[]> bishopMoves = new ArrayList<>();
+        boolean[][] enemyPositions;
+        if(whiteNext){
+            enemyPositions = blackPieces;
+        }
+        else{
+            enemyPositions = whitePieces;
+        }
+        byte ito = i;
+        byte jto = j;
+        //upleft
+        while(ito < 7 && jto > 0){
+            ito++;
+            jto--;
+            if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                bishopMoves.add(new byte[]{i, j, ito, jto});
+            }
+            else if(enemyPositions[ito][jto]){
+                bishopMoves.add(new byte[]{i, j, ito, jto});
+                break;
+            }
+            else break;
+        }
+        ito = i;
+        jto = j;
+        //upright
+        while(ito < 7 && jto < 7){
+            ito++;
+            jto++;
+            if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                bishopMoves.add(new byte[]{i, j, ito, jto});
+            }
+            else if(enemyPositions[ito][jto]){
+                bishopMoves.add(new byte[]{i, j, ito, jto});
+                break;
+            }
+            else break;
+        }
+        ito = i;
+        jto = j;
+        //downleft
+        while(ito > 0 && jto > 0){
+            ito--;
+            jto--;
+            if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                bishopMoves.add(new byte[]{i, j, ito, jto});
+            }
+            else if(enemyPositions[ito][jto]){
+                bishopMoves.add(new byte[]{i, j, ito, jto});
+                break;
+            }
+            else break;
+        }
+        ito = i;
+        jto = j;
+        //downright
+        while(ito > 0 && jto < 7){
+            ito--;
+            jto++;
+            if(board[ito][jto] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
+                bishopMoves.add(new byte[]{i, j, ito, jto});
+            }
+            else if(enemyPositions[ito][jto]){
+                bishopMoves.add(new byte[]{i, j, ito, jto});
+                break;
+            }
+            else break;
+        }
+
+
+        return bishopMoves;
+    }
+
+    //knight move generator. working.
     private ArrayList<byte[]> generateKnightMoves(byte i, byte j) {
         ArrayList<byte[]> knightmoves = new ArrayList<>();
         boolean[][] enemyPositions;
@@ -330,7 +570,7 @@ public class Game {
         return knightmoves;
     }
 
-    //rook move generator working
+    //rook move generator. working.
     public ArrayList<byte[]> generateRookMoves(byte i, byte j){
         ArrayList<byte[]> moves = new ArrayList<>();
         boolean[][] enemyPositions;
@@ -402,6 +642,7 @@ public class Game {
         return moves;
     }
 
+    //return the moves from movelist that start at i,j
     public ArrayList<byte[]> getMoves(int i, int j){
         ArrayList<byte[]> tileMoves = new ArrayList<>();
         for (byte[] move :
