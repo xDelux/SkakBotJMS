@@ -7,6 +7,11 @@ public class Game {
     private boolean whiteNext;
     private boolean[][] whitePieces;
     private boolean[][] blackPieces;
+
+    public ArrayList<byte[]> getMoves() {
+        return moves;
+    }
+
     private ArrayList<byte[]> moves = new ArrayList<>();
 
     public Game(){
