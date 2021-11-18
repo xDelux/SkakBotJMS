@@ -7,7 +7,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         /*Game game = new Game();
         GUI gui = new GUI(game);*/
-        Board board = new Board();
+//        Board board = new Board();
+        MoveGen moves = new MoveGen();
 
 
 
