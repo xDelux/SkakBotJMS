@@ -45,7 +45,7 @@ public class Board {
                 -1, -1, 16, 17, 18, 19, 20, 21, 22, 23, -1, -1,
                 -1, -1, 24, 25, 26, 27, 28, 29, 30, 31, -1, -1,
                 -1, -1, 32, 33, 34, 35, 36, 37, 38, 39, -1, -1,
-            -1, -1, 40, 41, 42, 43, 44, 45, 46, 47, -1, -1,
+                -1, -1, 40, 41, 42, 43, 44, 45, 46, 47, -1, -1,
                 -1, -1, 48, 49, 50, 51, 52, 53, 54, 55, -1, -1,
                 -1, -1, 56, 57, 58, 59, 60, 61, 62, 63, -1, -1,
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -53,6 +53,8 @@ public class Board {
         };
         System.out.println("start index: board[26] | "+ board[26] + "\nNow adding offset for vertical: +12 | board[26+12] | " + board[26+12]);
     }
+
+
     private void setupBoardChar () {
         boardChar = new char[]{
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
@@ -71,7 +73,7 @@ public class Board {
     }
 
     public int[] getBoardIndex() {
-        return board;
+        return boardIndex;
     }
 
     public int[] getBoardInt() {
