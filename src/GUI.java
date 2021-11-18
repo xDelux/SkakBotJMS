@@ -7,8 +7,10 @@ import java.util.ArrayList;
 public class GUI {
     //GUI general values
     private final JFrame gameFrame;
-    private static Dimension FRAME_DIMENSION = new Dimension(800,800);
+    private static final Dimension FRAME_DIMENSION = new Dimension(800,800);
     private final Font FONT_DEFAULT = new Font("Serif", Font.PLAIN, 50);
+    private final Color colorSelected = new Color(124, 225, 124);
+    private final Color colorMovePossible = new Color(217, 225, 129);
 
     //boardtiles
     private TilePanel[][] tiles = new TilePanel[8][8];
@@ -146,7 +148,7 @@ public class GUI {
 
         public void setPicked(boolean isPicked){
             if(isPicked){
-                this.setBackground(new Color(124, 225, 124));
+                this.setBackground(colorSelected);
                 colorPossibleTiles(fromTile.row, fromTile.column, true);
             }
             else{
@@ -217,11 +219,11 @@ public class GUI {
     }
 
     private void colorPossibleTiles(int row, int column, boolean possible) {
-        System.out.println("colorPossibleTiles: " + row + " " + column + " " + possible);
+        //System.out.println("colorPossibleTiles: " + row + " " + column + " " + possible);
         ArrayList<byte[]> moves = game.getMoves(row, column);
         if(possible){
             for (byte[] move: moves) {
-                tiles[move[2]][move[3]].setBackground(new Color(217, 225, 129));
+                tiles[move[2]][move[3]].setBackground(colorMovePossible);
             }
         }
         else{
