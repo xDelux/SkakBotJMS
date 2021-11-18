@@ -7,7 +7,7 @@ public class Main {
 
     public static char[][] board;
     public static void main(String[] args) throws IOException {
-        Game game = new Game();
+        Game game = Game.getInstance();
         GUI gui = new GUI(game);
         System.out.println("Make sure to keep backend using simple letters as unicode letters are encoded as multiple bytes");
         System.out.println("binary of \u2656: " + Integer.toBinaryString('\u2656'));

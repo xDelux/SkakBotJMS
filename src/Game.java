@@ -8,16 +8,23 @@ public class Game {
     private boolean[][] whitePieces;
     private boolean[][] blackPieces;
 
+    private static final Game INSTANCE = new Game();
+
+
     public ArrayList<byte[]> getMoves() {
         return moves;
     }
 
     private ArrayList<byte[]> moves = new ArrayList<>();
 
-    public Game(){
+    private Game(){
         board = newSetupBoard();
         whiteNext = true;
         generateMoves();
+    }
+
+    public static Game getInstance() {
+        return INSTANCE;
     }
 
     public char[][] getBoard(){
