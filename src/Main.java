@@ -1,18 +1,21 @@
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
-import org.w3c.dom.ls.LSOutput;
-
 import java.io.IOException;
-import java.util.Scanner;
+import newBoard.*;
 
 public class Main {
 
     public static char[][] board;
     public static void main(String[] args) throws IOException {
-        Game game = new Game();
-        GUI gui = new GUI(game);
-        System.out.println("Make sure to keep backend using simple letters as unicode letters are encoded as multiple bytes");
-        System.out.println("binary of \u2656: " + Integer.toBinaryString('\u2656'));
-        System.out.println("binary of R: " + Integer.toBinaryString('R'));
+//        Game game = new Game();
+//        GUI gui = new GUI(game);
+        Board board = new Board(true);
+        MoveGen moveGen = new MoveGen(board);
+        NewGUI gui = new NewGUI(moveGen);
+
+
+
+//        System.out.println("Make sure to keep backend using simple letters as unicode letters are encoded as multiple bytes");
+//        System.out.println("binary of \u2656: " + Integer.toBinaryString('\u2656'));
+//        System.out.println("binary of R: " + Integer.toBinaryString('R'));
         /*board = newSetupBoard();
         boolean whiteNext = true;
         Scanner scanner = new Scanner(System.in);
