@@ -281,7 +281,7 @@ public class NewGUI {
                  * And using boardIndex for finding the correct index of the specific tile in the
                  * 12x12 array containing the pieces. Because a "Move" contains index of the piece
                  * position before it performs a move.  */
-                tileMoves = moveGen.getMoves(boardIndex[startTile.getTilePos()]);
+                tileMoves = moveGen.getSpecificMoves(boardIndex[startTile.getTilePos()]);
 
                 targetTile.setPicked(true, tileMoves);
                 pickedMovePiece = true;

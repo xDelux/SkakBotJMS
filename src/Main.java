@@ -12,6 +12,7 @@ public class Main {
 
         Board board = new Board(true);
         MoveGen moveGen = new MoveGen(board);
+        Algorithm AI = new Algorithm(moveGen);
         NewGUI gui = new NewGUI(moveGen);
 
 

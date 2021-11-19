@@ -49,6 +49,7 @@ public class MoveGen {
         generateMoves();
     }
 
+    public Board returnWorkloadBoardClass() {return BoardClass;}
     public char[] workloadBoard() {
         return board;
     }
@@ -61,13 +62,16 @@ public class MoveGen {
 
 
 
-    public ArrayList<Move> getMoves(int startSquare) {
+    public ArrayList<Move> getSpecificMoves(int startSquare) {
         tempMoves = new ArrayList<>();
         for (Move m : moves) {
             if(m.getStartSquare() == startSquare)
                 tempMoves.add(m);
         }
         return tempMoves;
+    }
+    public ArrayList<Move> getAllMoves() {
+        return moves;
     }
 
     /* MOVE EXECUTION */
@@ -100,7 +104,7 @@ public class MoveGen {
 
     /* GENERATION OF EVERY MOVE
     * Every square is checked for moves within the current board position  */
-    private void generateMoves() {
+    public void generateMoves() {
         moves.clear();
         char piece;
         for (int i = 0; i < 64; i++) {
@@ -116,6 +120,9 @@ public class MoveGen {
 
             if (piece == '0')
                 break;
+
+            if(boardIndex[i] > 50 && piece == 'P')
+                System.out.println();
 
             if (isFriendlyFire(piece)) {
                 if(!isPawnPiece(piece)) {
@@ -255,6 +262,7 @@ public class MoveGen {
         /* PAWN MOVES BASED ON WHOS TURN IT IS. */
         int[] pawnOffsets = (whitesTurn) ? whitePawnOffsets : blackPawnOffsets;
 
+
         for (int i = 0; i < pawnOffsets.length; i++) {
             /* Setting target square and what piece stands on it */
             targetSquare = startSquare + pawnOffsets[i];
@@ -268,23 +276,30 @@ public class MoveGen {
             if (isFriendlyFire(targetPiece))
                 break;
 
-            /* Adds newly found move to list */
-            tempMoves.add(genericMove(startSquare,targetSquare,piece));
+            if(i == 0) {
+                /* If opponents piece is on the square can't move any further */
+                if (isEnemyFire(targetPiece))
+                    continue;
 
-            /* CHECKING IF PAWN HASNT MOVED */
-            if (i == 0 && (BoardClass.getFile(startSquare) == 2 || BoardClass.getFile(startSquare) == 7)) {
-                /* CHECKS THE SQUARE TWO UP FROM PAWN */
-                targetSquare += pawnOffsets[i];
-                targetPiece = board[targetSquare];
-                /* IF SQUARE IS EMPTY : MOVE UP TWO AS MOVE*/
-                if (targetPiece == ' ') {
-                    tempMoves.add(genericMove(startSquare,targetSquare,piece));
+                /* Adds newly found move to list */
+                tempMoves.add(genericMove(startSquare, targetSquare, piece));
+
+                /* CHECKING IF PAWN HASNT MOVED */
+                if (BoardClass.getFile(startSquare) == 2 || BoardClass.getFile(startSquare) == 7) {
+                    /* CHECKS THE SQUARE TWO UP FROM PAWN */
+                    targetSquare += pawnOffsets[i];
+                    targetPiece = board[targetSquare];
+                    /* IF SQUARE IS EMPTY : MOVE UP TWO AS MOVE*/
+                    if (!isEnemyFire(targetPiece)) {
+                        tempMoves.add(genericMove(startSquare, targetSquare, piece));
+                    }
                 }
-            }
 
-            /* If opponents piece is on the square can't move any further */
-            if (isEnemyFire(targetPiece))
-                break;
+            } else {
+                /* Diagonal pawn captures */
+                if(isEnemyFire(targetPiece))
+                    tempMoves.add(genericMove(startSquare, targetSquare, piece));
+            }
 
         }
         /* Returning found moves */

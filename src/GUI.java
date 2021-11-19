@@ -170,7 +170,7 @@ public class GUI {
                     fromTile.setPicked(false);
                     pickedMovePiece = false;
                 }
-                else{
+                else {
                     //make move
                     fromTile.setPicked(false);
                     setBoard(game.moveByIndex(fromTile.column, fromTile.row, tileClicked.column, tileClicked.row));

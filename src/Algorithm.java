@@ -1,5 +1,7 @@
+import newBoard.Move;
+import newBoard.MoveGen;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 import static java.lang.Double.max;
@@ -7,7 +9,11 @@ import static java.lang.Double.min;
 
 public class Algorithm {
     double eval, maxEval, minEval;
-    Game game = Game.getInstance();
+    MoveGen MG;
+    public Algorithm (MoveGen MG) {
+        this.MG = MG;
+    }
+    
     int pawnValue = 100; int knightValue = 300; int bishopValue = 320; int rookValue = 500; int queenValue = 1100; int kingValue = 20000;
     int[] pawnBlackHeat = {
     -50,-40,-30,-30,-30,-30,-40,-50,
@@ -77,13 +83,13 @@ public class Algorithm {
     int[] kingWhiteHeat = reverseArray(kingBlackHeat);
 
 
-    public double alphaBeta(ArrayList<byte[]> moves, int depth, double alpha, double beta, boolean maximizing) {
+    public double alphaBeta(ArrayList<Move> moves, int depth, double alpha, double beta, boolean maximizing) {
         if(depth == 0) {
             return eval;
         }
         if(maximizing) {
             maxEval = Double.NEGATIVE_INFINITY;
-            for (byte[] move : moves) {
+            for (Move move : moves) {
             eval = alphaBeta(makeMove(move),depth - 1, alpha, beta, false);
             maxEval = max(maxEval, eval);
             alpha = max(alpha, eval);
@@ -97,7 +103,7 @@ public class Algorithm {
 
         } else {
             minEval = Double.POSITIVE_INFINITY;
-            for (byte[] move: moves) {
+            for (Move move: moves) {
                 eval = alphaBeta(makeMove(move), depth - 1, alpha, beta, true);
                 minEval = min(minEval, eval);
                 beta = min(beta, eval);
@@ -109,21 +115,23 @@ public class Algorithm {
                 return minEval;
             }
         }
+        /* ??? */
+        return 0;
     }
 
-    private ArrayList<byte[]> makeMove(byte[] move) {
-        game.moveByIndex(move[0], move[1], move[2], move[3]);
-        game.generateMoves();
-        return game.getMoves();
+    private ArrayList<Move> makeMove(Move move) {
+        MG.executeMove(move);
+//        MG.generateMoves();
+        return MG.getAllMoves();
     }
 
-    private void unmakeMove(byte[] move) {
-        game.moveByIndex(move[2], move[3], move[0], move[1]);
-        game.generateMoves();
+    private void unmakeMove(Move move) {
+        MG.executeMove(move);
+//        MG.generateMoves();
     }
 
     private double evaluatePosition() {
-        char[] board = game.get8x8Board();
+        char[] board = MG.returnWorkloadBoardClass().get8by8();
         double whiteEval = 0, blackEval = 0, curr = 0;
         //We look through the board and add the pieces plus the heap maps to evaluate the position
         for (int i = 0; i < board.length; i++) {
