@@ -21,7 +21,7 @@ public class Board {
 //            System.out.println(counter);
             boardIndex[i] = counter;
             if(! (i == 7 || i == 15 || i == 23 || i == 31 || i == 39 || i == 47 || i == 55 || i == 63))
-                counter ++;
+                counter++;
             else
                 counter += 5;
         }
