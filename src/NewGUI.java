@@ -17,6 +17,8 @@ public class NewGUI {
     private static Dimension FRAME_DIMENSION;
     private static final Color LIGHT = new Color(252,194,142);
     private static final Color DARK = new Color(149,84,28);
+    private static final Color colorMovePossible = new Color(150, 225, 129);
+
 //    private final Font FONT_DEFAULT = new Font("Serif", Font.PLAIN, 70);
 
     //boardtiles
@@ -25,20 +27,23 @@ public class NewGUI {
 
     //for moves
     private boolean pickedMovePiece;
-    private TilePanel fromTile;
+    ArrayList<Move> tileMoves;
+    private TilePanel startTile;
+    private TilePanel targetTile;
     private JLabel statusLabel;
 
     private Board boardClass;
     private char board[];
     private int boardIndex[];
+    private int boardToInt[];
     private MoveGen moveGen;
 
     //constructor
-    public NewGUI(Board bc) {
-        this.boardClass = bc;
-        this.board = boardClass.getBoardChar();
-        this.boardIndex = boardClass.getBoardIndex();
-        this.moveGen = new MoveGen(boardClass);
+    public NewGUI(MoveGen mg) {
+        this.moveGen = mg;
+        this.board = mg.workloadBoard();
+        this.boardIndex = mg.returnBoardIndex();
+        this.boardToInt = mg.returnBoardInt();
 
 
         //setup all frames and panels
@@ -96,8 +101,21 @@ public class NewGUI {
         //Setting up main chess board
         TilePanel temp;
         int counter = 0;
-        for (int i = 63; i >= 0; i--) {
-            System.out.println("TILE: " + i);
+       /* for (int i = 63; i >= 0; i--) {
+            temp = new TilePanel(i, nextTileBright, listener);
+            tilesA.add(temp);
+            setBoard(temp);
+            gamePanel.add(temp.getTilePanel());
+            if(counter==7)
+                counter = 0;
+            else {
+                counter++;
+                nextTileBright = !nextTileBright;
+            }
+        };*/
+
+        for (int i = 0; i < 64; i++) {
+//            System.out.println("TILE: " + i);
             temp = new TilePanel(i, nextTileBright, listener);
             tilesA.add(temp);
             setBoard(temp);
@@ -136,7 +154,7 @@ public class NewGUI {
 
     public void setBoard(TilePanel tile){
         //converting letter representation from backend to unicode representation for GUI
-        switch (board[boardIndex[tile.getPosition()]]) {
+        switch (board[boardIndex[tile.getTilePos()]]) {
             case ' ' -> tile.setTileIcon("transparent");
             case 'R' -> tile.setTileIcon("Rw");
             case 'N' -> tile.setTileIcon("KTw");
@@ -154,17 +172,9 @@ public class NewGUI {
         }
     }
 
-    public void setGUI(TilePanel source, TilePanel target) {
-        Container parent = source.getParent();
-        TilePanel temp = source;
-
-        System.out.println(parent.getComponent(source.position));
-    }
-
-
     private class TilePanel extends JPanel{
         Icon displayPiece;
-        int position;
+        int tilePos;
         JPanel tile = new JPanel(new BorderLayout());
         JLabel label = new JLabel();
 
@@ -176,7 +186,7 @@ public class NewGUI {
             label.setHorizontalAlignment(JLabel.CENTER);
 
             //set tile values
-            position = i;
+            tilePos = i;
             defaultColor = isBright ? LIGHT : DARK;
             setBackground(defaultColor);
             addMouseListener(listener);
@@ -202,6 +212,7 @@ public class NewGUI {
             add(label);
 //            System.out.println(new java.io.File("src/ressources/kb.png").exists());
         }
+
         public void setTileIcon(Icon icon){
             transparent = false;
             getLabel().setIcon(icon);
@@ -211,70 +222,70 @@ public class NewGUI {
             return getLabel().getIcon();
         }
 
-        public void setPicked(boolean isPicked){
+        public int getTilePos() {
+            return tilePos;
+        }
+
+        public void setPicked(boolean isPicked, ArrayList<Move> moves){
             if(isPicked){
                 this.setBackground(new Color(124, 225, 124));
+                colorPossibleMoveTiles(targetTile, true, moves);
             }
             else{
                 this.setBackground(defaultColor);
+                colorPossibleMoveTiles(targetTile, false, moves);
             }
         }
 
-        public int getPosition() {
-            return position;
-        }
+
     }
 
     //onClickListener added to all tiles
     private class Listener implements MouseListener{
         @Override
         public void mouseClicked(MouseEvent e) {
+            targetTile = (TilePanel) e.getSource();
 
-            TilePanel tileClicked = (TilePanel) e.getSource();
+            System.out.println("\nTILE CLICKED: " + targetTile);
+            Container parent = targetTile.getParent();
 
-            System.out.println("\nTILE CLICKED: " + tileClicked);
-            Container parent = tileClicked.getParent();
-
-            System.out.println("\nPARENT CONTAINER LOOKING FOR CHILD: " + parent.getComponentAt(tileClicked.getLocation()));
+            System.out.println("\nPARENT CONTAINER LOOKING FOR CHILD: " + parent.getComponentAt(targetTile.getLocation()));
             System.out.println("\nPARENT CONTAINER: " + parent);
 //            System.out.println(Arrays.toString(parent.getComponents()));
 
-
             if(pickedMovePiece){
-                if(fromTile == tileClicked){
+                if(startTile == targetTile){
                     //undo selection
-                    fromTile.setPicked(false);
+                    startTile.setPicked(false, tileMoves);
                     pickedMovePiece = false;
                 } else{
+
                     //make move
-                    boardClass.moveByIndex(fromTile.position, tileClicked.position);
-
-                    tileClicked.setTileIcon(fromTile.getTileIcon());
-                    fromTile.setTileIcon("transparent");
-
-                    System.out.println(board);
-
-                    fromTile.setPicked(false);
+                    targetTile.setTileIcon(startTile.getTileIcon());
+                    startTile.setTileIcon("transparent");
                     pickedMovePiece = false;
-
-                    //update status
-//                    if(game.isWhiteNext()){
-//                        statusLabel.setText("Next: white");
-//                    }
-//                    else{
-//                        statusLabel.setText("Next: black");
-//                    }
+                    startTile.setPicked(false, tileMoves);
+                    moveGen.moveByIndex(startTile.tilePos, targetTile.tilePos);
 
                 }
             } else{
                 // if clicked on empty tile then return cause you cant move it.
-                if(tileClicked.getTransparency()){
+                if(targetTile.getTransparency()){
                     return;
                 }
+
                 //select move piece
-                tileClicked.setPicked(true);
+                startTile = targetTile;
+
+                /* Prepare moves list for coloring by using method in move gen
+                 * And using boardIndex for finding the correct index of the specific tile in the
+                 * 12x12 array containing the pieces. Because a "Move" contains index of the piece
+                 * position before it performs a move.  */
+                tileMoves = moveGen.getMoves(boardIndex[startTile.getTilePos()]);
+
+                targetTile.setPicked(true, tileMoves);
                 pickedMovePiece = true;
-                fromTile = tileClicked;
+
             }
 
 
@@ -294,8 +305,22 @@ public class NewGUI {
         }
     }
 
-    private void colorPossibleMoveTiles() {
-        ArrayList<Move> moves = moveGen.getMoves();
+    private void colorPossibleMoveTiles(TilePanel startTile, boolean isPicked, ArrayList<Move> moves) {
+        int tileToColor;
+        if(isPicked) {
+            for (Move m : moves){
+                tileToColor = boardToInt[m.getTargetSquare()];
+                System.out.println(tileToColor);
+                tilesA.get(tileToColor).setBackground(colorMovePossible);
+//                tilesA[indexOf].setBackground(colorMovePossible);
+            }
+        } else {
+            for (Move m : moves) {
+                tileToColor = boardToInt[m.getTargetSquare()];
+                TilePanel temp = tilesA.get(tileToColor);
+                temp.setBackground(temp.defaultColor);
+            }
+        }
     }
 }
 

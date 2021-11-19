@@ -15,9 +15,9 @@ public class MoveGen {
     int[] whitePawnOffsets = new int[]{12, 13, 11};
     int[] blackPawnOffsets = new int[]{-12, -13, -11};
     //initialize board and turn variable.
-    Board BoardClass = new Board();
-    int[] boardIndex = BoardClass.getBoardIndex();
-    char[] board = BoardClass.getBoardChar();
+    Board BoardClass;
+    int[] boardIndex;
+    char[] board;
     boolean whitesTurn = true;
     int startSquare;
     int targetSquare;
@@ -43,21 +43,63 @@ public class MoveGen {
 
     //constructor
     public MoveGen(Board boardClass) {
+        this.BoardClass = boardClass;
+        this.board = boardClass.getBoardChar();
+        this.boardIndex = boardClass.getBoardIndex();
         generateMoves();
     }
 
-    private boolean isSameColor(char piece) {
-        if (whitesTurn && Character.isUpperCase(piece))
-            return true;
-        if (!whitesTurn && Character.isLowerCase(piece))
-            return true;
-        return false;
+    public char[] workloadBoard() {
+        return board;
+    }
+    public int[] returnBoardIndex() {
+        return BoardClass.boardIndex;
+    }
+    public int[] returnBoardInt() {
+        return BoardClass.getBoardInt();
     }
 
-    public ArrayList<Move> getMoves() {
-        return moves;
+
+
+    public ArrayList<Move> getMoves(int startSquare) {
+        tempMoves = new ArrayList<>();
+        for (Move m : moves) {
+            if(m.getStartSquare() == startSquare)
+                tempMoves.add(m);
+        }
+        return tempMoves;
     }
 
+    /* MOVE EXECUTION */
+    public void executeMove (Move move) {
+        System.out.println(
+                "EXECUTING ORDER 66 MOVE: " +
+                        move.getPiece() +
+                        " FROM SQUARE: " +
+                        move.getStartSquare() +
+                        " TO: " +
+                        move.getTargetSquare());
+        board[move.getTargetSquare()] = board[move.getPiece()];
+        board[move.getStartSquare()] = ' ';
+        whitesTurn = !whitesTurn;
+        generateMoves();
+    }
+
+    public void moveByIndex (int startSquare, int targetSquare) {
+        if(!(startSquare == '0' || targetSquare == '0')) {
+            board[boardIndex[targetSquare]] = board[boardIndex[startSquare]];
+            board[boardIndex[startSquare]] = ' ';
+
+            whitesTurn = !whitesTurn;
+            generateMoves();
+        }
+
+    }
+    /* END : MOVE EXEC */
+
+
+    /* GENERATION OF EVERY MOVE
+    * Every square is checked for moves within the current board position  */
     private void generateMoves() {
         moves.clear();
         char piece;
@@ -75,7 +117,7 @@ public class MoveGen {
             if (piece == '0')
                 break;
 
-            if (isSameColor(piece)) {
+            if (isFriendlyFire(piece)) {
                 if(!isPawnPiece(piece)) {
                     if (isSlidingPiece(piece))
                         moves.addAll(generateSlidingMoves(startSquare, piece));
@@ -92,45 +134,65 @@ public class MoveGen {
 
     }
 
-    private char getTargetPiece(int targetSquare) {
-        return targetPiece = board[targetSquare];
+
+    /* Checking if a piece is the same color as the player */
+    private boolean isFriendlyFire(char piece) {
+
+        /* IF FRIENDLY FOR WHITE */
+        if (whitesTurn && Character.isUpperCase(piece))
+            return true;
+
+        /* IF FRIENDLY FOR BLACK */
+        if (!whitesTurn && Character.isLowerCase(piece))
+            return true;
+
+        return false;
     }
-    private int getTargetSquare(int startSquare, int i) {
-        return targetSquare = startSquare + directionOffsets[i];
+    private boolean isEnemyFire(char piece) {
+        if(whitesTurn && Character.isLowerCase(piece))
+            return true;
+
+        if(!whitesTurn && Character.isUpperCase(piece))
+            return true;
+
+        return false;
     }
 
-
+    /* Generic methods to check what type of piece a char is */
     private boolean isSlidingPiece(char piece) {
         return  piece == 'b' || piece == 'B' ||
                 piece == 'q' || piece == 'Q' ||
                 piece == 'r' || piece == 'R';
     }
-
     private boolean isKnightPiece(char piece) {
         return (piece == 'n' || piece == 'N');
     }
-
     private boolean isKingPiece(char piece) {
         return (piece == 'k' || piece == 'K');
     }
-
     private boolean isPawnPiece(char piece) {
         return (piece == 'p' || piece == 'P');
     }
+
 
     /* GENERATING BISHOP, ROOK & QUEEN MOVES MOVES */
     private ArrayList<Move> generateSlidingMoves(int startSquare, char piece) {
         tempMoves = new ArrayList<>();
         int startIndex, endIndex;
         /* Sets the indexes related to the offsets and input */
-        startIndex = (piece == 'r' || piece == 'R') ? 4 : 0;
-        endIndex = (piece == 'b' || piece == 'B') ? 4 : 8;
+        startIndex = (piece == 'b' || piece == 'B') ? 4 : 0;
+        endIndex= (piece == 'r' || piece == 'R') ? 4 : 8;
+
+
+//        piece = 'q';
+        if(piece == 'q' || piece == 'Q')
+            System.out.println();
 
         for (int i = startIndex; i < endIndex; i++) {
             /* Looping through all the possible direction squares */
-            for (; ; ) {
+            for (targetSquare = startSquare + directionOffsets[i];; targetSquare+= directionOffsets[i]) {
                 /* Setting target square and what piece stands on it */
-                targetSquare = startSquare + directionOffsets[i];
+//                targetSquare = startSquare + directionOffsets[i];
                 targetPiece = board[targetSquare];
 
                 /* if target piece is OUT OF BOUNDS */
@@ -138,14 +200,14 @@ public class MoveGen {
                     break;
 
                 /* if target piece is friendly break */
-                if (isSameColor(targetPiece))
+                if (isFriendlyFire(targetPiece))
                     break;
 
                 /* Adds newly found move to list */
-                moves.add(new Move(startSquare, targetSquare, piece));
+                moves.add(genericMove(startSquare, targetSquare, piece));
 
                 /* If opponents piece is on the square can't move any further */
-                if (!isSameColor(targetPiece))
+                if (isEnemyFire(targetPiece))
                     break;
             }
         }
@@ -154,37 +216,37 @@ public class MoveGen {
         return tempMoves;
     }
 
-    /* GENERATING KING OR KNIGHT MOVES */
+
+    /* GENERATING KING OR KNIGHT MOVES
+    * they are different as they can only jump once to a specific square
+    * and not slide around. so doesn't have to check for enemy piece to stop */
     private ArrayList<Move> generateKingOrKnightMoves(int startSquare, char piece) {
         tempMoves = new ArrayList<>();
         int[] offset = (isKingPiece(piece)) ? directionOffsets : knightOffsets;
 
         for (int dos : offset) {
             /* Looping through all the possible direction squares */
-            for(;;) {
-                /* Setting target square and what piece stands on it */
-                targetSquare = startSquare + dos;
-                targetPiece = board[targetSquare];
+            /* Setting target square and what piece stands on it */
+            targetSquare = startSquare + dos;
+            targetPiece = board[targetSquare];
 
-                /* if target piece is OUT OF BOUNDS */
-                if (targetPiece == '0')
-                    break;
+            /* if target piece is OUT OF BOUNDS */
+            if (targetPiece == '0')
+                continue;
 
-                /* if target piece is friendly break */
-                if (isSameColor(targetPiece))
-                    break;
+            /* if target piece is friendly break */
+            if (isFriendlyFire(targetPiece))
+                continue;
 
-                /* Adds newly found move to list */
-                tempMoves.add(new Move(startSquare, targetSquare, piece));
+            /* Adds newly found move to list */
+            tempMoves.add(genericMove(startSquare, targetSquare, piece));
 
-                /* If opponents piece is on the square can't move any further */
-                if (!isSameColor(targetPiece))
-                    break;
-            }
         }
+
         /* Returning found moves */
         return tempMoves;
     }
+
 
     /* GENERATING PAWN MOVES */
     private ArrayList<Move> generatePawnMoves(int startSquare, char piece) {
@@ -203,11 +265,11 @@ public class MoveGen {
                 break;
 
             /* if target piece is friendly break */
-            if (isSameColor(targetPiece))
+            if (isFriendlyFire(targetPiece))
                 break;
 
             /* Adds newly found move to list */
-            tempMoves.add(new Move(startSquare, targetSquare, piece));
+            tempMoves.add(genericMove(startSquare,targetSquare,piece));
 
             /* CHECKING IF PAWN HASNT MOVED */
             if (i == 0 && (BoardClass.getFile(startSquare) == 2 || BoardClass.getFile(startSquare) == 7)) {
@@ -216,16 +278,23 @@ public class MoveGen {
                 targetPiece = board[targetSquare];
                 /* IF SQUARE IS EMPTY : MOVE UP TWO AS MOVE*/
                 if (targetPiece == ' ') {
-                    tempMoves.add(new Move(startSquare, targetSquare, piece));
+                    tempMoves.add(genericMove(startSquare,targetSquare,piece));
                 }
             }
 
             /* If opponents piece is on the square can't move any further */
-            if (!isSameColor(targetPiece))
+            if (isEnemyFire(targetPiece))
                 break;
 
         }
         /* Returning found moves */
         return tempMoves;
+    }
+
+    public Move genericMove(int startSquare, int targetSquare, char piece){
+        return new Move(
+                new String[] {BoardClass.posToString(startSquare), BoardClass.posToString(targetSquare)},
+                new int[] {startSquare, targetSquare},
+                piece);
     }
 }

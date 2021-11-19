@@ -1,11 +1,9 @@
 package newBoard;
 
-import java.util.Arrays;
-
 public class Board {
     /* BOARD ARRAYS */
     public int[] boardIndex = new int[64];
-    public int[] board = new int[144];
+    public int[] boardInt = new int[144];
     public char[] boardChar = new char[144];
 
     /* RANK & FILE ARRAY*/
@@ -16,9 +14,13 @@ public class Board {
     public boolean[] whitePieces;
     public boolean[] blackPieces;
 
-    public Board () {
+    public Board (boolean wantTest) {
+        if (wantTest) {
+            setupBoardCharTESTARRAY();
+        } else {
+            setupBoardChar();
+        }
         setupBoardInt();
-        setupBoardChar();
         setupBoardIndex();
         setupRanksAndFiles();
     }
@@ -40,7 +42,7 @@ public class Board {
         * Else start index for this array is
         * STARTINDEX = 26 || ENDINDEX = 117
         * */
-        board = new int[]{
+        boardInt = new int[]{
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                 -1, -1,  0,  1,  2,  3,  4,  5,  6,  7, -1, -1,
@@ -54,7 +56,7 @@ public class Board {
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
         };
-        System.out.println("start index: board[26] | "+ board[26] + "\nNow adding offset for vertical: +12 | board[26+12] | " + board[26+12]);
+        System.out.println("start index: board[26] | "+ boardInt[26] + "\nNow adding offset for vertical: +12 | board[26+12] | " + boardInt[26+12]);
     }
 
     private void setupBoardChar () {
@@ -68,6 +70,22 @@ public class Board {
                 '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
                 '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
                 '0', '0', 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p', '0', '0',
+                '0', '0', 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
+        };
+    }
+    private void setupBoardCharTESTARRAY () {
+        boardChar = new char[]{
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', 'R', ' ', 'B', 'Q', 'K', 'B', 'N', 'R', '0', '0',
+                '0', '0', 'P', 'P', 'P', 'P', ' ', 'P', 'P', 'P', '0', '0',
+                '0', '0', ' ', ' ', 'N', ' ', ' ', ' ', ' ', ' ', '0', '0',
+                '0', '0', ' ', ' ', ' ', ' ', 'P', ' ', ' ', ' ', '0', '0',
+                '0', '0', ' ', ' ', ' ', 'p', 'p', ' ', ' ', ' ', '0', '0',
+                '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
+                '0', '0', 'p', 'p', 'p', ' ', ' ', 'p', 'p', 'p', '0', '0',
                 '0', '0', 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
@@ -111,7 +129,7 @@ public class Board {
     }
 
     public int[] getBoardInt() {
-        return board;
+        return boardInt;
     }
 
     public char[] getBoardChar() {
@@ -135,15 +153,15 @@ public class Board {
         return rank[startSquare];
     }
 
-    public void executeMove (Move move) {
-        System.out.println("EXECUTING ORDER 66 MOVE: " + move.getPiece() + " FROM SQUARE: " + move.getStartSquare() + " TO: " +move.targetSquare);
-        boardChar[move.targetSquare] = boardChar[move.getPiece()];
-        boardChar[move.startSquare] = ' ';
+    public String posToString(int startSquare) {
+        return "" + getRank(startSquare) + "" + getFile(startSquare);
+    }
+    public int getIndexOfSpecific (int startSquare) {
+        if(startSquare != -1)
+            return boardInt[startSquare];
+        return 0;
     }
 
-    public void moveByIndex (int startSquare, int targetSquare) {
-        boardChar[targetSquare] = boardChar[startSquare];
-        boardChar[startSquare] = ' ';
-    }
+
 
 }

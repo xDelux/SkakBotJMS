@@ -1,18 +1,20 @@
 package newBoard;
 
+import java.util.ArrayList;
+
 public class Move {
-    int startSquare;
-    int targetSquare;
+    int[] posIndex;
+    String[] pos;
     char piece;
 
-    public Move (int sq, int tq, char piece) {
-        this.startSquare = sq;
-        this.targetSquare = tq;
+    public Move (String[] pos, int[] posIndex, char piece) {
+        this.pos = pos;
+        this.posIndex = posIndex;
         this.piece = piece;
     }
 
     public String moveToString () {
-        return "" + startSquare + " " + targetSquare + " " +piece;
+        return "MOVE: Piece  " + piece + "  from  " + pos[0] + " -> " + pos[1];
     }
 
     public char getPiece() {
@@ -20,10 +22,10 @@ public class Move {
     }
 
     public int getStartSquare() {
-        return startSquare;
+        return posIndex[0];
+    }
+    public int getTargetSquare() {
+        return posIndex[1];
     }
 
-    public int getTargetSquare() {
-        return targetSquare;
-    }
 }
