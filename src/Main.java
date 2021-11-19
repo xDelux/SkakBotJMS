@@ -5,10 +5,10 @@ public class Main {
 
     public static char[][] board;
     public static void main(String[] args) throws IOException {
-        Game game = new Game();
-        GUI gui = new GUI(game);
-        /*Board board = new Board();
-        MoveGen moves = new MoveGen();*/
+        /*Game game = new Game();
+        GUI gui = new GUI(game);*/
+        Board board = new Board();
+        MoveGen moves = new MoveGen();
 
 
 

@@ -15,10 +15,9 @@ public class MoveGen {
     int[] whitePawnOffsets = new int[]{12, 13, 11};
     int[] blackPawnOffsets = new int[]{-12, -13, -11};
     //initialize board and turn variable.
-    Board boardInit = new Board();
-    int[] boardIndex = boardInit.getBoardIndex();
-    ;
-    char[] board = boardInit.getBoardChar();
+    Board BoardClass = new Board();
+    int[] boardIndex = BoardClass.getBoardIndex();
+    char[] board = BoardClass.getBoardChar();
     boolean whitesTurn = true;
     int startSquare;
     int targetSquare;
@@ -56,29 +55,6 @@ public class MoveGen {
         return tempBoard;
     }
 
-    public int getFile(int startSquare) {
-        int file;
-        if (startSquare <= boardIndex[7])
-            return file = 1;
-        else if (startSquare <= boardIndex[15])
-            return file = 2;
-        else if (startSquare <= boardIndex[23])
-            return file = 3;
-        else if (startSquare <= boardIndex[31])
-            return file = 4;
-        else if (startSquare <= boardIndex[39])
-            return file = 5;
-        else if (startSquare <= boardIndex[47])
-            return file = 6;
-        else if (startSquare <= boardIndex[55])
-            return file = 7;
-        else if (startSquare <= boardIndex[63])
-            return file = 8;
-        else
-            return 0;
-
-    }
-
 
     private boolean isSameColor(char piece) {
         if (whitesTurn && Character.isUpperCase(piece))
@@ -97,7 +73,7 @@ public class MoveGen {
             piece = board[startSquare];
 
             /* TESTING */
-//            System.out.println("SQUARE: " +startSquare + " PIECE: " + piece);
+            System.out.println("SQUARE: [" +BoardClass.getRank(startSquare) + BoardClass.getFile(startSquare) + "] - " +startSquare + " PIECE: " + piece);
 //            System.out.println("Testing getFile() of all squares : ");
 //            System.out.println(getFile(startSquare));
             /* TESTING ENDS */
@@ -230,7 +206,7 @@ public class MoveGen {
             tempMoves.add(new Move(startSquare, targetSquare, piece));
 
             /* CHECKING IF PAWN HASNT MOVED */
-            if (i == 0 && (getFile(startSquare) == 2 || getFile(startSquare) == 7)) {
+            if (i == 0 && (BoardClass.getFile(startSquare) == 2 || BoardClass.getFile(startSquare) == 7)) {
                 /* CHECKS THE SQUARE TWO UP FROM PAWN */
                 targetSquare += pawnOffsets[i];
                 targetPiece = board[targetSquare];

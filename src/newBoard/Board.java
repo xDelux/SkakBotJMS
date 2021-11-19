@@ -3,9 +3,16 @@ package newBoard;
 import java.util.Arrays;
 
 public class Board {
+    /* BOARD ARRAYS */
     public int[] boardIndex = new int[64];
     public int[] board = new int[144];
     public char[] boardChar = new char[144];
+
+    /* RANK & FILE ARRAY*/
+    public char[] rank = new char[64];
+    public int[] file = new int[64];
+
+    /* NOT USED: color array*/
     public boolean[] whitePieces;
     public boolean[] blackPieces;
 
@@ -13,6 +20,7 @@ public class Board {
         setupBoardInt();
         setupBoardChar();
         setupBoardIndex();
+        setupRanksAndFiles();
     }
 
     private void setupBoardIndex() {
@@ -25,13 +33,8 @@ public class Board {
             else
                 counter += 5;
         }
-
-//        for (int i = 0; i < 144; i++) {
-//            if(board[i] != -1)
-//                System.out.println("INDEX I BOARD SAT MED INT: " + i);
-//        }
-//        System.out.println(Arrays.toString(boardIndex));
     }
+
     private void setupBoardInt () {
         /* Use together with the index board to easily look uå index if needed.
         * Else start index for this array is
@@ -54,7 +57,6 @@ public class Board {
         System.out.println("start index: board[26] | "+ board[26] + "\nNow adding offset for vertical: +12 | board[26+12] | " + board[26+12]);
     }
 
-
     private void setupBoardChar () {
         boardChar = new char[]{
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
@@ -72,6 +74,38 @@ public class Board {
         };
     }
 
+    private void setupRanksAndFiles() {
+        rank = new char[] {
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
+        };
+
+        file = new int[] {
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', 1, 1, 1, 1, 1, 1, 1, 1, '0', '0',
+                '0', '0', 2, 2, 2, 2, 2, 2, 2, 2, '0', '0',
+                '0', '0', 3, 3, 3, 3, 3, 3, 3, 3, '0', '0',
+                '0', '0', 4, 4, 4, 4, 4, 4, 4, 4, '0', '0',
+                '0', '0', 5, 5, 5, 5, 5, 5, 5, 5, '0', '0',
+                '0', '0', 6, 6, 6, 6, 6, 6, 6, 6, '0', '0',
+                '0', '0', 7, 7, 7, 7, 7, 7, 7, 7, '0', '0',
+                '0', '0', 8, 8, 8, 8, 8, 8, 8, 8, '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
+        };
+    }
+
     public int[] getBoardIndex() {
         return boardIndex;
     }
@@ -82,6 +116,40 @@ public class Board {
 
     public char[] getBoardChar() {
         return boardChar;
+    }
+
+    public char[] get8by8() {
+        char[] tempBoard = new char[64];
+        for (int i = 0; i < 64; i++) {
+            tempBoard[i] = boardChar[boardIndex[i]];
+        }
+        return tempBoard;
+    }
+
+    public int getFile(int startSquare) {
+        /*int bonk;
+        if (startSquare <= boardIndex[7])
+            return bonk = 1;
+        else if (startSquare <= boardIndex[15])
+            return bonk = 2;
+        else if (startSquare <= boardIndex[23])
+            return bonk = 3;
+        else if (startSquare <= boardIndex[31])
+            return bonk = 4;
+        else if (startSquare <= boardIndex[39])
+            return bonk = 5;
+        else if (startSquare <= boardIndex[47])
+            return bonk = 6;
+        else if (startSquare <= boardIndex[55])
+            return bonk = 7;
+        else if (startSquare <= boardIndex[63])
+            return bonk = 8;
+        else */
+        return file[startSquare];
+    }
+
+    public char getRank (int startSquare) {
+        return rank[startSquare];
     }
 
 }
