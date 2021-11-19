@@ -1,3 +1,5 @@
+
+
 import java.io.IOException;
 import newBoard.*;
 
@@ -5,8 +7,9 @@ public class Main {
 
     public static char[][] board;
     public static void main(String[] args) throws IOException {
-//        Game game = new Game();
+        Game game = Game.getInstance();
 //        GUI gui = new GUI(game);
+
         Board board = new Board(true);
         MoveGen moveGen = new MoveGen(board);
         NewGUI gui = new NewGUI(moveGen);
