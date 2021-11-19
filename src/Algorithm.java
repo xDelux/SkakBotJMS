@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -7,7 +8,7 @@ import static java.lang.Double.min;
 public class Algorithm {
     double eval, maxEval, minEval;
     Game game = Game.getInstance();
-    int pawnValue = 100; int knightValue = 300; int bishopValue = 310; int rookValue = 500; int queenValue = 900; int kingValue = 20000;
+    int pawnValue = 100; int knightValue = 300; int bishopValue = 320; int rookValue = 500; int queenValue = 1100; int kingValue = 20000;
     int[] pawnBlackHeat = {
     -50,-40,-30,-30,-30,-30,-40,-50,
     -40,-20,  0,  0,  0,  0,-20,-40,
@@ -76,43 +77,61 @@ public class Algorithm {
     int[] kingWhiteHeat = reverseArray(kingBlackHeat);
 
 
-    public double alphaBeta(byte[] move, int depth, double alpha, double beta, boolean maximizing) {
+    public double alphaBeta(ArrayList<byte[]> moves, int depth, double alpha, double beta, boolean maximizing) {
         if(depth == 0) {
             return eval;
         }
         if(maximizing) {
             maxEval = Double.NEGATIVE_INFINITY;
-            //for each child of current position
-            eval = alphaBeta(child,depth - 1, alpha, beta, false);
+            for (byte[] move : moves) {
+            eval = alphaBeta(makeMove(move),depth - 1, alpha, beta, false);
             maxEval = max(maxEval, eval);
             alpha = max(alpha, eval);
+            // Prune
             if(beta <= alpha) {
+                unmakeMove(move);
                 break;
             }
-            return maxEval;
+                return maxEval;
+            }
+
         } else {
             minEval = Double.POSITIVE_INFINITY;
-            //for each child of current position
-            eval = alphaBeta(child,depth - 1, alpha, beta, true);
-            minEval = min(minEval, eval);
-            beta = min(beta, eval);
-            if(beta <= alpha) {
-                break;
+            for (byte[] move: moves) {
+                eval = alphaBeta(makeMove(move), depth - 1, alpha, beta, true);
+                minEval = min(minEval, eval);
+                beta = min(beta, eval);
+                // Prune
+                if (beta <= alpha) {
+                    unmakeMove(move);
+                    break;
+                }
+                return minEval;
             }
-            return minEval;
         }
     }
 
+    private ArrayList<byte[]> makeMove(byte[] move) {
+        game.moveByIndex(move[0], move[1], move[2], move[3]);
+        game.generateMoves();
+        return game.getMoves();
+    }
+
+    private void unmakeMove(byte[] move) {
+        game.moveByIndex(move[2], move[3], move[0], move[1]);
+        game.generateMoves();
+    }
+
     private double evaluatePosition() {
-        char[][] board = game.getBoard();
+        char[] board = game.get8x8Board();
         double whiteEval = 0, blackEval = 0, curr = 0;
         //We look through the board and add the pieces plus the heap maps to evaluate the position
-        for (int i = 0; i < 64; i++) {
-            for (int j = 0; j < 8; j++) {
-                if(board[i][j] != ' ') {
+        for (int i = 0; i < board.length; i++) {
+            {
+                if(board[i] != ' ' || board[i] != '0') {
                     //For white eval
-                    if(Character.isUpperCase(board[i][j])) {
-                        switch (board[i][j]) {
+                    if(Character.isUpperCase(board[i])) {
+                        switch (board[i]) {
                             case 'P' :
                                 whiteEval += pawnValue + pawnWhiteHeat[i];
                                 break;
@@ -134,7 +153,7 @@ public class Algorithm {
                         }
                     //For black eval
                     } else {
-                        switch (board[i][j]) {
+                        switch (board[i]) {
                             case 'p' :
                                 blackEval += pawnValue + pawnBlackHeat[i];
                                 break;
