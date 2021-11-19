@@ -42,19 +42,9 @@ public class MoveGen {
     ArrayList<Move> tempMoves;
 
     //constructor
-    public MoveGen() {
+    public MoveGen(Board boardClass) {
         generateMoves();
     }
-
-    /* Convert 12x12 board to 8x8 board with the pieces */
-    public char[] get8by8() {
-        char[] tempBoard = new char[64];
-        for (int i = 0; i < 64; i++) {
-            tempBoard[i] = board[boardIndex[i]];
-        }
-        return tempBoard;
-    }
-
 
     private boolean isSameColor(char piece) {
         if (whitesTurn && Character.isUpperCase(piece))
@@ -62,6 +52,10 @@ public class MoveGen {
         if (!whitesTurn && Character.isLowerCase(piece))
             return true;
         return false;
+    }
+
+    public ArrayList<Move> getMoves() {
+        return moves;
     }
 
     private void generateMoves() {
@@ -101,19 +95,30 @@ public class MoveGen {
     private char getTargetPiece(int targetSquare) {
         return targetPiece = board[targetSquare];
     }
-
     private int getTargetSquare(int startSquare, int i) {
         return targetSquare = startSquare + directionOffsets[i];
     }
 
-    private void generateRookMoves() {
-
-    }
 
     private boolean isSlidingPiece(char piece) {
-        return piece == 'b' || piece == 'B' || piece == 'q' || piece == 'Q' || piece == 'r' || piece == 'R';
+        return  piece == 'b' || piece == 'B' ||
+                piece == 'q' || piece == 'Q' ||
+                piece == 'r' || piece == 'R';
     }
 
+    private boolean isKnightPiece(char piece) {
+        return (piece == 'n' || piece == 'N');
+    }
+
+    private boolean isKingPiece(char piece) {
+        return (piece == 'k' || piece == 'K');
+    }
+
+    private boolean isPawnPiece(char piece) {
+        return (piece == 'p' || piece == 'P');
+    }
+
+    /* GENERATING BISHOP, ROOK & QUEEN MOVES MOVES */
     private ArrayList<Move> generateSlidingMoves(int startSquare, char piece) {
         tempMoves = new ArrayList<>();
         int startIndex, endIndex;
@@ -122,13 +127,12 @@ public class MoveGen {
         endIndex = (piece == 'b' || piece == 'B') ? 4 : 8;
 
         for (int i = startIndex; i < endIndex; i++) {
-
-//            int target = board[startSquare + directionOffsets[i]];
+            /* Looping through all the possible direction squares */
             for (; ; ) {
+                /* Setting target square and what piece stands on it */
                 targetSquare = startSquare + directionOffsets[i];
                 targetPiece = board[targetSquare];
 
-//                genericMoves(targetPiece, targetSquare);
                 /* if target piece is OUT OF BOUNDS */
                 if (targetPiece == '0')
                     break;
@@ -140,69 +144,69 @@ public class MoveGen {
                 /* Adds newly found move to list */
                 moves.add(new Move(startSquare, targetSquare, piece));
 
-                /* If opponents piece is on the square cant move any further */
+                /* If opponents piece is on the square can't move any further */
                 if (!isSameColor(targetPiece))
                     break;
-
             }
         }
+
+        /* Returning found moves */
         return tempMoves;
     }
 
-
-    private boolean isKnightPiece(char piece) {
-        return (piece == 'n' || piece == 'N');
-    }
-
-    private boolean isKingPiece(char piece) {
-        return (piece == 'k' || piece == 'K');
-    }
-
+    /* GENERATING KING OR KNIGHT MOVES */
     private ArrayList<Move> generateKingOrKnightMoves(int startSquare, char piece) {
         tempMoves = new ArrayList<>();
         int[] offset = (isKingPiece(piece)) ? directionOffsets : knightOffsets;
 
         for (int dos : offset) {
-
+            /* Looping through all the possible direction squares */
             for(;;) {
+                /* Setting target square and what piece stands on it */
                 targetSquare = startSquare + dos;
                 targetPiece = board[targetSquare];
 
+                /* if target piece is OUT OF BOUNDS */
                 if (targetPiece == '0')
                     break;
 
+                /* if target piece is friendly break */
                 if (isSameColor(targetPiece))
                     break;
 
+                /* Adds newly found move to list */
                 tempMoves.add(new Move(startSquare, targetSquare, piece));
 
+                /* If opponents piece is on the square can't move any further */
                 if (!isSameColor(targetPiece))
                     break;
             }
         }
+        /* Returning found moves */
         return tempMoves;
     }
 
-    private boolean isPawnPiece(char piece) {
-        return (piece == 'p' || piece == 'P');
-    }
-
+    /* GENERATING PAWN MOVES */
     private ArrayList<Move> generatePawnMoves(int startSquare, char piece) {
         tempMoves = new ArrayList<>();
+
         /* PAWN MOVES BASED ON WHOS TURN IT IS. */
         int[] pawnOffsets = (whitesTurn) ? whitePawnOffsets : blackPawnOffsets;
 
         for (int i = 0; i < pawnOffsets.length; i++) {
+            /* Setting target square and what piece stands on it */
             targetSquare = startSquare + pawnOffsets[i];
             targetPiece = board[targetSquare];
 
+            /* if target piece is OUT OF BOUNDS */
             if (targetPiece == '0')
                 break;
 
+            /* if target piece is friendly break */
             if (isSameColor(targetPiece))
                 break;
 
-
+            /* Adds newly found move to list */
             tempMoves.add(new Move(startSquare, targetSquare, piece));
 
             /* CHECKING IF PAWN HASNT MOVED */
@@ -216,11 +220,12 @@ public class MoveGen {
                 }
             }
 
+            /* If opponents piece is on the square can't move any further */
             if (!isSameColor(targetPiece))
                 break;
 
         }
-
+        /* Returning found moves */
         return tempMoves;
     }
 }

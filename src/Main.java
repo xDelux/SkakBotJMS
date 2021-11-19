@@ -8,7 +8,8 @@ public class Main {
         /*Game game = new Game();
         GUI gui = new GUI(game);*/
         Board board = new Board();
-        MoveGen moves = new MoveGen();
+        MoveGen moves = new MoveGen(board);
+        NewGUI gui = new NewGUI(board);
 
 
 

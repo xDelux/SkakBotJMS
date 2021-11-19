@@ -118,6 +118,7 @@ public class Board {
         return boardChar;
     }
 
+    /* Convert 12x12 board to 8x8 board with the pieces */
     public char[] get8by8() {
         char[] tempBoard = new char[64];
         for (int i = 0; i < 64; i++) {
@@ -127,29 +128,22 @@ public class Board {
     }
 
     public int getFile(int startSquare) {
-        /*int bonk;
-        if (startSquare <= boardIndex[7])
-            return bonk = 1;
-        else if (startSquare <= boardIndex[15])
-            return bonk = 2;
-        else if (startSquare <= boardIndex[23])
-            return bonk = 3;
-        else if (startSquare <= boardIndex[31])
-            return bonk = 4;
-        else if (startSquare <= boardIndex[39])
-            return bonk = 5;
-        else if (startSquare <= boardIndex[47])
-            return bonk = 6;
-        else if (startSquare <= boardIndex[55])
-            return bonk = 7;
-        else if (startSquare <= boardIndex[63])
-            return bonk = 8;
-        else */
         return file[startSquare];
     }
 
     public char getRank (int startSquare) {
         return rank[startSquare];
+    }
+
+    public void executeMove (Move move) {
+        System.out.println("EXECUTING ORDER 66 MOVE: " + move.getPiece() + " FROM SQUARE: " + move.getStartSquare() + " TO: " +move.targetSquare);
+        boardChar[move.targetSquare] = boardChar[move.getPiece()];
+        boardChar[move.startSquare] = ' ';
+    }
+
+    public void moveByIndex (int startSquare, int targetSquare) {
+        boardChar[targetSquare] = boardChar[startSquare];
+        boardChar[startSquare] = ' ';
     }
 
 }
