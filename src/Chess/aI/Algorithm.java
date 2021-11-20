@@ -1,80 +1,86 @@
 package Chess.aI;
+import Chess.Game;
 import Chess.Moves.Move;
 import Chess.Moves.MoveGen;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 
 import static java.lang.Double.max;
 import static java.lang.Double.min;
 
 public class Algorithm {
+    Stack<char[]> stackOfPositions = new Stack<>();
     double eval, maxEval, minEval;
     Move bestMove, currMove;
     MoveGen MG;
-    public Algorithm (MoveGen MG) {
+    Game chessGame;
+    public Algorithm (MoveGen MG, Game chessGame) {
+        this.chessGame = chessGame;
         this.MG = MG;
     }
     
     int pawnValue = 100; int knightValue = 300; int bishopValue = 320; int rookValue = 500; int queenValue = 1100; int kingValue = 20000;
     int[] pawnBlackHeat = {
-    -50,-40,-30,-30,-30,-30,-40,-50,
-    -40,-20,  0,  0,  0,  0,-20,-40,
-    -30,  0, 10, 15, 15, 10,  0,-30,
-    -30,  5, 15, 20, 20, 15,  5,-30,
-    -30,  0, 15, 20, 20, 15,  0,-30,
-    -30,  5, 10, 15, 15, 10,  5,-30,
-    -40,-20,  0,  5,  5,  0,-20,-40,
-    -50,-40,-30,-30,-30,-30,-40,-50
+        -50,-40,-30,-30,-30,-30,-40,-50,
+        -40,-20,  0,  0,  0,  0,-20,-40,
+        -30,  0, 10, 15, 15, 10,  0,-30,
+        -30,  5, 15, 20, 20, 15,  5,-30,
+        -30,  0, 15, 20, 20, 15,  0,-30,
+        -30,  5, 10, 15, 15, 10,  5,-30,
+        -40,-20,  0,  5,  5,  0,-20,-40,
+        -50,-40,-30,-30,-30,-30,-40,-50
     };
     int[] pawnWhiteHeat = reverseArray(pawnBlackHeat);
 
     int[] knightBlackHeat = {
-    -50,-40,-30,-30,-30,-30,-40,-50,
-    -40,-20,  0,  0,  0,  0,-20,-40,
-    -30,  0, 10, 15, 15, 10,  0,-30,
-    -30,  5, 15, 20, 20, 15,  5,-30,
-    -30,  0, 15, 20, 20, 15,  0,-30,
-    -40,-20,  0,  5,  5,  0,-20,-40,
-    -40,-20,  0,  5,  5,  0,-20,-40,
-    -50,-40,-30,-30,-30,-30,-40,-50
+        -50,-40,-30,-30,-30,-30,-40,-50,
+        -40,-20,  0,  0,  0,  0,-20,-40,
+        -30,  0, 10, 15, 15, 10,  0,-30,
+        -30,  5, 15, 20, 20, 15,  5,-30,
+        -30,  0, 15, 20, 20, 15,  0,-30,
+        -40,-20,  0,  5,  5,  0,-20,-40,
+        -40,-20,  0,  5,  5,  0,-20,-40,
+        -50,-40,-30,-30,-30,-30,-40,-50
     };
     int[] knightWhiteHeat = reverseArray(knightBlackHeat);
 
     int[] bishopBlackHeat = {
-    -20,-10,-10,-10,-10,-10,-10,-20,
-    -10,  0,  0,  0,  0,  0,  0,-10,
-    -10,  0,  5, 10, 10,  5,  0,-10,
-    -10,  5,  5, 10, 10,  5,  5,-10,
-    -10,  0, 10, 10, 10, 10,  0,-10,
-    -10, 10, 10, 10, 10, 10, 10,-10,
-    -10,  5,  0,  0,  0,  0,  5,-10,
-    -20,-10,-10,-10,-10,-10,-10,-20
+        -20,-10,-10,-10,-10,-10,-10,-20,
+        -10,  0,  0,  0,  0,  0,  0,-10,
+        -10,  0,  5, 10, 10,  5,  0,-10,
+        -10,  5,  5, 10, 10,  5,  5,-10,
+        -10,  0, 10, 10, 10, 10,  0,-10,
+        -10, 10, 10, 10, 10, 10, 10,-10,
+        -10,  5,  0,  0,  0,  0,  5,-10,
+        -20,-10,-10,-10,-10,-10,-10,-20
     };
     int[] bishopWhiteHeat = reverseArray(bishopBlackHeat);
 
     int[] rookBlackHeat = {
-     0,  0,  0,  0,  0,  0,  0,  0,
-     5,  10, 10, 10, 10, 10, 10, 5,
-    -5,  0,  0,  0,  0,  0,  0,  -5,
-    -5,  0,  0,  0,  0,  0,  0,  -5,
-    -5,  0,  0,  0,  0,  0,  0,  -5,
-    -5,  0,  0,  0,  0,  0,  0,  -5,
-    -5,  0,  0,  0,  0,  0,  0,  -5,
-     0,  0,  0,  5,  5,  0,  0,   0};
+         0,  0,  0,  0,  0,  0,  0,  0,
+         5,  10, 10, 10, 10, 10, 10, 5,
+        -5,  0,  0,  0,  0,  0,  0,  -5,
+        -5,  0,  0,  0,  0,  0,  0,  -5,
+        -5,  0,  0,  0,  0,  0,  0,  -5,
+        -5,  0,  0,  0,  0,  0,  0,  -5,
+        -5,  0,  0,  0,  0,  0,  0,  -5,
+         0,  0,  0,  5,  5,  0,  0,   0};
     int[] rookWhiteHeat = reverseArray(rookBlackHeat);
     int[] queenBlackHeat = {
-    -20, -10, -10, -5, -5, -10, -10, -20,
-    -10, 0, 0, 0, 0, 0, 0, -10,
-    -10, 0, 5, 5, 5, 5, 0, -10,
-    -5, 0, 5, 5, 5, 5, 0, -5,
-    0, 0, 5, 5, 5, 5, 0, -5,
-    -10, 5, 5, 5, 5, 5, 0, -10,
-    -10, 0, 5, 0, 0, 0, 0, -10,
-    -20, -10, -10, -5, -5, -10, -10, -20};
+        -20, -10, -10, -5, -5, -10, -10, -20,
+        -10, 0, 0, 0, 0, 0, 0, -10,
+        -10, 0, 5, 5, 5, 5, 0, -10,
+        -5, 0, 5, 5, 5, 5, 0, -5,
+        0, 0, 5, 5, 5, 5, 0, -5,
+        -10, 5, 5, 5, 5, 5, 0, -10,
+        -10, 0, 5, 0, 0, 0, 0, -10,
+        -20, -10, -10, -5, -5, -10, -10, -20};
     int [] queenWhiteHeat = reverseArray(queenBlackHeat);
 
-    int[] kingBlackHeat = {-30,-40,-40,-50,-50,-40,-40,-30,
+    int[] kingBlackHeat = {
+            -30,-40,-40,-50,-50,-40,-40,-30,
             -30,-40,-40,-50,-50,-40,-40,-30,
             -30,-40,-40,-50,-50,-40,-40,-30,
             -30,-40,-40,-50,-50,-40,-40,-30,
@@ -118,25 +124,23 @@ public class Algorithm {
             }
         }
         /* ??? */
-        return 0;
+        return eval;
     }
 
     private ArrayList<Move> makeMove(Move move) {
-        MG.executeMove(move);
-//        MG.generateMoves();
-        return MG.getAllMoves();
+
+        chessGame.executeMove(move);
+//        MG.executeMove(move);
+
+        return chessGame.getAllMoves();
     }
 
     private void unmakeMove(Move move) {
-        int start = move.getStartSquare();
-        int target = move.getTargetSquare();
-
-        //MG.executeMove(move);
-//        MG.generateMoves();
+        stackOfPositions.pop();
     }
 
     private double evaluatePosition() {
-        char[] board = MG.returnWorkloadBoardClass().get8by8();
+        char[] board = chessGame.get8By8Board();
         double whiteEval = 0, blackEval = 0, curr = 0;
         //We look through the board and add the pieces plus the heap maps to evaluate the position
         for (int i = 0; i < board.length; i++) {
@@ -145,46 +149,22 @@ public class Algorithm {
                     //For white eval
                     if(Character.isUpperCase(board[i])) {
                         switch (board[i]) {
-                            case 'P' :
-                                whiteEval += pawnValue + pawnWhiteHeat[i];
-                                break;
-                            case 'N' :
-                                whiteEval += knightValue + knightWhiteHeat[i];
-                                break;
-                            case 'B' :
-                                whiteEval += bishopValue + bishopWhiteHeat[i];
-                                break;
-                            case 'R' :
-                                whiteEval += rookValue + rookWhiteHeat[i];
-                                break;
-                            case 'Q' :
-                                whiteEval += queenValue + queenWhiteHeat[i];
-                                break;
-                            case 'K' :
-                                whiteEval += kingValue + kingWhiteHeat[i];
-                                break;
+                            case 'P' -> whiteEval += pawnValue + pawnWhiteHeat[i];
+                            case 'N' -> whiteEval += knightValue + knightWhiteHeat[i];
+                            case 'B' -> whiteEval += bishopValue + bishopWhiteHeat[i];
+                            case 'R' -> whiteEval += rookValue + rookWhiteHeat[i];
+                            case 'Q' -> whiteEval += queenValue + queenWhiteHeat[i];
+                            case 'K' -> whiteEval += kingValue + kingWhiteHeat[i];
                         }
                     //For black eval
                     } else {
                         switch (board[i]) {
-                            case 'p' :
-                                blackEval += pawnValue + pawnBlackHeat[i];
-                                break;
-                            case 'n' :
-                                blackEval += knightValue + knightBlackHeat[i];
-                                break;
-                            case 'b' :
-                                blackEval += bishopValue + bishopBlackHeat[i];
-                                break;
-                            case 'R' :
-                                blackEval += rookValue + rookBlackHeat[i];
-                                break;
-                            case 'Q' :
-                                blackEval += queenValue + queenBlackHeat[i];
-                                break;
-                            case 'K' :
-                                blackEval += kingValue + kingBlackHeat[i];
-                                break;
+                            case 'p' -> blackEval += pawnValue + pawnBlackHeat[i];
+                            case 'n' -> blackEval += knightValue + knightBlackHeat[i];
+                            case 'b' -> blackEval += bishopValue + bishopBlackHeat[i];
+                            case 'R' -> blackEval += rookValue + rookBlackHeat[i];
+                            case 'Q' -> blackEval += queenValue + queenBlackHeat[i];
+                            case 'K' -> blackEval += kingValue + kingBlackHeat[i];
                         }
                     }
                 }

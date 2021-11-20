@@ -1,7 +1,6 @@
 package Chess.Moves;
 
 import Chess.Board;
-
 import java.util.ArrayList;
 
 public class MoveGen {
@@ -20,112 +19,89 @@ public class MoveGen {
     Board BoardClass;
     int[] boardIndex;
     char[] board;
+    char[] rank;
+    int[] file;
     boolean whitesTurn = true;
     int startSquare;
     int targetSquare;
     char targetPiece;
 
-    // White and black chars
-    private final char[] whiteChars = new char[]{'R', 'N', 'B', 'Q', 'K', 'P'};
-    private final char[] blackChars = new char[]{'r', 'n', 'b', 'q', 'k', 'p'};
-    int[] color = new int[]{
-            1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1
-    };
+    private void setupRanksAndFiles() {
+        rank = new char[] {
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
+        };
+
+        file = new int[] {
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', 1, 1, 1, 1, 1, 1, 1, 1, '0', '0',
+                '0', '0', 2, 2, 2, 2, 2, 2, 2, 2, '0', '0',
+                '0', '0', 3, 3, 3, 3, 3, 3, 3, 3, '0', '0',
+                '0', '0', 4, 4, 4, 4, 4, 4, 4, 4, '0', '0',
+                '0', '0', 5, 5, 5, 5, 5, 5, 5, 5, '0', '0',
+                '0', '0', 6, 6, 6, 6, 6, 6, 6, 6, '0', '0',
+                '0', '0', 7, 7, 7, 7, 7, 7, 7, 7, '0', '0',
+                '0', '0', 8, 8, 8, 8, 8, 8, 8, 8, '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
+        };
+    }
 
     //initialize move list
-    ArrayList<Move> moves = new ArrayList<>();
+    ArrayList<Move> moves;
     ArrayList<Move> tempMoves;
 
     //constructor
-    public MoveGen(Board boardClass) {
-        this.BoardClass = boardClass;
-        this.board = boardClass.getBoardChar();
-        this.boardIndex = boardClass.getBoardIndex();
-        generateMoves();
-    }
-
-
-    public Board returnWorkloadBoardClass() {return BoardClass;}
-    public char[] workloadBoard() {
-        return board;
-    }
-    public int[] returnBoardIndex() {
-        return BoardClass.boardIndex;
-    }
-    public int[] returnBoardInt() {
-        return BoardClass.getBoardInt();
-    }
-
-
-
-    public ArrayList<Move> getSpecificMoves(int startSquare) {
-        tempMoves = new ArrayList<>();
-        for (Move m : moves) {
-            if(m.getStartSquare() == startSquare)
-                tempMoves.add(m);
-        }
-        return tempMoves;
-    }
-    public ArrayList<Move> getAllMoves() {
-        return moves;
-    }
-
-    /* MOVE EXECUTION */
-    public void executeMove (Move move) {
-        System.out.println(
-                "EXECUTING ORDER 66 MOVE: " +
-                        move.getPiece() +
-                        " FROM SQUARE: " +
-                        move.getStartSquare() +
-                        " TO: " +
-                        move.getTargetSquare());
-        board[move.getTargetSquare()] = board[move.getPiece()];
-        board[move.getStartSquare()] = ' ';
-        whitesTurn = !whitesTurn;
-        generateMoves();
-    }
-
-    public void moveByIndex (int startSquare, int targetSquare) {
-        if(!(startSquare == '0' || targetSquare == '0')) {
-            board[boardIndex[targetSquare]] = board[boardIndex[startSquare]];
-            board[boardIndex[startSquare]] = ' ';
-
-            whitesTurn = !whitesTurn;
-            generateMoves();
-        }
+    public MoveGen(int[] boardIndex, char[] board, boolean whitesTurn) {
+        this.boardIndex = boardIndex;
+        this.board = board;
+        this.whitesTurn = whitesTurn;
+        setupRanksAndFiles();
 
     }
-    /* END : MOVE EXEC */
 
+    public ArrayList<Move> updateAndGenerateMoves(char[] board, boolean turn) {
+        this.whitesTurn = turn;
+        this.board = board;
+        return generateMoves();
+    }
 
     /* GENERATION OF EVERY MOVE
     * Every square is checked for moves within the current board position  */
-    public void generateMoves() {
-        moves.clear();
+    public ArrayList<Move> generateMoves() {
+        moves = new ArrayList<>();
         char piece;
         for (int i = 0; i < 64; i++) {
             /* Start from the first piece */
             startSquare = boardIndex[i];
             piece = board[startSquare];
 
-            /* TESTING */
-            //System.out.println("SQUARE: [" +BoardClass.getRank(startSquare) + BoardClass.getFile(startSquare) + "] - " +startSquare + " PIECE: " + piece);
+/*
+             TESTING
+*/
+            System.out.println("SQUARE: [" +getRank(startSquare) + getFile(startSquare) + "] - " +startSquare + " PIECE: " + piece);
 //            System.out.println("Testing getFile() of all squares : ");
 //            System.out.println(getFile(startSquare));
-            /* TESTING ENDS */
+/*
+             TESTING ENDS
+*/
 
             if (piece == '0')
                 break;
 
-            if(boardIndex[i] > 50 && piece == 'P')
-                System.out.println();
+            /*if(boardIndex[i] > 50 && piece == 'P')
+                System.out.println();*/
 
             if (isFriendlyFire(piece)) {
                 if(!isPawnPiece(piece)) {
@@ -137,11 +113,7 @@ public class MoveGen {
                     moves.addAll(generatePawnMoves(startSquare, piece));
             }
         }
-
-//        for (Move m : moves) {
-//            System.out.println(m.moveToString());
-//        }
-
+        return moves;
     }
 
 
@@ -288,7 +260,7 @@ public class MoveGen {
                 tempMoves.add(genericMove(startSquare, targetSquare, piece));
 
                 /* CHECKING IF PAWN HASNT MOVED */
-                if (BoardClass.getFile(startSquare) == 2 || BoardClass.getFile(startSquare) == 7) {
+                if (getFile(startSquare) == 2 || getRank(startSquare) == 7) {
                     /* CHECKS THE SQUARE TWO UP FROM PAWN */
                     targetSquare += pawnOffsets[i];
                     targetPiece = board[targetSquare];
@@ -311,8 +283,18 @@ public class MoveGen {
 
     public Move genericMove(int startSquare, int targetSquare, char piece){
         return new Move(
-                new String[] {BoardClass.posToString(startSquare), BoardClass.posToString(targetSquare)},
+                new String[] {posToString(startSquare), posToString(targetSquare)},
                 new int[] {startSquare, targetSquare},
                 piece);
+    }
+
+    public int getFile(int startSquare) {
+        return file[startSquare];
+    }
+    public char getRank (int startSquare) {
+        return rank[startSquare];
+    }
+    public String posToString(int startSquare) {
+        return "" + getRank(startSquare) + "" + getFile(startSquare);
     }
 }

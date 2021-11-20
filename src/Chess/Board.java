@@ -4,7 +4,7 @@ public class Board {
     /* BOARD ARRAYS */
     public int[] boardIndex = new int[64];
     public int[] boardInt = new int[144];
-    public char[] boardChar = new char[144];
+    public char[] board = new char[144];
 
     /* RANK & FILE ARRAY*/
     public char[] rank = new char[64];
@@ -22,7 +22,7 @@ public class Board {
         }
         setupBoardInt();
         setupBoardIndex();
-        setupRanksAndFiles();
+//        setupRanksAndFiles();
     }
 
     private void setupBoardIndex() {
@@ -60,7 +60,7 @@ public class Board {
     }
 
     private void setupBoardChar () {
-        boardChar = new char[]{
+        board = new char[]{
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', '0', '0',
@@ -76,53 +76,23 @@ public class Board {
         };
     }
     private void setupBoardCharTESTARRAY () {
-        boardChar = new char[]{
+        /* TESTING BOARD | SWAPPED ARRAY ATM */
+        board = new char[]{
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                '0', '0', 'R', ' ', 'B', 'Q', 'K', 'B', 'N', 'R', '0', '0',
-                '0', '0', 'P', 'P', 'P', 'P', ' ', 'P', 'P', 'P', '0', '0',
-                '0', '0', ' ', ' ', 'N', ' ', ' ', ' ', ' ', ' ', '0', '0',
-                '0', '0', ' ', ' ', ' ', ' ', 'P', ' ', ' ', ' ', '0', '0',
-                '0', '0', ' ', ' ', ' ', 'p', 'p', ' ', ' ', ' ', '0', '0',
-                '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
-                '0', '0', 'p', 'p', 'p', ' ', ' ', 'p', 'p', 'p', '0', '0',
                 '0', '0', 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r', '0', '0',
+                '0', '0', 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p', '0', '0',
+                '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
+                '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
+                '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
+                '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
+                '0', '0', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', '0', '0',
+                '0', '0', 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
         };
     }
 
-    private void setupRanksAndFiles() {
-        rank = new char[] {
-                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
-        };
-
-        file = new int[] {
-                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                '0', '0', 1, 1, 1, 1, 1, 1, 1, 1, '0', '0',
-                '0', '0', 2, 2, 2, 2, 2, 2, 2, 2, '0', '0',
-                '0', '0', 3, 3, 3, 3, 3, 3, 3, 3, '0', '0',
-                '0', '0', 4, 4, 4, 4, 4, 4, 4, 4, '0', '0',
-                '0', '0', 5, 5, 5, 5, 5, 5, 5, 5, '0', '0',
-                '0', '0', 6, 6, 6, 6, 6, 6, 6, 6, '0', '0',
-                '0', '0', 7, 7, 7, 7, 7, 7, 7, 7, '0', '0',
-                '0', '0', 8, 8, 8, 8, 8, 8, 8, 8, '0', '0',
-                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
-        };
-    }
 
     public int[] getBoardIndex() {
         return boardIndex;
@@ -132,20 +102,40 @@ public class Board {
         return boardInt;
     }
 
-    public char[] getBoardChar() {
-        return boardChar;
+    public char[] getBoard() {
+        return board;
     }
 
     /* Convert 12x12 board to 8x8 board with the pieces */
-    public char[] get8by8() {
+    public char[] get8by8AsChars() {
         char[] tempBoard = new char[64];
         for (int i = 0; i < 64; i++) {
-            tempBoard[i] = boardChar[boardIndex[i]];
+            tempBoard[i] = board[boardIndex[i]];
         }
         return tempBoard;
     }
 
-    public int getFile(int startSquare) {
+
+    public int convertBoardIndexToIndex (int startSquare) {
+        if(startSquare != -1)
+            return boardInt[startSquare];
+        return 0;
+    }
+    public int convertIndexToBoardIndex(int startSquare) {
+        return boardIndex[startSquare];
+    }
+
+    /* MOVES ON BOARD */
+    public boolean movePiece (int startSquare, int targetSquare) {
+        if(!(startSquare == '0' || targetSquare == '0')) {
+            board[boardIndex[targetSquare]] = board[boardIndex[startSquare]];
+            board[boardIndex[startSquare]] = ' ';
+            return true;
+        }
+        return false;
+    }
+
+    /*public int getFile(int startSquare) {
         return file[startSquare];
     }
 
@@ -155,13 +145,5 @@ public class Board {
 
     public String posToString(int startSquare) {
         return "" + getRank(startSquare) + "" + getFile(startSquare);
-    }
-    public int getIndexOfSpecific (int startSquare) {
-        if(startSquare != -1)
-            return boardInt[startSquare];
-        return 0;
-    }
-
-
-
+    }*/
 }
