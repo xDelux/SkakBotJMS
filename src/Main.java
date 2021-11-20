@@ -1,14 +1,17 @@
 
 
 import java.io.IOException;
+
+import aI.Algorithm;
 import newBoard.*;
+import oldCode.Game;
 
 public class Main {
 
     public static char[][] board;
     public static void main(String[] args) throws IOException {
         Game game = Game.getInstance();
-//        GUI gui = new GUI(game);
+//        oldCode.GUI gui = new oldCode.GUI(game);
 
         Board board = new Board(true);
         MoveGen moveGen = new MoveGen(board);
@@ -24,7 +27,7 @@ public class Main {
         boolean whiteNext = true;
         Scanner scanner = new Scanner(System.in);
         String input;
-        GUI gui = new GUI();
+        oldCode.GUI gui = new oldCode.GUI();
         while(true){
             print(board);
             gui.setBoard(board);
@@ -75,7 +78,7 @@ public class Main {
                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}
         };*/
     }
-    public static void move(String input){
+    /*public static void move(String input){
         int xFrom = input.charAt(0) - 'a';
         int yFrom = input.charAt(1) - '1';
         int xTo = input.charAt(2) - 'a';
@@ -96,6 +99,6 @@ public class Main {
             System.out.println("");
         }
         System.out.println('\u2654' + "\u265A ");
-    }
+    }*/
 
 }

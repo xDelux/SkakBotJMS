@@ -1,3 +1,5 @@
+package aI;
+
 import newBoard.Move;
 import newBoard.MoveGen;
 

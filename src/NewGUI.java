@@ -9,7 +9,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 public class NewGUI {
-    //GUI general values
+    //oldCode.GUI general values
     private final JFrame window;
     private final JPanel numberPanel;
     private final JPanel letterPanel;
@@ -153,7 +153,7 @@ public class NewGUI {
     }
 
     public void setBoard(TilePanel tile){
-        //converting letter representation from backend to unicode representation for GUI
+        //converting letter representation from backend to unicode representation for oldCode.GUI
         switch (board[boardIndex[tile.getTilePos()]]) {
             case ' ' -> tile.setTileIcon("transparent");
             case 'R' -> tile.setTileIcon("Rw");

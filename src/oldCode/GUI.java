@@ -1,3 +1,7 @@
+package oldCode;
+
+import oldCode.Game;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -5,7 +9,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 public class GUI {
-    //GUI general values
+    //oldCode.GUI general values
     private final JFrame gameFrame;
     private static final Dimension FRAME_DIMENSION = new Dimension(800,800);
     private final Font FONT_DEFAULT = new Font("Serif", Font.PLAIN, 50);
@@ -74,7 +78,7 @@ public class GUI {
     }
     
     public void setBoard(char[][] board){
-        //converting letter representation from backend to unicode representation for GUI
+        //converting letter representation from backend to unicode representation for oldCode.GUI
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 switch (board[i][j]){

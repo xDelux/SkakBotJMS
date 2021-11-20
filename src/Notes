@@ -1,8 +1,8 @@
 # Hvad der skal laves #
 
-### GUI ###
+### oldCode.GUI ###
 1.
-    Brikker skal kun kunne rykke i forhold til brikkens regler på GUI
+    Brikker skal kun kunne rykke i forhold til brikkens regler på oldCode.GUI
 2.
     Hvid spiller skal ikke kunne rykke sorts brikker og omvendt. Lås på brikker
 3.

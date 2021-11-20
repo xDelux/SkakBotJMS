@@ -1,6 +1,6 @@
-import java.lang.reflect.Array;
+package oldCode;
+
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class Game {
     private static char[][] board;
