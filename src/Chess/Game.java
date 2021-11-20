@@ -10,13 +10,15 @@ public class Game {
     ArrayList<Move> tempMoves;
     Board boardClass;
     MoveGen moveGen;
-    boolean whitesTurn;
+    boolean whitesTurn = true;
 
     /* Constructor of game */
     public Game() {
         boardClass = new Board(true);
         moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
         moves = moveGen.generateMoves();
+        for (Move m : moves)
+            System.out.println(m.moveToString());
     }
 
     /* Just to avoid writing the same over and over again */

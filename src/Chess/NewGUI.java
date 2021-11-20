@@ -262,7 +262,7 @@ public class NewGUI {
                     //undo selection
                     startTile.setPicked(false, tileMoves);
                     pickedMovePiece = false;
-                } else{
+                } else {
                     // Check if the move is valid and can be made
                     boolean targetTrue = false;
                     for (Move m: tileMoves) {
@@ -278,6 +278,7 @@ public class NewGUI {
                         pickedMovePiece = false;
                         startTile.setPicked(false, tileMoves);
                         chessGame.executeMoveByIndex(startTile.getTilePos(), targetTile.getTilePos());
+
 //                        moveGen.moveByIndex(startTile.tilePos, targetTile.tilePos);
                     }
 

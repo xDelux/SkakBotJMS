@@ -13,8 +13,8 @@ public class MoveGen {
     int[] knightOffsets = new int[]{-25, -14, 10, 23, 25, 14, -10, -23};
 
     /* 24 = PUSH TWO SQUARES FORWARD | 12 = ONE SQUARE | 13 & 11 CAPTURE DIAGONALLY*/
-    int[] whitePawnOffsets = new int[]{12, 13, 11};
-    int[] blackPawnOffsets = new int[]{-12, -13, -11};
+    int[] whitePawnOffsets = new int[]{-12, -13, -11};
+    int[] blackPawnOffsets = new int[]{12, 13, 11};
     //initialize board and turn variable.
     Board BoardClass;
     int[] boardIndex;
@@ -45,14 +45,14 @@ public class MoveGen {
         file = new int[] {
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                '0', '0', 1, 1, 1, 1, 1, 1, 1, 1, '0', '0',
-                '0', '0', 2, 2, 2, 2, 2, 2, 2, 2, '0', '0',
-                '0', '0', 3, 3, 3, 3, 3, 3, 3, 3, '0', '0',
-                '0', '0', 4, 4, 4, 4, 4, 4, 4, 4, '0', '0',
-                '0', '0', 5, 5, 5, 5, 5, 5, 5, 5, '0', '0',
-                '0', '0', 6, 6, 6, 6, 6, 6, 6, 6, '0', '0',
-                '0', '0', 7, 7, 7, 7, 7, 7, 7, 7, '0', '0',
                 '0', '0', 8, 8, 8, 8, 8, 8, 8, 8, '0', '0',
+                '0', '0', 7, 7, 7, 7, 7, 7, 7, 7, '0', '0',
+                '0', '0', 6, 6, 6, 6, 6, 6, 6, 6, '0', '0',
+                '0', '0', 5, 5, 5, 5, 5, 5, 5, 5, '0', '0',
+                '0', '0', 4, 4, 4, 4, 4, 4, 4, 4, '0', '0',
+                '0', '0', 3, 3, 3, 3, 3, 3, 3, 3, '0', '0',
+                '0', '0', 2, 2, 2, 2, 2, 2, 2, 2, '0', '0',
+                '0', '0', 1, 1, 1, 1, 1, 1, 1, 1, '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
         };
@@ -260,7 +260,7 @@ public class MoveGen {
                 tempMoves.add(genericMove(startSquare, targetSquare, piece));
 
                 /* CHECKING IF PAWN HASNT MOVED */
-                if (getFile(startSquare) == 2 || getRank(startSquare) == 7) {
+                if (getFile(startSquare) == 2 || getFile(startSquare) == 7) {
                     /* CHECKS THE SQUARE TWO UP FROM PAWN */
                     targetSquare += pawnOffsets[i];
                     targetPiece = board[targetSquare];
