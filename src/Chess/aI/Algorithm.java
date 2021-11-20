@@ -1,7 +1,6 @@
-package aI;
-
-import newBoard.Move;
-import newBoard.MoveGen;
+package Chess.aI;
+import Chess.Moves.Move;
+import Chess.Moves.MoveGen;
 
 import java.util.ArrayList;
 
