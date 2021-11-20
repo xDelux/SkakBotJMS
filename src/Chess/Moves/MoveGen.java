@@ -1,4 +1,6 @@
-package newBoard;
+package Chess.Moves;
+
+import Chess.Board;
 
 import java.util.ArrayList;
 
@@ -48,6 +50,7 @@ public class MoveGen {
         this.boardIndex = boardClass.getBoardIndex();
         generateMoves();
     }
+
 
     public Board returnWorkloadBoardClass() {return BoardClass;}
     public char[] workloadBoard() {

@@ -1,6 +1,4 @@
-package oldCode;
-
-import oldCode.Game;
+package Chess.oldCode;
 
 import javax.swing.*;
 import java.awt.*;

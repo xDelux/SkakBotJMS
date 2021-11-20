@@ -1,4 +1,4 @@
-package aI;
+package Chess.aI;
 
 public class ChessBOT {
 

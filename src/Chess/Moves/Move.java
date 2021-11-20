@@ -1,6 +1,4 @@
-package newBoard;
-
-import java.util.ArrayList;
+package Chess.Moves;
 
 public class Move {
     int[] posIndex;

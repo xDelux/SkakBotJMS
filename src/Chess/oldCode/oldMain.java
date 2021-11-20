@@ -1,41 +1,30 @@
+package Chess.oldCode;
 
-
-import java.io.IOException;
-
-import aI.Algorithm;
-import newBoard.*;
-import oldCode.Game;
-
-public class Main {
+public class oldMain {
 
     public static char[][] board;
-    public static void main(String[] args) throws IOException {
-        Game game = Game.getInstance();
-//        oldCode.GUI gui = new oldCode.GUI(game);
-
-        Board board = new Board(true);
-        MoveGen moveGen = new MoveGen(board);
-        Algorithm AI = new Algorithm(moveGen);
-        NewGUI gui = new NewGUI(moveGen);
-
-
-
-//        System.out.println("Make sure to keep backend using simple letters as unicode letters are encoded as multiple bytes");
-//        System.out.println("binary of \u2656: " + Integer.toBinaryString('\u2656'));
-//        System.out.println("binary of R: " + Integer.toBinaryString('R'));
-        /*board = newSetupBoard();
-        boolean whiteNext = true;
-        Scanner scanner = new Scanner(System.in);
-        String input;
-        oldCode.GUI gui = new oldCode.GUI();
-        while(true){
-            print(board);
-            gui.setBoard(board);
-            System.out.println("input move in format like: e2e4 (moving e2 to e4)");
-            input = scanner.nextLine();
-            move(input);
-        }*/
-    }
+//    public static void main(String[] args) throws IOException {
+//        Game game = Game.getInstance();
+////        oldCode.GUI gui = new oldCode.GUI(game);
+//
+//
+//
+////        System.out.println("Make sure to keep backend using simple letters as unicode letters are encoded as multiple bytes");
+////        System.out.println("binary of \u2656: " + Integer.toBinaryString('\u2656'));
+////        System.out.println("binary of R: " + Integer.toBinaryString('R'));
+//        /*board = newSetupBoard();
+//        boolean whiteNext = true;
+//        Scanner scanner = new Scanner(System.in);
+//        String input;
+//        oldCode.GUI gui = new oldCode.GUI();
+//        while(true){
+//            print(board);
+//            gui.setBoard(board);
+//            System.out.println("input move in format like: e2e4 (moving e2 to e4)");
+//            input = scanner.nextLine();
+//            move(input);
+//        }*/
+//    }
 
     public static char[][] newSetupBoard() {
         /*

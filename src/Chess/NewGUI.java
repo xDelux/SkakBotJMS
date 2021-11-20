@@ -1,6 +1,7 @@
-import newBoard.Board;
-import newBoard.Move;
-import newBoard.MoveGen;
+package Chess;
+
+import Chess.Moves.Move;
+import Chess.Moves.MoveGen;
 
 import javax.swing.*;
 import java.awt.*;

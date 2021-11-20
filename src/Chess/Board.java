@@ -1,4 +1,4 @@
-package newBoard;
+package Chess;
 
 public class Board {
     /* BOARD ARRAYS */
