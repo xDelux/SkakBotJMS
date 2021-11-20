@@ -6,6 +6,7 @@ public class Move {
     int[] posIndex;
     String[] pos;
     char piece;
+    int moveValue;
 
     public Move (String[] pos, int[] posIndex, char piece) {
         this.pos = pos;
@@ -27,5 +28,6 @@ public class Move {
     public int getTargetSquare() {
         return posIndex[1];
     }
+    public int getMoveValue() {return moveValue;}
 
 }

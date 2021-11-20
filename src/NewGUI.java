@@ -246,11 +246,11 @@ public class NewGUI {
         public void mouseClicked(MouseEvent e) {
             targetTile = (TilePanel) e.getSource();
 
-            System.out.println("\nTILE CLICKED: " + targetTile);
-            Container parent = targetTile.getParent();
-
-            System.out.println("\nPARENT CONTAINER LOOKING FOR CHILD: " + parent.getComponentAt(targetTile.getLocation()));
-            System.out.println("\nPARENT CONTAINER: " + parent);
+//            System.out.println("\nTILE CLICKED: " + targetTile);
+//            Container parent = targetTile.getParent();
+//
+//            System.out.println("\nPARENT CONTAINER LOOKING FOR CHILD: " + parent.getComponentAt(targetTile.getLocation()));
+//            System.out.println("\nPARENT CONTAINER: " + parent);
 //            System.out.println(Arrays.toString(parent.getComponents()));
 
             if(pickedMovePiece){
@@ -259,13 +259,22 @@ public class NewGUI {
                     startTile.setPicked(false, tileMoves);
                     pickedMovePiece = false;
                 } else{
-
-                    //make move
-                    targetTile.setTileIcon(startTile.getTileIcon());
-                    startTile.setTileIcon("transparent");
-                    pickedMovePiece = false;
-                    startTile.setPicked(false, tileMoves);
-                    moveGen.moveByIndex(startTile.tilePos, targetTile.tilePos);
+                    // Check if the move is valid and can be made
+                    boolean targetTrue = false;
+                    for (Move m: tileMoves) {
+                        if(boardIndex[targetTile.getTilePos()] == m.getTargetSquare()) {
+                            targetTrue = true;
+                            break;
+                        }
+                    }
+                    if(targetTrue) {
+                        //make move
+                        targetTile.setTileIcon(startTile.getTileIcon());
+                        startTile.setTileIcon("transparent");
+                        pickedMovePiece = false;
+                        startTile.setPicked(false, tileMoves);
+                        moveGen.moveByIndex(startTile.tilePos, targetTile.tilePos);
+                    }
 
                 }
             } else{

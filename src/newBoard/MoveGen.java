@@ -113,7 +113,7 @@ public class MoveGen {
             piece = board[startSquare];
 
             /* TESTING */
-            System.out.println("SQUARE: [" +BoardClass.getRank(startSquare) + BoardClass.getFile(startSquare) + "] - " +startSquare + " PIECE: " + piece);
+            //System.out.println("SQUARE: [" +BoardClass.getRank(startSquare) + BoardClass.getFile(startSquare) + "] - " +startSquare + " PIECE: " + piece);
 //            System.out.println("Testing getFile() of all squares : ");
 //            System.out.println(getFile(startSquare));
             /* TESTING ENDS */
@@ -135,9 +135,9 @@ public class MoveGen {
             }
         }
 
-        for (Move m : moves) {
-            System.out.println(m.moveToString());
-        }
+//        for (Move m : moves) {
+//            System.out.println(m.moveToString());
+//        }
 
     }
 

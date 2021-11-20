@@ -9,6 +9,7 @@ import static java.lang.Double.min;
 
 public class Algorithm {
     double eval, maxEval, minEval;
+    Move bestMove, currMove;
     MoveGen MG;
     public Algorithm (MoveGen MG) {
         this.MG = MG;
@@ -90,16 +91,16 @@ public class Algorithm {
         if(maximizing) {
             maxEval = Double.NEGATIVE_INFINITY;
             for (Move move : moves) {
-            eval = alphaBeta(makeMove(move),depth - 1, alpha, beta, false);
-            maxEval = max(maxEval, eval);
-            alpha = max(alpha, eval);
-            // Prune
-            if(beta <= alpha) {
-                unmakeMove(move);
-                break;
-            }
-                return maxEval;
-            }
+                eval = alphaBeta(makeMove(move),depth - 1, alpha, beta, false);
+                maxEval = max(maxEval, eval);
+                alpha = max(alpha, eval);
+                // Prune
+                if(beta <= alpha) {
+                    unmakeMove(move);
+                    break;
+                }
+                    return maxEval;
+                }
 
         } else {
             minEval = Double.POSITIVE_INFINITY;
@@ -126,7 +127,10 @@ public class Algorithm {
     }
 
     private void unmakeMove(Move move) {
-        MG.executeMove(move);
+        int start = move.getStartSquare();
+        int target = move.getTargetSquare();
+
+        //MG.executeMove(move);
 //        MG.generateMoves();
     }
 
