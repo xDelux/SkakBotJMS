@@ -458,6 +458,7 @@ public class Game {
         }
 
         byte ito, jto;
+
         //down 2
         if(i > 1){
             System.out.println("down2");
@@ -572,7 +573,7 @@ public class Game {
 
     //rook move generator. working.
     public ArrayList<byte[]> generateRookMoves(byte i, byte j){
-        ArrayList<byte[]> moves = new ArrayList<>();
+        ArrayList<byte[]> rookMoves = new ArrayList<>();
         boolean[][] enemyPositions;
         if(whiteNext){
             enemyPositions = blackPieces;
@@ -590,10 +591,10 @@ public class Game {
         //add downwards
         for (byte k = (byte) (i-1); k >= 0; k--) {
             if(board[k][j] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
-                moves.add(new byte[]{i, j, k, j});
+                rookMoves.add(new byte[]{i, j, k, j});
             }
             else if(enemyPositions[k][j]){
-                moves.add(new byte[]{i, j, k, j});
+                rookMoves.add(new byte[]{i, j, k, j});
                 break;
             }
             else{
@@ -603,10 +604,10 @@ public class Game {
         //add upwards
         for(byte k = (byte) (i+1); k < 8; k++){
             if(board[k][j] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
-                moves.add(new byte[]{i, j, k, j});
+                rookMoves.add(new byte[]{i, j, k, j});
             }
             else if(enemyPositions[k][j]){
-                moves.add(new byte[]{i, j, k, j});
+                rookMoves.add(new byte[]{i, j, k, j});
                 break;
             }
             else{
@@ -616,10 +617,10 @@ public class Game {
         //add left
         for (byte k = (byte) (j-1); k >= 0; k--) {
             if(board[i][k] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
-                moves.add(new byte[]{i, j, i, k});
+                rookMoves.add(new byte[]{i, j, i, k});
             }
             else if(enemyPositions[i][k]){
-                moves.add(new byte[]{i, j, i, k});
+                rookMoves.add(new byte[]{i, j, i, k});
                 break;
             }
             else{
@@ -629,17 +630,17 @@ public class Game {
         //add right
         for (byte k = (byte) (j+1); k < 8; k++){
             if(board[i][k] == ' '){ //could be !whitepiece[k][j] && !blackpieces[k][j] ??? which is speed?
-                moves.add(new byte[]{i, j, i, k});
+                rookMoves.add(new byte[]{i, j, i, k});
             }
             else if(enemyPositions[i][k]){
-                moves.add(new byte[]{i, j, i, k});
+                rookMoves.add(new byte[]{i, j, i, k});
                 break;
             }
             else{
                 break;
             }
         }
-        return moves;
+        return rookMoves;
     }
 
     //return the moves from movelist that start at i,j
