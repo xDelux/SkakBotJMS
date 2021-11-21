@@ -26,25 +26,25 @@ public class Game {
         whitesTurn = !whitesTurn;
     }
 
-    /* MOVE EXECUTION */
+
+    /* MOVE EXECUTION :
+    * Executes a move on the chessboard by switching indexes,
+    * switches whose turn it is & then generates new moves for that position */
     public void executeMove (Move move) {
         printMove(move);
         if(boardClass.movePiece(move.getTargetSquare(), move.getStartSquare())) {
             switchTurns();
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
-//            moveGen.updateAndGenerate(boardClass.getBoard());
         }
     }
-
     public void executeMoveByIndex (int startSquare, int targetSquare) {
         if(boardClass.movePiece(startSquare, targetSquare)) {
             switchTurns();
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
-//            moveGen.updateAndGenerate(boardClass.getBoard());
         }
     }
 
-    /* Get moves for a specific square on the chessboard */
+    /* Get moves for a specific square on the chessboard (primarily used in GUI) */
     public ArrayList<Move> getSpecificMoves(int startSquare) {
         startSquare = boardClass.convertIndexToBoardIndex(startSquare);
         tempMoves = new ArrayList<>();
