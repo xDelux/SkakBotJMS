@@ -1,10 +1,13 @@
 package Chess;
 
+import java.util.Arrays;
+
 public class Board {
     /* BOARD ARRAYS */
     public int[] boardIndex = new int[64];
     public int[] boardInt = new int[144];
     public char[] board = new char[144];
+    public char[] boardStack;
 
     /* RANK & FILE ARRAY*/
     public char[] rank = new char[64];
@@ -15,11 +18,8 @@ public class Board {
     public boolean[] blackPieces;
 
     public Board (boolean wantTest) {
-        if (wantTest) {
-            setupBoardCharTESTARRAY();
-        } else {
-            setupBoardChar();
-        }
+        setupBoardChar();
+
         setupBoardInt();
         setupBoardIndex();
 //        setupRanksAndFiles();
@@ -35,6 +35,7 @@ public class Board {
             else
                 counter += 5;
         }
+//        System.out.println(Arrays.toString(boardIndex));
     }
 
     private void setupBoardInt () {
@@ -59,7 +60,7 @@ public class Board {
         System.out.println("start index: board[26] | "+ boardInt[26] + "\nNow adding offset for vertical: +12 | board[26+12] | " + boardInt[26+12]);
     }
 
-    private void setupBoardChar () {
+    /*private void setupBoardChar () {
         board = new char[]{
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
@@ -74,8 +75,8 @@ public class Board {
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
         };
-    }
-    private void setupBoardCharTESTARRAY () {
+    }*/
+    private void setupBoardChar () {
         /* TESTING BOARD | SWAPPED ARRAY ATM */
         board = new char[]{
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
@@ -102,9 +103,7 @@ public class Board {
         return boardInt;
     }
 
-    public char[] getBoard() {
-        return board;
-    }
+
 
     /* Convert 12x12 board to 8x8 board with the pieces */
     public char[] get8by8AsChars() {
@@ -125,8 +124,11 @@ public class Board {
         return boardIndex[startSquare];
     }
 
-    /* MOVES ON BOARD */
-    public boolean movePiece (int startSquare, int targetSquare) {
+    /* Moves a piece one the board with conversion.
+    * This method is used when coming from squares that are 8x8 (0 to 63)
+    * like in the GUI with tile positions when clicking on tiles.
+    * BoardIndex converts a 8x8 (0 to 64) to the board 12x12 (0 to 143) */
+    public boolean movePieceWithConersion(int startSquare, int targetSquare) {
         if(!(startSquare == '0' || targetSquare == '0')) {
             board[boardIndex[targetSquare]] = board[boardIndex[startSquare]];
             board[boardIndex[startSquare]] = ' ';
@@ -134,16 +136,22 @@ public class Board {
         }
         return false;
     }
-
-    /*public int getFile(int startSquare) {
-        return file[startSquare];
+    /* Moves a piece on the board.
+    * Used when operating on moves */
+    public boolean movePiece(int startSquare, int targetSquare) {
+        if(!(startSquare == '0' || targetSquare == '0')) {
+            board[targetSquare] = board[startSquare];
+            board[startSquare] = ' ';
+            return true;
+        }
+        return false;
     }
 
-    public char getRank (int startSquare) {
-        return rank[startSquare];
+    public char[] getBoard() {
+        return board;
     }
 
-    public String posToString(int startSquare) {
-        return "" + getRank(startSquare) + "" + getFile(startSquare);
-    }*/
+    public void setBoard(char[] board) {
+        this.board = board;
+    }
 }

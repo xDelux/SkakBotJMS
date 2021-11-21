@@ -15,8 +15,8 @@ public class MoveGen {
     /* 24 = PUSH TWO SQUARES FORWARD | 12 = ONE SQUARE | 13 & 11 CAPTURE DIAGONALLY*/
     int[] whitePawnOffsets = new int[]{-12, -13, -11};
     int[] blackPawnOffsets = new int[]{12, 13, 11};
+
     //initialize board and turn variable.
-    Board BoardClass;
     int[] boardIndex;
     char[] board;
     char[] rank;
@@ -90,7 +90,7 @@ public class MoveGen {
 /*
              TESTING
 */
-            System.out.println("SQUARE: [" +getRank(startSquare) + getFile(startSquare) + "] - " +startSquare + " PIECE: " + piece);
+//            System.out.println("SQUARE: [" +getRank(startSquare) + getFile(startSquare) + "] - " +startSquare + " PIECE: " + piece);
 //            System.out.println("Testing getFile() of all squares : ");
 //            System.out.println(getFile(startSquare));
 /*

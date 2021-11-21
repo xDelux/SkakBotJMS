@@ -2,6 +2,7 @@ package Chess;
 
 import Chess.Moves.Move;
 import Chess.Moves.MoveGen;
+import Chess.aI.Algorithm;
 
 import java.util.ArrayList;
 
@@ -13,12 +14,12 @@ public class Game {
     boolean whitesTurn = true;
 
     /* Constructor of game */
-    public Game() {
+    public Game(boolean wantAlhpaBeta) {
         boardClass = new Board(true);
         moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
         moves = moveGen.generateMoves();
-        for (Move m : moves)
-            System.out.println(m.moveToString());
+//        for (Move m : moves)
+//            System.out.println(m.moveToString());
     }
 
     /* Just to avoid writing the same over and over again */
@@ -31,14 +32,14 @@ public class Game {
     * Executes a move on the chessboard by switching indexes,
     * switches whose turn it is & then generates new moves for that position */
     public void executeMove (Move move) {
-        printMove(move);
-        if(boardClass.movePiece(move.getTargetSquare(), move.getStartSquare())) {
+//        printMove(move);
+        if(boardClass.movePiece(move.getStartSquare(), move.getTargetSquare())) {
             switchTurns();
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
         }
     }
     public void executeMoveByIndex (int startSquare, int targetSquare) {
-        if(boardClass.movePiece(startSquare, targetSquare)) {
+        if(boardClass.movePieceWithConersion(startSquare, targetSquare)) {
             switchTurns();
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
         }
@@ -74,6 +75,20 @@ public class Game {
         return boardClass.get8by8AsChars();
     }
 
+    public char[] getWorkloadBoard() {
+        return boardClass.getBoard();
+    }
+
+    public void setBoardState(char[] board, boolean turn) {
+        whitesTurn = turn;
+        boardClass.setBoard(board);
+    }
+
+    public boolean whosTurn() {
+        return whitesTurn;
+    }
+
+    /*TODO rewrite / make smarter.*/
     public int rewriteThis (int indexToConvert) {
         return boardClass.convertBoardIndexToIndex(indexToConvert);
     }
@@ -81,5 +96,4 @@ public class Game {
     public MoveGen returnMoveGen() {
         return moveGen;
     }
-
 }
