@@ -8,7 +8,7 @@ public class Main {
 //        Board board = new Board(true);
 //        MoveGen moveGen = new MoveGen();
         Game chessGame = new Game(true);
-//        NewGUI gui = new NewGUI(chessGame);
+        NewGUI gui = new NewGUI(chessGame);
 
         Algorithm AI = new Algorithm(chessGame);
         AI.runAlphaBeta();

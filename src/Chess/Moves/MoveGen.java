@@ -171,8 +171,6 @@ public class MoveGen {
 
 
 //        piece = 'q';
-        if(piece == 'q' || piece == 'Q')
-            System.out.println();
 
         for (int i = startIndex; i < endIndex; i++) {
             /* Looping through all the possible direction squares */
@@ -190,7 +188,7 @@ public class MoveGen {
                     break;
 
                 /* Adds newly found move to list */
-                moves.add(genericMove(startSquare, targetSquare, piece));
+                moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
 
                 /* If opponents piece is on the square can't move any further */
                 if (isEnemyFire(targetPiece))
@@ -225,7 +223,7 @@ public class MoveGen {
                 continue;
 
             /* Adds newly found move to list */
-            tempMoves.add(genericMove(startSquare, targetSquare, piece));
+            tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
 
         }
 
@@ -261,7 +259,7 @@ public class MoveGen {
                     continue;
 
                 /* Adds newly found move to list */
-                tempMoves.add(genericMove(startSquare, targetSquare, piece));
+                tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
 
                 /* CHECKING IF PAWN HASNT MOVED */
                 if (getFile(startSquare) == 2 || getFile(startSquare) == 7) {
@@ -270,14 +268,14 @@ public class MoveGen {
                     targetPiece = board[targetSquare];
                     /* IF SQUARE IS EMPTY : MOVE UP TWO AS MOVE*/
                     if (!isEnemyFire(targetPiece)) {
-                        tempMoves.add(genericMove(startSquare, targetSquare, piece));
+                        tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
                     }
                 }
 
             } else {
                 /* Diagonal pawn captures */
                 if(isEnemyFire(targetPiece))
-                    tempMoves.add(genericMove(startSquare, targetSquare, piece));
+                    tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
             }
 
         }
@@ -285,11 +283,11 @@ public class MoveGen {
         return tempMoves;
     }
 
-    public Move genericMove(int startSquare, int targetSquare, char piece){
+    public Move genericMove(int startSquare, int targetSquare, char piece, char killPiece){
         return new Move(
                 new String[] {posToString(startSquare), posToString(targetSquare)},
                 new int[] {startSquare, targetSquare},
-                piece);
+                piece, killPiece);
     }
 
     public int getFile(int startSquare) {

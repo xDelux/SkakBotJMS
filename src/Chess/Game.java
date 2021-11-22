@@ -38,6 +38,7 @@ public class Game {
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
         }
     }
+
     public void executeMoveByIndex (int startSquare, int targetSquare) {
         if(boardClass.movePieceWithConersion(startSquare, targetSquare)) {
             switchTurns();
