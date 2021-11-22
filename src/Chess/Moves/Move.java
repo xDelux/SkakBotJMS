@@ -20,7 +20,8 @@ public class Move {
         return piece;
     }
 
-    public int getStartSquare() {
+    public int getStartSquare
+            () {
         return posIndex[0];
     }
     public int getTargetSquare() {

@@ -141,36 +141,16 @@ public class Algorithm {
         /* Running alphabeta on current positions moves */
         for (Move m : moves) {
             makeMove(m);
-            tempValue = alphaBeta(4, alpha, beta, true);
+            tempValue = alphaBeta(2, alpha, beta, true);
             if(tempValue > bestValue) {
                 bestValue = tempValue;
                 bestMove = m;
             }
             unmakeMove();
         }
+        System.out.println(bestMove.getStartSquare() + " " + bestMove.getTargetSquare() + " " + bestMove.getPiece());
         return bestMove;
     }
-
-   /* public double alphaBeta(int depth, double alpha, double beta) {
-        if (depth == 0 ) {
-            return evaluatePosition();
-        }
-
-        moves = chessGame.getAllMoves();
-
-        for (Move m : moves) {
-            makeMove(m);
-            eval = -alphaBeta(depth - 1, -alpha, -beta);
-            unmakeMove();
-            if(eval >= beta)
-                return beta;
-            if(eval > alpha)
-                alpha = eval;
-
-            bestMove = m;
-        }
-        return alpha;
-    }*/
 
     public double alphaBeta(int depth, double alpha, double beta, boolean maximizing) {
         if (depth == 0) {
@@ -178,7 +158,6 @@ public class Algorithm {
         }
 
         /* Check if game is over or something*/
-
 
         ArrayList<Move> moves = chessGame.getAllMoves();
         /*if(moves.isEmpty()) {

@@ -32,12 +32,12 @@ public class Game {
     * Executes a move on the chessboard by switching indexes,
     * switches whose turn it is & then generates new moves for that position */
     public void executeMove (Move move) {
-//        printMove(move);
         if(boardClass.movePiece(move.getStartSquare(), move.getTargetSquare())) {
             switchTurns();
-            moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
+            moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn, move);
         }
     }
+
     public void executeMoveByIndex (int startSquare, int targetSquare) {
         if(boardClass.movePieceWithConersion(startSquare, targetSquare)) {
             switchTurns();

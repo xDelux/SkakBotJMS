@@ -8,10 +8,11 @@ public class Main {
 //        Board board = new Board(true);
 //        MoveGen moveGen = new MoveGen();
         Game chessGame = new Game(true);
-//        NewGUI gui = new NewGUI(chessGame);
+//        Algorithm AI = new Algorithm(chessGame);
+//        AI.runAlphaBeta();
+        NewGUI gui = new NewGUI(chessGame);
 
-        Algorithm AI = new Algorithm(chessGame);
-        AI.runAlphaBeta();
+
 //        AI.alphaBeta(chessGame.getAllMoves(),3, minEval, maxEval, true);
     }
 }
