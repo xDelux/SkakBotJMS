@@ -47,7 +47,7 @@ public class Algorithm {
     int bishopValue = 320;
     int rookValue = 500;
     int queenValue = 1100;
-    int kingValue = 20000;
+    int kingValue = 999999;//;
     int[] pawnBlackHeat = {
             -50, -40, -30, -30, -30, -30, -40, -50,
             -40, -20, 0, 0, 0, 0, -20, -40,
@@ -119,9 +119,6 @@ public class Algorithm {
 
     public Algorithm(Game chessGame) {
         this.chessGame = chessGame;
-
-        int[] testarray = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 42, 53, 10};
-        System.out.println(Arrays.toString(reverseArrays(testarray, 12)));
     }
 
 
@@ -141,14 +138,15 @@ public class Algorithm {
         /* Running alphabeta on current positions moves */
         for (Move m : moves) {
             makeMove(m);
-            tempValue = alphaBeta(2, alpha, beta, true);
+            tempValue = alphaBeta(4, alpha, beta, true);
+            System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
             if(tempValue > bestValue) {
                 bestValue = tempValue;
                 bestMove = m;
             }
             unmakeMove();
         }
-        System.out.println(bestMove.getStartSquare() + " " + bestMove.getTargetSquare() + " " + bestMove.getPiece());
+        System.out.println("best move: " + bestMove.moveToString() + " bestValue: " + bestValue);
         return bestMove;
     }
 

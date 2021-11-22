@@ -5,11 +5,13 @@ public class Move {
     String[] pos;
     char piece;
     int moveValue;
+    char killPiece;
 
-    public Move (String[] pos, int[] posIndex, char piece) {
+    public Move (String[] pos, int[] posIndex, char piece, char killPiece) {
         this.pos = pos;
         this.posIndex = posIndex;
         this.piece = piece;
+        this.killPiece = killPiece;
     }
 
     public String moveToString () {
