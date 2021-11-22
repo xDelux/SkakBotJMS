@@ -74,6 +74,9 @@ public class Game {
     public char[] get8By8Board() {
         return boardClass.get8by8AsChars();
     }
+    public char[] get8By8Board(char[] custom) {
+        return boardClass.get8by8AsChars(custom);
+    }
 
     public char[] getWorkloadBoard() {
         return boardClass.getBoard();

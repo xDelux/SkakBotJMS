@@ -18,7 +18,11 @@ public class Board {
     public boolean[] blackPieces;
 
     public Board (boolean wantTest) {
-        setupBoardChar();
+        if ((wantTest)) {
+            setupBoardWithCustomStartingPosition();
+        } else {
+            setupBoardChar();
+        }
 
         setupBoardInt();
         setupBoardIndex();
@@ -60,22 +64,22 @@ public class Board {
         System.out.println("start index: board[26] | "+ boardInt[26] + "\nNow adding offset for vertical: +12 | board[26+12] | " + boardInt[26+12]);
     }
 
-    /*private void setupBoardChar () {
+    private void setupBoardWithCustomStartingPosition () {
         board = new char[]{
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                '0', '0', 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', '0', '0',
-                '0', '0', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', '0', '0',
-                '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
-                '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
-                '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
-                '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
-                '0', '0', 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p', '0', '0',
-                '0', '0', 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r', '0', '0',
+                '0', '0', 'r', 'n', ' ', 'q', 'k', 'b', ' ', 'r', '0', '0',
+                '0', '0', 'p', 'p', 'p', ' ', ' ', 'p', 'p', 'p', '0', '0',
+                '0', '0', ' ', ' ', ' ', 'p', 'b', 'n', ' ', ' ', '0', '0',
+                '0', '0', ' ', ' ', ' ', ' ', 'p', ' ', ' ', ' ', '0', '0',
+                '0', '0', ' ', ' ', ' ', 'P', 'P', ' ', ' ', ' ', '0', '0',
+                '0', '0', ' ', ' ', 'N', ' ', 'B', ' ', ' ', ' ', '0', '0',
+                '0', '0', 'P', 'P', 'P', ' ', ' ', 'P', 'P', 'P', '0', '0',
+                '0', '0', 'R', ' ', ' ', 'Q', 'K', 'B', 'N', 'R', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
         };
-    }*/
+    }
     private void setupBoardChar () {
         /* TESTING BOARD | SWAPPED ARRAY ATM */
         board = new char[]{
@@ -110,6 +114,13 @@ public class Board {
         char[] tempBoard = new char[64];
         for (int i = 0; i < 64; i++) {
             tempBoard[i] = board[boardIndex[i]];
+        }
+        return tempBoard;
+    }
+    public char[] get8by8AsChars(char[] custom) {
+        char[] tempBoard = new char[64];
+        for (int i = 0; i < 64; i++) {
+            tempBoard[i] = custom[boardIndex[i]];
         }
         return tempBoard;
     }
