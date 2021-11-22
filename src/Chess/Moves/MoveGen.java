@@ -30,14 +30,14 @@ public class MoveGen {
         rank = new char[] {
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
         };
@@ -68,11 +68,10 @@ public class MoveGen {
         this.board = board;
         this.whitesTurn = whitesTurn;
         setupRanksAndFiles();
-
     }
 
-    public ArrayList<Move> updateAndGenerateMoves(char[] board, boolean turn) {
-        this.whitesTurn = turn;
+    public ArrayList<Move> updateAndGenerateMoves(char[] board, boolean isWhitesTurn) {
+        this.whitesTurn = isWhitesTurn;
         this.board = board;
         return generateMoves();
     }
@@ -239,7 +238,6 @@ public class MoveGen {
         /* PAWN MOVES BASED ON WHOS TURN IT IS. */
         int[] pawnOffsets = (whitesTurn) ? whitePawnOffsets : blackPawnOffsets;
 
-
         for (int i = 0; i < pawnOffsets.length; i++) {
             /* Setting target square and what piece stands on it */
             targetSquare = startSquare + pawnOffsets[i];
@@ -262,6 +260,7 @@ public class MoveGen {
                 tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
 
                 /* CHECKING IF PAWN HASNT MOVED */
+                // TODO: below doesnt care if black or white
                 if (getFile(startSquare) == 2 || getFile(startSquare) == 7) {
                     /* CHECKS THE SQUARE TWO UP FROM PAWN */
                     targetSquare += pawnOffsets[i];
