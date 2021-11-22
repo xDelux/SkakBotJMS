@@ -30,6 +30,7 @@ public class MoveGen {
     int targetSquare;
     char targetPiece;
 
+
     private void setupRanksAndFiles() {
         rank = new char[] {
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
@@ -63,11 +64,8 @@ public class MoveGen {
     }
 
     //initialize move list
-    Move lastMoveExecuted;
     ArrayList<Move> moves;
     ArrayList<Move> tempMoves;
-    ArrayList<Move> attackLines = new ArrayList<>();
-    ArrayList<Move> tempAttacks;
 
     //constructor
     public MoveGen(int[] boardIndex, char[] board, boolean whitesTurn) {
@@ -75,6 +73,7 @@ public class MoveGen {
         this.board = board;
         this.whitesTurn = whitesTurn;
         setupRanksAndFiles();
+
     }
 
     public ArrayList<Move> updateAndGenerateMoves(char[] board, boolean turn) {
@@ -82,73 +81,50 @@ public class MoveGen {
         this.board = board;
         return generateMoves();
     }
-    public ArrayList<Move> updateAndGenerateMoves(char[] board, boolean turn, Move lastMove) {
-        this.lastMoveExecuted = lastMove;
-        this.whitesTurn = turn;
-        this.board = board;
-        return generateMoves();
-    }
+
 
     /* GENERATION OF EVERY MOVE
-     * Every square is checked for moves within the current board position  */
+    * Every square is checked for moves within the current board position  */
     public ArrayList<Move> generateMoves() {
-        tempAttacks = attackLines;
-        attackLines.clear();
         moves = new ArrayList<>();
         char piece;
-        if(isInCheck) {
-            for (int i = 0; i < 64; i++) {
-                startSquare = boardIndex[i];
-                piece = board[startSquare];
+        for (int i = 0; i < 64; i++) {
+            /* Start from the first piece */
+            startSquare = boardIndex[i];
+            piece = board[startSquare];
 
-                if (piece == '0')
-                    break;
-
-                // If theres multiple attacks on the king only look for king moves, since one piece can't protect multiple lines
-                if(kingAttackCount > 1) {
-                    if(piece == 'k' || piece == 'K') {
-                        generateKingOrKnightMoves(startSquare, piece);
-                    }
-                }
-            }
-            isInCheck = false;
-        }
-
-        else {
-            for (int i = 0; i < 64; i++) {
-                /* Start from the first piece */
-                startSquare = boardIndex[i];
-                piece = board[startSquare];
-
+/*
+             TESTING
+*/
 //            System.out.println("SQUARE: [" +getRank(startSquare) + getFile(startSquare) + "] - " +startSquare + " PIECE: " + piece);
-                if (piece == '0')
-                    break;
+//            System.out.println("Testing getFile() of all squares : ");
+//            System.out.println(getFile(startSquare));
+/*
+             TESTING ENDS
+*/
 
-                if (isFriendlyFire(piece)) {
-                    if(!isPawnPiece(piece)) {
-                        if (isSlidingPiece(piece))
-                            moves.addAll(generateSlidingMoves(startSquare, piece));
-                        if (isKingPiece(piece) || isKnightPiece(piece))
-                            moves.addAll(generateKingOrKnightMoves(startSquare, piece));
-                    } else
-                        moves.addAll(generatePawnMoves(startSquare, piece));
-                }
+            if (piece == '0')
+                break;
+
+            /*if(boardIndex[i] > 50 && piece == 'P')
+                System.out.println();*/
+
+            if (isFriendlyFire(piece)) {
+                if(!isPawnPiece(piece)) {
+                    if (isSlidingPiece(piece))
+                        moves.addAll(generateSlidingMoves(startSquare, piece));
+                    if (isKingPiece(piece) || isKnightPiece(piece))
+                        moves.addAll(generateKingOrKnightMoves(startSquare, piece));
+                } else
+                    moves.addAll(generatePawnMoves(startSquare, piece));
             }
         }
         return moves;
     }
 
-    private boolean isCheck(ArrayList<Move> moves) {
-        /* If the king is a piece being  attacked set to true*/
-        /* Generate moves that only prevents check*/
-        /* INCLUDES: Pinned pieces that protects the king, and enemy pieces that prevents moves in the line of attack*/
-        isInCheck = false;
-        if(moves.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+
+
+
 
     /* Checking if a piece is the same color as the player */
     private boolean isFriendlyFire(char piece) {
@@ -220,18 +196,10 @@ public class MoveGen {
 
                 /* Adds newly found move to list */
                 moves.add(genericMove(startSquare, targetSquare, piece));
-                attackLines.add(genericMove(startSquare, targetSquare, piece));
 
                 /* If opponents piece is on the square can't move any further */
-                if (isEnemyFire(targetPiece)) {
-                    // Check if the target piece is the king and if it is set check to true and the count of attack to +1
-                    if(targetPiece == 'k' || targetPiece == 'K') {
-                        kingAttackCount++;
-                        isInCheck = true;
-                    }
+                if (isEnemyFire(targetPiece))
                     break;
-                }
-
             }
         }
 
@@ -241,8 +209,8 @@ public class MoveGen {
 
 
     /* GENERATING KING OR KNIGHT MOVES
-     * they are different as they can only jump once to a specific square
-     * and not slide around. so doesn't have to check for enemy piece to stop */
+    * they are different as they can only jump once to a specific square
+    * and not slide around. so doesn't have to check for enemy piece to stop */
     private ArrayList<Move> generateKingOrKnightMoves(int startSquare, char piece) {
         tempMoves = new ArrayList<>();
         int[] offset = (isKingPiece(piece)) ? directionOffsets : knightOffsets;
@@ -262,24 +230,7 @@ public class MoveGen {
                 continue;
 
             /* Adds newly found move to list */
-            // But if the piece is the king and a line of attack is on that square dont add to moves
-            if(isKingPiece(piece)) {
-                for (Move move : tempAttacks) {
-                    if(move.getTargetSquare() == targetSquare) {
-                        continue;
-                    }
-                }
-
-            }
             tempMoves.add(genericMove(startSquare, targetSquare, piece));
-            attackLines.add(genericMove(startSquare, targetSquare, piece));
-
-            if (isEnemyFire(targetPiece)) {
-                if(targetPiece == 'k' || targetPiece == 'K') {
-                    kingAttackCount++;
-                    isInCheck = true;
-                }
-            }
 
         }
 
@@ -330,14 +281,8 @@ public class MoveGen {
 
             } else {
                 /* Diagonal pawn captures */
-                if(isEnemyFire(targetPiece)) {
+                if(isEnemyFire(targetPiece))
                     tempMoves.add(genericMove(startSquare, targetSquare, piece));
-                    attackLines.add(genericMove(startSquare, targetSquare, piece));
-                    if(targetPiece == 'k' || targetPiece == 'K') {
-                        kingAttackCount++;
-                        isInCheck = true;
-                    }
-                }
             }
 
         }

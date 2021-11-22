@@ -12,6 +12,7 @@ public class Game {
     Board boardClass;
     MoveGen moveGen;
     boolean whitesTurn = true;
+   Move lastMoveExecuted;
 
     /* Constructor of game */
     public Game(boolean wantAlhpaBeta) {
@@ -32,9 +33,10 @@ public class Game {
     * Executes a move on the chessboard by switching indexes,
     * switches whose turn it is & then generates new moves for that position */
     public void executeMove (Move move) {
+        lastMoveExecuted = move;
         if(boardClass.movePiece(move.getStartSquare(), move.getTargetSquare())) {
             switchTurns();
-            moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn, move);
+            moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
         }
     }
 

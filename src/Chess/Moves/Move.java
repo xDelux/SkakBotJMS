@@ -7,13 +7,17 @@ public class Move {
     int moveValue;
     char killPiece;
 
+    public Move (String[] pos, int[] posIndex, char piece) {
+        this.pos = pos;
+        this.posIndex = posIndex;
+        this.piece = piece;
+    }
     public Move (String[] pos, int[] posIndex, char piece, char killPiece) {
         this.pos = pos;
         this.posIndex = posIndex;
         this.piece = piece;
         this.killPiece = killPiece;
     }
-
     public String moveToString () {
         return "MOVE: Piece  " + piece + "  from  " + pos[0] + " -> " + pos[1];
     }
