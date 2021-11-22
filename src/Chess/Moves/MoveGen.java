@@ -191,7 +191,7 @@ public class MoveGen {
                     break;
 
                 /* Adds newly found move to list */
-                moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                moves.add(genericMove(startSquare, targetSquare, piece));
 
                 /* If opponents piece is on the square can't move any further */
                 if (isEnemyFire(targetPiece))
@@ -226,7 +226,7 @@ public class MoveGen {
                 continue;
 
             /* Adds newly found move to list */
-            tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+            tempMoves.add(genericMove(startSquare, targetSquare, piece));
 
         }
 
@@ -272,7 +272,7 @@ public class MoveGen {
                     targetPiece = board[targetSquare];
                     /* IF SQUARE IS EMPTY : MOVE UP TWO AS MOVE*/
                     if (!isEnemyFire(targetPiece)) {
-                        tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                        tempMoves.add(genericMove(startSquare, targetSquare, piece));
                     }
                     /*if (targetPiece == ' ') {
                         tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
@@ -282,7 +282,7 @@ public class MoveGen {
             } else {
                 /* Diagonal pawn captures */
                 if(isEnemyFire(targetPiece))
-                    tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                    tempMoves.add(genericMove(startSquare, targetSquare, piece));
             }
 
         }
