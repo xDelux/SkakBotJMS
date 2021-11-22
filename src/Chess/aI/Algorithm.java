@@ -33,6 +33,7 @@ record boardState(char[] board, boolean turn) {
 }
 
 public class Algorithm {
+    private static final int DEPTH = 4;
     Stack<ArrayList<Move>> moveStack = new Stack<>();
     Stack<char[]> boardStack = new Stack<>();
 
@@ -133,12 +134,14 @@ public class Algorithm {
 
         /* Moves */
         ArrayList<Move> moves = chessGame.getAllMoves();
+
         Move bestMove = moves.get(0);
+
 
         /* Running alphabeta on current positions moves */
         for (Move m : moves) {
             makeMove(m);
-            tempValue = alphaBeta(4, alpha, beta, true);
+            tempValue = alphaBeta(DEPTH, alpha, beta, false);
             System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
             if(tempValue > bestValue) {
                 bestValue = tempValue;
@@ -166,12 +169,11 @@ public class Algorithm {
         }*/
 
         if (maximizing) {
-            maxEval = Double.NEGATIVE_INFINITY;
             for (Move move : moves) {
                 makeMove(move);
                 eval = alphaBeta(depth - 1, alpha, beta, false);
                 unmakeMove();
-                maxEval = max(maxEval, eval);
+
                 if(alpha < eval) {
                     alpha = eval;
                 }
@@ -181,28 +183,28 @@ public class Algorithm {
                     break;
                 }
             }
-            return maxEval;
+            return alpha;
 
         } else {
-            minEval = Double.POSITIVE_INFINITY;
             for (Move move : moves) {
                 makeMove(move);
                 eval = alphaBeta(depth - 1, alpha, beta, true);
                 unmakeMove();
-                minEval = min(minEval, eval);
-                beta = min(beta, eval);
+                if(eval < beta){
+                    beta = eval;
+                }
                 // Prune
                 if (beta <= alpha) {
                     break;
                 }
             }
-            return minEval;
+            return beta;
         }
     }
 
     private void makeMove(Move move) {
         /*add board before execute*/
-        tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.whosTurn());
+        tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.isWhitesTurn());
         stateStack.add(tempState);
         chessGame.executeMove(move);
 //        moves = chessGame.getAllMoves();
@@ -260,7 +262,8 @@ public class Algorithm {
             }
         }
         double evaluation = whiteEval - blackEval;
-        int pointPerspective = (chessGame.whosTurn()) ? 1 : -1;
+        int pointPerspective = (chessGame.isAIwhite()) ? 1 : -1;
+        //int pointPerspective = (chessGame.isWhitesTurn()) ? 1 : -1;
         return evaluation * pointPerspective;
     }
 

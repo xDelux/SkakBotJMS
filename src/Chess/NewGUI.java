@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class NewGUI {
     //oldCode.GUI general values
@@ -88,7 +89,6 @@ public class NewGUI {
 //        Color black = Color.LIGHT_GRAY;
         Listener listener = new Listener();
 
-
         //Setting up files
         JLabel tempLabel;
         for (int i = 8; i > 0; i--) {
@@ -119,7 +119,6 @@ public class NewGUI {
             }
         };*/
 
-
         for (int i = 0; i < 64; i++) {
 //            System.out.println("TILE: " + i);
             piece = board[i];
@@ -134,7 +133,6 @@ public class NewGUI {
                 nextTileBright = !nextTileBright;
             }
         };
-
 
         //Setting up ranks
         for (char a = 'a'; a < 'i'; a++ ) {
@@ -154,6 +152,14 @@ public class NewGUI {
         //show frame
         window.pack();
         this.window.setVisible(true);
+    }
+
+    public void updateBoard(){
+        char[] board_backend = chessGame.get8By8Board();
+        for (int i = 0; i < tiles.size(); i++) {
+            tiles.get(i).tilePiece = board_backend[i];
+            setBoard(tiles.get(i));
+        }
     }
 
     public void setBoard(TilePanel tile){
@@ -277,6 +283,7 @@ public class NewGUI {
                         startTile.setTileIcon("transparent");
                         pickedMovePiece = false;
                         startTile.setPicked(false, tileMoves);
+
                         chessGame.executeMoveByIndex(startTile.getTilePos(), targetTile.getTilePos());
 
 //                        moveGen.moveByIndex(startTile.tilePos, targetTile.tilePos);

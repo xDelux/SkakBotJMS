@@ -21,7 +21,6 @@ public class MoveGen {
     char[] board;
     char[] rank;
     int[] file;
-
     boolean whitesTurn = true;
     boolean isInCheck;
     int kingAttackCount;
@@ -30,19 +29,18 @@ public class MoveGen {
     int targetSquare;
     char targetPiece;
 
-
     private void setupRanksAndFiles() {
         rank = new char[] {
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
-                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'D', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
+                '0', '0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
         };
@@ -76,8 +74,8 @@ public class MoveGen {
 
     }
 
-    public ArrayList<Move> updateAndGenerateMoves(char[] board, boolean turn) {
-        this.whitesTurn = turn;
+    public ArrayList<Move> updateAndGenerateMoves(char[] board, boolean isWhitesTurn) {
+        this.whitesTurn = isWhitesTurn;
         this.board = board;
         return generateMoves();
     }
@@ -176,8 +174,6 @@ public class MoveGen {
 
 
 //        piece = 'q';
-        if(piece == 'q' || piece == 'Q')
-            System.out.println();
 
         for (int i = startIndex; i < endIndex; i++) {
             /* Looping through all the possible direction squares */
@@ -195,7 +191,7 @@ public class MoveGen {
                     break;
 
                 /* Adds newly found move to list */
-                moves.add(genericMove(startSquare, targetSquare, piece));
+                moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
 
                 /* If opponents piece is on the square can't move any further */
                 if (isEnemyFire(targetPiece))
@@ -230,7 +226,7 @@ public class MoveGen {
                 continue;
 
             /* Adds newly found move to list */
-            tempMoves.add(genericMove(startSquare, targetSquare, piece));
+            tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
 
         }
 
@@ -254,13 +250,13 @@ public class MoveGen {
 
             /* if target piece is OUT OF BOUNDS */
             if (targetPiece == '0')
-                break;
+                continue;
 
             /* if target piece is friendly break */
             if (isFriendlyFire(targetPiece))
-                break;
+                continue;
 
-            if(i == 0) {
+            if(i == 0) {//if going forward (pawnOffset[0] is +-12)
                 /* If opponents piece is on the square can't move any further */
                 if (isEnemyFire(targetPiece))
                     continue;
@@ -269,20 +265,24 @@ public class MoveGen {
                 tempMoves.add(genericMove(startSquare, targetSquare, piece));
 
                 /* CHECKING IF PAWN HASNT MOVED */
+                // TODO: below doesnt care if black or white
                 if (getFile(startSquare) == 2 || getFile(startSquare) == 7) {
                     /* CHECKS THE SQUARE TWO UP FROM PAWN */
                     targetSquare += pawnOffsets[i];
                     targetPiece = board[targetSquare];
                     /* IF SQUARE IS EMPTY : MOVE UP TWO AS MOVE*/
                     if (!isEnemyFire(targetPiece)) {
-                        tempMoves.add(genericMove(startSquare, targetSquare, piece));
+                        tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
                     }
+                    /*if (targetPiece == ' ') {
+                        tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                    }*/
                 }
 
             } else {
                 /* Diagonal pawn captures */
                 if(isEnemyFire(targetPiece))
-                    tempMoves.add(genericMove(startSquare, targetSquare, piece));
+                    tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
             }
 
         }

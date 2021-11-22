@@ -139,7 +139,7 @@ public class Board {
     * This method is used when coming from squares that are 8x8 (0 to 63)
     * like in the GUI with tile positions when clicking on tiles.
     * BoardIndex converts a 8x8 (0 to 64) to the board 12x12 (0 to 143) */
-    public boolean movePieceWithConersion(int startSquare, int targetSquare) {
+    public boolean movePieceWithConversion(int startSquare, int targetSquare) {
         if(!(startSquare == '0' || targetSquare == '0')) {
             board[boardIndex[targetSquare]] = board[boardIndex[startSquare]];
             board[boardIndex[startSquare]] = ' ';

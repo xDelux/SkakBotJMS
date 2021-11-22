@@ -5,24 +5,37 @@ import Chess.Moves.MoveGen;
 import Chess.aI.Algorithm;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class Game {
+    private static NewGUI GUI;
     ArrayList<Move> moves;
     ArrayList<Move> tempMoves;
     Board boardClass;
     MoveGen moveGen;
     boolean whitesTurn = true;
+    Algorithm AI;
+    private final boolean isAIwhite;
    Move lastMoveExecuted;
 
     /* Constructor of game */
-    public Game(boolean wantAlhpaBeta) {
+    public Game(boolean isAIwhite) {
         boardClass = new Board(true);
         moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
         moves = moveGen.generateMoves();
-//        for (Move m : moves)
-//            System.out.println(m.moveToString());
-    }
+        AI = new Algorithm(this);
+        this.isAIwhite = isAIwhite;
+        if(isAIwhite){
+            //if AI is white then run alphabeta and execute best move at start
+            Move bestMove = AI.runAlphaBeta();
+            this.executeMove(bestMove);
+        }
 
+        //then wait for input from gui for player move. Every playermove should then result in triggering AI move.
+    }
+    public boolean isAIwhite(){
+        return isAIwhite;
+    }
     /* Just to avoid writing the same over and over again */
     public void switchTurns() {
         whitesTurn = !whitesTurn;
@@ -41,10 +54,18 @@ public class Game {
     }
 
     public void executeMoveByIndex (int startSquare, int targetSquare) {
-        if(boardClass.movePieceWithConersion(startSquare, targetSquare)) {
+        /* ONLY USED BY GUI
+            TRIGGERS AI TO MAKE A MOVE AFTERWARDS! */
+
+        if(boardClass.movePieceWithConversion(startSquare, targetSquare)) {
             switchTurns();
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
+            //AI will make next move
+            Move nextAIMove = AI.runAlphaBeta();
+            executeMove(nextAIMove);
+            GUI.updateBoard();
         }
+
     }
 
     /* Get moves for a specific square on the chessboard (primarily used in GUI) */
@@ -89,7 +110,7 @@ public class Game {
         boardClass.setBoard(board);
     }
 
-    public boolean whosTurn() {
+    public boolean isWhitesTurn() {
         return whitesTurn;
     }
 
@@ -100,5 +121,9 @@ public class Game {
 
     public MoveGen returnMoveGen() {
         return moveGen;
+    }
+
+    public void setGUI(NewGUI gui) {
+        this.GUI = gui;
     }
 }
