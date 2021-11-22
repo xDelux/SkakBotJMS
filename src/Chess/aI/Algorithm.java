@@ -40,10 +40,8 @@ public class Algorithm {
     boardState tempState;
 
     double eval, maxEval, minEval;
-    Move bestMove, currMove;
     Game chessGame;
-    ArrayList<Move> moves;
-    ArrayList<Move> tempMoves;
+
     int pawnValue = 100;
     int knightValue = 300;
     int bishopValue = 320;
@@ -127,15 +125,30 @@ public class Algorithm {
     }
 
 
-    public void runAlphaBeta(boolean run) {
+    public Move runAlphaBeta() {
+        /* Start value alpha & beta */
         double alpha = Double.NEGATIVE_INFINITY;
         double beta = Double.POSITIVE_INFINITY;
 
-//        moves = chessGame.getAllMoves();
-        if (run) {
-            System.out.println(alphaBeta(6, maxEval, minEval, true));
-//            returnOriginalPosition();
+        /* Values found by evaluating positions*/
+        double tempValue;
+        double bestValue = Double.NEGATIVE_INFINITY;
+
+        /* Moves */
+        ArrayList<Move> moves = chessGame.getAllMoves();
+        Move bestMove = moves.get(0);
+
+        /* Running alphabeta on current positions moves */
+        for (Move m : moves) {
+            makeMove(m);
+            tempValue = alphaBeta(4, alpha, beta, true);
+            if(tempValue > bestValue) {
+                bestValue = tempValue;
+                bestMove = m;
+            }
+            unmakeMove();
         }
+        return bestMove;
     }
 
    /* public double alphaBeta(int depth, double alpha, double beta) {
@@ -166,7 +179,15 @@ public class Algorithm {
 
         /* Check if game is over or something*/
 
-        moves = chessGame.getAllMoves();
+
+        ArrayList<Move> moves = chessGame.getAllMoves();
+        /*if(moves.isEmpty()) {
+            if(chessGame.playerInCheck()) {
+                return Double.NEGATIVE_INFINITY;
+            }
+            return 0;
+        }*/
+
         if (maximizing) {
             maxEval = Double.NEGATIVE_INFINITY;
             for (Move move : moves) {
@@ -174,13 +195,17 @@ public class Algorithm {
                 eval = alphaBeta(depth - 1, alpha, beta, false);
                 unmakeMove();
                 maxEval = max(maxEval, eval);
-                alpha = max(alpha, eval);
+                if(alpha < eval) {
+                    alpha = eval;
+                }
+
                 // Prune
                 if (beta <= alpha) {
                     break;
                 }
             }
             return maxEval;
+
         } else {
             minEval = Double.POSITIVE_INFINITY;
             for (Move move : moves) {

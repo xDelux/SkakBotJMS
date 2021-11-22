@@ -77,6 +77,7 @@ public class MoveGen {
         return generateMoves();
     }
 
+
     /* GENERATION OF EVERY MOVE
     * Every square is checked for moves within the current board position  */
     public ArrayList<Move> generateMoves() {
@@ -115,6 +116,9 @@ public class MoveGen {
         }
         return moves;
     }
+
+
+
 
 
     /* Checking if a piece is the same color as the player */

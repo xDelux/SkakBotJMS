@@ -11,7 +11,7 @@ public class Main {
 //        NewGUI gui = new NewGUI(chessGame);
 
         Algorithm AI = new Algorithm(chessGame);
-        AI.runAlphaBeta(true);
+        AI.runAlphaBeta();
 //        AI.alphaBeta(chessGame.getAllMoves(),3, minEval, maxEval, true);
     }
 }
