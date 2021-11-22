@@ -245,13 +245,13 @@ public class MoveGen {
 
             /* if target piece is OUT OF BOUNDS */
             if (targetPiece == '0')
-                break;
+                continue;
 
             /* if target piece is friendly break */
             if (isFriendlyFire(targetPiece))
-                break;
+                continue;
 
-            if(i == 0) {
+            if(i == 0) {//if going forward (pawnOffset[0] is +-12)
                 /* If opponents piece is on the square can't move any further */
                 if (isEnemyFire(targetPiece))
                     continue;
@@ -266,7 +266,7 @@ public class MoveGen {
                     targetSquare += pawnOffsets[i];
                     targetPiece = board[targetSquare];
                     /* IF SQUARE IS EMPTY : MOVE UP TWO AS MOVE*/
-                    if (!isEnemyFire(targetPiece)) {
+                    if (targetPiece == ' ') {
                         tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
                     }
                 }

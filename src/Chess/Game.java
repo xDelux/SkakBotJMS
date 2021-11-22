@@ -18,7 +18,7 @@ public class Game {
     private final boolean isAIwhite;
     /* Constructor of game */
     public Game(boolean isAIwhite) {
-        boardClass = new Board(false);
+        boardClass = new Board(true);
         moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
         moves = moveGen.generateMoves();
         AI = new Algorithm(this);
