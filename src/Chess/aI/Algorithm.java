@@ -128,23 +128,22 @@ public class Algorithm {
 
 
     public void runAlphaBeta(boolean run) {
-        maxEval = Double.NEGATIVE_INFINITY;
-        minEval = Double.POSITIVE_INFINITY;
+        double alpha = Double.NEGATIVE_INFINITY;
+        double beta = Double.POSITIVE_INFINITY;
 
-
-
-        moves = chessGame.getAllMoves();
+//        moves = chessGame.getAllMoves();
         if (run) {
             System.out.println(alphaBeta(6, maxEval, minEval, true));
 //            returnOriginalPosition();
-            System.out.println();
         }
     }
 
-    public double alphaBeta(int depth, double alpha, double beta) {
+   /* public double alphaBeta(int depth, double alpha, double beta) {
         if (depth == 0 ) {
             return evaluatePosition();
         }
+
+        moves = chessGame.getAllMoves();
 
         for (Move m : moves) {
             makeMove(m);
@@ -152,21 +151,22 @@ public class Algorithm {
             unmakeMove();
             if(eval >= beta)
                 return beta;
-            alpha = max(alpha,eval);
+            if(eval > alpha)
+                alpha = eval;
+
+            bestMove = m;
         }
         return alpha;
-    }
+    }*/
 
     public double alphaBeta(int depth, double alpha, double beta, boolean maximizing) {
         if (depth == 0) {
             return evaluatePosition();
         }
 
-        /* if game is over return 0 here
-        *
-        *
-        * */
+        /* Check if game is over or something*/
 
+        moves = chessGame.getAllMoves();
         if (maximizing) {
             maxEval = Double.NEGATIVE_INFINITY;
             for (Move move : moves) {
@@ -175,14 +175,12 @@ public class Algorithm {
                 unmakeMove();
                 maxEval = max(maxEval, eval);
                 alpha = max(alpha, eval);
-
                 // Prune
                 if (beta <= alpha) {
                     break;
                 }
-
-                return maxEval;
             }
+            return maxEval;
         } else {
             minEval = Double.POSITIVE_INFINITY;
             for (Move move : moves) {
@@ -195,10 +193,9 @@ public class Algorithm {
                 if (beta <= alpha) {
                     break;
                 }
-                return minEval;
             }
+            return minEval;
         }
-        return 0;
     }
 
     private void makeMove(Move move) {
@@ -206,13 +203,13 @@ public class Algorithm {
         tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.whosTurn());
         stateStack.add(tempState);
         chessGame.executeMove(move);
-        moves = chessGame.getAllMoves();
+//        moves = chessGame.getAllMoves();
     }
 
     private void unmakeMove() {
         tempState = stateStack.pop();
         chessGame.setBoardState(tempState.getBoard(), tempState.getTurn());
-        moves = chessGame.getAllMoves();
+//        moves = chessGame.getAllMoves();
     }
 
     private void returnOriginalPosition() {
