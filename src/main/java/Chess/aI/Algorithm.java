@@ -33,7 +33,6 @@ record boardState(char[] board, boolean turn) {
 }
 
 public class Algorithm {
-    private static final int DEPTH = 4;
     Stack<ArrayList<Move>> moveStack = new Stack<>();
     Stack<char[]> boardStack = new Stack<>();
 
@@ -123,6 +122,10 @@ public class Algorithm {
     }
 
 
+    static int DEPTH;
+    public void setDepth(int Depth) {
+        DEPTH = Depth;
+    }
     public Move runAlphaBeta() {
         /* Start value alpha & beta */
         double alpha = Double.NEGATIVE_INFINITY;
@@ -202,7 +205,7 @@ public class Algorithm {
         }
     }
 
-    private void makeMove(Move move) {
+    public void makeMove(Move move) {
         /*add board before execute*/
         tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.isWhitesTurn());
         stateStack.add(tempState);
@@ -210,7 +213,7 @@ public class Algorithm {
 //        moves = chessGame.getAllMoves();
     }
 
-    private void unmakeMove() {
+    public void unmakeMove() {
         tempState = stateStack.pop();
         chessGame.setBoardState(tempState.getBoard(), tempState.getTurn());
 //        moves = chessGame.getAllMoves();
@@ -298,5 +301,21 @@ public class Algorithm {
 //            System.out.print(temp[i] + "|" );
         }
         System.out.println();
+    }
+
+    public int getNumberOfPositions(int depth) {
+        if (depth == 0)
+            return 1;
+
+        ArrayList<Move> moves = chessGame.getAllMoves();
+        int numberOfPositions = 0;
+
+        for (Move m : moves) {
+            makeMove(m);
+            numberOfPositions += getNumberOfPositions(-1);
+            unmakeMove();
+        }
+
+        return numberOfPositions;
     }
 }

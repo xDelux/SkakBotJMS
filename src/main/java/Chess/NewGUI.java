@@ -217,7 +217,7 @@ public class NewGUI {
 
         public void setTileIcon(String icon){
             //label.getWidth & getHeight
-            ImageIcon imageIcon = new ImageIcon(new ImageIcon("src/Chess/res/" + icon + ".png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
+            ImageIcon imageIcon = new ImageIcon(new ImageIcon("src/main/java/Chess/res/" + icon + ".png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
             if(icon.equals("transparent"))
                 transparent = true;
             label.setIcon(imageIcon);

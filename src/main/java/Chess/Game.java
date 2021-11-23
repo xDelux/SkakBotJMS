@@ -30,9 +30,11 @@ public class Game {
             Move bestMove = AI.runAlphaBeta();
             this.executeMove(bestMove);
         }
-
         //then wait for input from gui for player move. Every playermove should then result in triggering AI move.
     }
+
+
+
     public boolean isAIwhite(){
         return isAIwhite;
     }
