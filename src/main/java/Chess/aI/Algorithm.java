@@ -263,7 +263,7 @@ public class Algorithm {
         }
         double evaluation = whiteEval - blackEval;
         int pointPerspective = (chessGame.isAIwhite()) ? 1 : -1;
-        //int pointPerspective = (chessGame.isWhitesTurn()) ? 1 : -1;
+//        int pointPerspective = (chessGame.isWhitesTurn()) ? 1 : -1;
         return evaluation * pointPerspective;
     }
 
