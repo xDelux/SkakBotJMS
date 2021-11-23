@@ -105,19 +105,6 @@ public class NewGUI {
         TilePanel temp;
         char piece;
         int counter = 0;
-        /*for (int i = 63; i >= 0; i--) {
-            piece = board[i];
-            temp = new TilePanel(i, piece, nextTileBright, listener);
-            tiles.add(temp);
-            setBoard(temp);
-            gamePanel.add(temp.getTilePanel());
-            if(counter==7)
-                counter = 0;
-            else {
-                counter++;
-                nextTileBright = !nextTileBright;
-            }
-        };*/
 
         for (int i = 0; i < 64; i++) {
 //            System.out.println("TILE: " + i);
@@ -283,7 +270,7 @@ public class NewGUI {
                         startTile.setTileIcon("transparent");
                         pickedMovePiece = false;
                         startTile.setPicked(false, tileMoves);
-
+                        System.out.println("GUI attempting move: " + startTile.getTilePos() + " " + targetTile.getTilePos());
                         chessGame.executeMoveByIndex(startTile.getTilePos(), targetTile.getTilePos());
 
 //                        moveGen.moveByIndex(startTile.tilePos, targetTile.tilePos);

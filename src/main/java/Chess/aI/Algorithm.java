@@ -35,7 +35,7 @@ record boardState(char[] board, boolean turn) {
 public class Algorithm {
     Stack<ArrayList<Move>> moveStack = new Stack<>();
     Stack<char[]> boardStack = new Stack<>();
-
+    HashMap<String, Double> evaluatedStates =  new HashMap<>();
     Stack<boardState> stateStack = new Stack<>();
     boardState tempState;
 
@@ -139,7 +139,10 @@ public class Algorithm {
         ArrayList<Move> moves = chessGame.getAllMoves();
 
         Move bestMove = moves.get(0);
+        System.out.println(keyGen());
 
+        /*clear evaluated list*/
+        evaluatedStates.clear();
 
         /* Running alphabeta on current positions moves */
         for (Move m : moves) {
@@ -157,8 +160,22 @@ public class Algorithm {
     }
 
     public double alphaBeta(int depth, double alpha, double beta, boolean maximizing) {
+        //check if already calculated
+        String stateKey = keyGen();
+        Double preValue = evaluatedStates.get(stateKey);
+        //System.out.println(stateKey);
+        if(preValue != null){
+            //System.out.println("evaluate MATCHED!!");
+            return preValue;
+        }
+        else{
+            //System.out.println("eveluate mismatch!");
+        }
+
         if (depth == 0) {
-            return evaluatePosition();
+            eval = evaluatePosition();
+            evaluatedStates.put(stateKey, eval);
+            return eval;
         }
 
         /* Check if game is over or something*/
@@ -170,7 +187,6 @@ public class Algorithm {
             }
             return 0;
         }*/
-
         if (maximizing) {
             for (Move move : moves) {
                 makeMove(move);
@@ -268,6 +284,39 @@ public class Algorithm {
         int pointPerspective = (chessGame.isAIwhite()) ? 1 : -1;
 //        int pointPerspective = (chessGame.isWhitesTurn()) ? 1 : -1;
         return evaluation * pointPerspective;
+    }
+
+    private String keyGen(){
+        char[] board = chessGame.get8By8Board();
+        StringBuilder keyBuilder = new StringBuilder();
+        int spaceCounter = 0;
+        boolean countingSpaces = false;
+        //build board string
+        for (int i = 0; i < board.length; i++) {
+            if(board[i] != ' '){
+                if(countingSpaces){
+                    keyBuilder.append(spaceCounter);
+                    keyBuilder.append(board[i]);
+                    countingSpaces = false;
+                    spaceCounter = 0;
+                }
+                else{
+                    keyBuilder.append(board[i]);
+                }
+            }
+            else{
+                countingSpaces = true;
+                spaceCounter++;
+            }
+        }
+        //add whose turn
+        if(chessGame.isWhitesTurn()){
+            keyBuilder.append('w');
+        }
+        else{
+            keyBuilder.append('b');
+        }
+        return keyBuilder.toString();
     }
 
     private int[] reverseArrays(int[] array) {
