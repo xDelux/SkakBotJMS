@@ -140,11 +140,14 @@ public class Board {
     * like in the GUI with tile positions when clicking on tiles.
     * BoardIndex converts a 8x8 (0 to 64) to the board 12x12 (0 to 143) */
     public boolean movePieceWithConversion(int startSquare, int targetSquare) {
-        if(!(startSquare == '0' || targetSquare == '0')) {
+        System.out.println("board movepiecewith conversion: " + startSquare + " " + targetSquare);
+        if(board[boardIndex[targetSquare]] != '0') {
             board[boardIndex[targetSquare]] = board[boardIndex[startSquare]];
             board[boardIndex[startSquare]] = ' ';
+            System.out.println("movepiecewithconversion: true");
             return true;
         }
+        System.out.println("movepiecewithconversion: false");
         return false;
     }
     /* Moves a piece on the board.
