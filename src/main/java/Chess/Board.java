@@ -161,10 +161,11 @@ public class Board {
         return false;
     }
 
+
+
     public char[] getBoard() {
         return board;
     }
-
     public void setBoard(char[] board) {
         this.board = board;
     }

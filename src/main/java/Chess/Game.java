@@ -19,16 +19,20 @@ public class Game {
    Move lastMoveExecuted;
 
     /* Constructor of game */
-    public Game(boolean isAIwhite) {
+    public Game(boolean isAIwhite, boolean wantAI) {
         boardClass = new Board(false);
         moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
         moves = moveGen.generateMoves();
         AI = new Algorithm(this);
         this.isAIwhite = isAIwhite;
-        if(isAIwhite){
-            //if AI is white then run alphabeta and execute best move at start
-            Move bestMove = AI.runAlphaBeta();
-            this.executeMove(bestMove);
+        if(wantAI) {
+            if (isAIwhite) {
+                /* SET DEPTH OF ALPHA BETA */
+                AI.setDepth(4);
+                //if AI is white then run alphabeta and execute best move at start
+                Move bestMove = AI.runAlphaBeta();
+                this.executeMove(bestMove);
+            }
         }
         //then wait for input from gui for player move. Every playermove should then result in triggering AI move.
     }
@@ -127,5 +131,9 @@ public class Game {
 
     public void setGUI(NewGUI gui) {
         this.GUI = gui;
+    }
+
+    public char[] getPieceList() {
+        return new char[] {'K', 'Q', 'R', 'N', 'B', 'P', 'k', 'q', 'r', 'n', 'b', 'p'};
     }
 }
