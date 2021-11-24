@@ -59,7 +59,7 @@ public class Algorithm {
     ArrayList<ArrayList<Integer>> whiteHeats = new ArrayList<>();
     ArrayList<ArrayList<Integer>> blackHeats = new ArrayList<>();
     
-    /* calulated heatmaps */
+    /* pre-calulated heatmaps */
     Map<Character, ArrayList<Integer>> calculatedPosition = Collections.synchronizedMap(new HashMap<>(12));
     private void setCalculatedPosition () {
         char[] piecelist = chessGame.getPieceList();
@@ -91,7 +91,6 @@ public class Algorithm {
         }
         System.out.println(calculatedPosition);
     }
-
 
     /* Sets up all piece-square tables (heatmaps) */
     private void setUpPieceSquareTables() {
@@ -332,7 +331,7 @@ public class Algorithm {
         double bestValue = Double.NEGATIVE_INFINITY;
 
         /* Moves */
-        ArrayList<Move> moves = chessGame.getAllMoves();
+        ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
 
         Move bestMove = moves.get(0);
         System.out.println(keyGen());
@@ -519,24 +518,41 @@ public class Algorithm {
     }
 
     private ArrayList<Move> sortMoves(ArrayList<Move> movesToSort) {
+        char [] board = chessGame.getWorkloadBoard();
         ArrayList<Move> sorted;
-
-        int moveScoreGuess;
-        int movingPiece;
-        int targetPiece;
-
+        char movingPiece;
+        char targetPiece;
+        System.out.println("PRE SORT");
         for (Move m : movesToSort) {
-            movingPiece = m.getStartSquare();
+            movingPiece = m.getPiece();
             targetPiece = m.getKillPiece();
 
-//            if(targetPiece != ' ')
-//                moveScoreGuess = 10*
+            if(targetPiece != ' ')
+                m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));
+
+            /* TODO (IF PROMOTION) */
 
 
+            if (chessGame.getOpponentAttackedSquares('p').contains(m.getTargetSquare()))
+                m.setMoveScoreGuess(-pieceValues.get(movingPiece));
+
+
+            System.out.print("MS: " + m.getMoveScoreGuess() + " ");
         }
-
-
-        return new ArrayList<>();
+        System.out.println();
+        System.out.println("POST SORT");
+        movesToSort.sort(Comparator.comparing(Move::getMoveScoreGuess));
+        for (Move m : movesToSort)
+            System.out.print("MS: " + m.getMoveScoreGuess() + " ");
+        System.out.println();
+        /*Arrays.sort(movesToSort, new Comparator<Move>(){
+            @Override
+            public int compare(Move m1, Move m2){
+                return m1.getMoveScoreGuess() - m2.getMoveScoreGuess();
+            }
+        });
+*/
+        return movesToSort;
     }
 
 

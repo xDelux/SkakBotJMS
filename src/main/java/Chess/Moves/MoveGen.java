@@ -1,6 +1,8 @@
 package Chess.Moves;
 
 import Chess.Board;
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 
 public class MoveGen {
@@ -21,6 +23,12 @@ public class MoveGen {
     char[] board;
     char[] rank;
     int[] file;
+
+    /* Keeping track of attacked squares */
+    ArrayList<Integer> pawnAttackedSqaures = new ArrayList<>();
+
+    /* Tracking moves for opponent */
+
     boolean whitesTurn = true;
     boolean isInCheck;
     int kingAttackCount;
@@ -77,6 +85,7 @@ public class MoveGen {
     public ArrayList<Move> updateAndGenerateMoves(char[] board, boolean isWhitesTurn) {
         this.whitesTurn = isWhitesTurn;
         this.board = board;
+
         return generateMoves();
     }
 
@@ -91,21 +100,10 @@ public class MoveGen {
             startSquare = boardIndex[i];
             piece = board[startSquare];
 
-/*
-             TESTING
-*/
 //            System.out.println("SQUARE: [" +getRank(startSquare) + getFile(startSquare) + "] - " +startSquare + " PIECE: " + piece);
-//            System.out.println("Testing getFile() of all squares : ");
-//            System.out.println(getFile(startSquare));
-/*
-             TESTING ENDS
-*/
 
             if (piece == '0')
                 break;
-
-            /*if(boardIndex[i] > 50 && piece == 'P')
-                System.out.println();*/
 
             if (isFriendlyFire(piece)) {
                 if(!isPawnPiece(piece)) {
@@ -235,7 +233,7 @@ public class MoveGen {
     private ArrayList<Move> generatePawnMoves(int startSquare, char piece) {
         tempMoves = new ArrayList<>();
 
-        /* PAWN MOVES BASED ON WHOS TURN IT IS. */
+        /* PAWN MOVES BASED ON WHO'S TURN IT IS. */
         int[] pawnOffsets = (whitesTurn) ? whitePawnOffsets : blackPawnOffsets;
 
 
@@ -277,8 +275,11 @@ public class MoveGen {
 
             } else {
                 /* Diagonal pawn captures */
-                if(isEnemyFire(targetPiece))
+                if(isEnemyFire(targetPiece)) {
                     tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                }
+                /* Tracking squares attacked by pawns */
+                pawnAttackedSqaures.add(targetSquare);
             }
 
         }
@@ -286,7 +287,7 @@ public class MoveGen {
         return tempMoves;
     }
 
-
+    /* Boilerplate for move creation */
     public Move genericMove(int startSquare, int targetSquare, char piece, char killPiece){
         return new Move(
                 new String[] {posToString(startSquare), posToString(targetSquare)},
@@ -295,13 +296,20 @@ public class MoveGen {
     }
 
 
+    /* Get file from position */
     public int getFile(int startSquare) {
         return file[startSquare];
     }
+    /* Get rank from positon */
     public char getRank (int startSquare) {
         return rank[startSquare];
     }
+    /* Rank & File for position to string */
     public String posToString(int startSquare) {
         return "" + getRank(startSquare) + "" + getFile(startSquare);
+    }
+
+    public ArrayList<Integer> getPawnAttackedSqaures() {
+        return pawnAttackedSqaures;
     }
 }

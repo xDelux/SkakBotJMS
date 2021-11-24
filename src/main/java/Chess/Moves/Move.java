@@ -8,11 +8,19 @@ public class Move {
     int moveValue;
     char killPiece;
 
-   /* public Move (String[] pos, int[] posIndex, char piece) {
-        this.pos = pos;
-        this.posIndex = posIndex;
-        this.piece = piece;
-    }*/
+
+
+    /* TODO TESTING SORT */
+    int moveScoreGuess;
+
+    public int getMoveScoreGuess() {
+        return this.moveScoreGuess;
+    }
+
+    public void setMoveScoreGuess(int moveScoreGuess) {
+        this.moveScoreGuess = moveScoreGuess;
+    }
+
     public Move (String[] pos, int[] posIndex, char piece, char killPiece) {
         this.pos = pos;
         this.posIndex = posIndex;

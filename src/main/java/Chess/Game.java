@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Game {
     private static NewGUI GUI;
+    ArrayList<Move> opponentMoves;
     ArrayList<Move> moves;
     ArrayList<Move> tempMoves;
     Board boardClass;
@@ -18,11 +19,14 @@ public class Game {
     private final boolean isAIwhite;
    Move lastMoveExecuted;
 
+
+
     /* Constructor of game */
     public Game(boolean isAIwhite, boolean wantAI) {
         boardClass = new Board(false);
         moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
         moves = moveGen.generateMoves();
+
         AI = new Algorithm(this);
         this.isAIwhite = isAIwhite;
         if(wantAI) {
@@ -37,7 +41,13 @@ public class Game {
         //then wait for input from gui for player move. Every playermove should then result in triggering AI move.
     }
 
+    public ArrayList<Integer> getOpponentAttackedSquares(char piece){
+        if (piece == 'p' || piece == 'P') {
+            return moveGen.getPawnAttackedSqaures();
+        }
 
+        return new ArrayList<>();
+    }
 
     public boolean isAIwhite(){
         return isAIwhite;
@@ -53,6 +63,7 @@ public class Game {
     * switches whose turn it is & then generates new moves for that position */
     public void executeMove (Move move) {
         lastMoveExecuted = move;
+//        opponentMoves.addAll(moves);
         if(boardClass.movePiece(move.getStartSquare(), move.getTargetSquare())) {
             switchTurns();
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
