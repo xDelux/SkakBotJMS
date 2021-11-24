@@ -22,6 +22,25 @@ import static java.lang.Double.min;
         return turn;
     }
 }*/
+
+enum pieces {
+    K('K'),
+    k('k'),
+    Q('Q'),
+    q('q'),
+    R('R'),
+    r('r'),
+    N('N'),
+    n('n'),
+    B('B'),
+    b('b'),
+    P('P'),
+    p('p');
+
+    pieces(char type) {
+    }
+}
+
 record boardState(char[] board, boolean turn) {
     public char[] getBoard() {
         return board;
@@ -36,18 +55,44 @@ public class Algorithm {
     Stack<ArrayList<Move>> moveStack = new Stack<>();
     Stack<char[]> boardStack = new Stack<>();
     HashMap<String, Double> evaluatedStates =  new HashMap<>();
-    Stack<boardState> stateStack = new Stack<>();
     boardState tempState;
+    Stack<boardState> stateStack = new Stack<>();
+
+
 
     double eval, maxEval, minEval;
     Game chessGame;
-
+    Map<Character, Integer> map = Collections.synchronizedMap(new HashMap<>());
+    EnumMap<pieces, Integer> pieceValues = new EnumMap<pieces, Integer>(pieces.class);
     int pawnValue = 100;
     int knightValue = 300;
     int bishopValue = 320;
     int rookValue = 500;
     int queenValue = 1100;
-    int kingValue = 999999;//;
+    int kingValue = 999999;
+
+    /* Sets up all piece values into a hashmap for faster look up*/
+    private void setUpPieceValues () {
+        map.put('K',kingValue);
+        map.put('k',kingValue);
+
+        map.put('Q',queenValue);
+        map.put('q',queenValue);
+
+        map.put('R',rookValue);
+        map.put('r',rookValue);
+
+        map.put('N',knightValue);
+        map.put('n',knightValue);
+
+        map.put('B',bishopValue);
+        map.put('b',bishopValue);
+
+        map.put('P',pawnValue);
+        map.put('p',pawnValue);
+    }
+
+    
     int[] pawnBlackHeat = {
             -50, -40, -30, -30, -30, -30, -40, -50,
             -40, -20, 0, 0, 0, 0, -20, -40,
@@ -119,6 +164,8 @@ public class Algorithm {
 
     public Algorithm(Game chessGame) {
         this.chessGame = chessGame;
+
+        setUpPieceValues();
     }
 
 
@@ -126,6 +173,8 @@ public class Algorithm {
     public void setDepth(int Depth) {
         DEPTH = Depth;
     }
+
+
     public Move runAlphaBeta() {
         /* Start value alpha & beta */
         double alpha = Double.NEGATIVE_INFINITY;
@@ -159,6 +208,8 @@ public class Algorithm {
         return bestMove;
     }
 
+    /* TODO CONVERT TO NAGAMAX */
+    /* MAYBE https://en.wikipedia.org/wiki/Principal_variation_search */
     public double alphaBeta(int depth, double alpha, double beta, boolean maximizing) {
         //check if already calculated
         String stateKey = keyGen();
@@ -286,6 +337,43 @@ public class Algorithm {
         return evaluation * pointPerspective;
     }
 
+    /* Quiesent search is called when a leaf node is hit on the alpha beta algorithm.
+    * THe main purpose of this is to look through captures / take bakes & so on.
+    *
+    * "Essentially, a quiescent search is an evaluation function that takes into account some dynamic possibilities."
+    * https://web.archive.org/web/20071027170528/http://www.brucemo.com/compchess/programming/quiescent.htm */
+    private double quiesentSearch(int alpha, int beta) {
+
+    }
+
+    private ArrayList<Move> sortMoves(ArrayList<Move> movesToSort) {
+        ArrayList<Move> sorted;
+
+        int moveScoreGuess;
+        int movingPiece;
+        int targetPiece;
+
+        for (Move m : movesToSort) {
+            movingPiece = m.getStartSquare();
+            targetPiece = m.getKillPiece();
+
+            if(targetPiece != ' ')
+                moveScoreGuess = 10*
+
+
+        }
+
+
+        return sorted;
+    }
+
+    private int getPieceValue(char piece) {
+
+        pieceValues.get(piece);
+
+        return type;
+    }
+
     private String keyGen(){
         char[] board = chessGame.get8By8Board();
         StringBuilder keyBuilder = new StringBuilder();
@@ -361,7 +449,7 @@ public class Algorithm {
 
         for (Move m : moves) {
             makeMove(m);
-            numberOfPositions += getNumberOfPositions(-1);
+            numberOfPositions += getNumberOfPositions(depth-1);
             unmakeMove();
         }
 
