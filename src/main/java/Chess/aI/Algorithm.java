@@ -346,8 +346,8 @@ public class Algorithm {
         for (Move m : moves) {
             makeMove(m);
 //            tempValue = alphaBeta(DEPTH, alpha, beta, chessGame.isAIwhite());
-//            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isWhitesTurn()) ? 1 : -1);
-            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isAIwhite()) ? 1 : -1);
+            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isWhitesTurn()) ? 1 : -1);
+//            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isAIwhite()) ? 1 : -1);
 
 //            System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
             if(tempValue > bestValue) {
@@ -444,7 +444,8 @@ public class Algorithm {
 
     public double negaMaxAlphaBeta(int depth, double alpha, double beta, int turnMultiplier) {
         if (depth == 0) {
-            return searchAllCaptures(alpha, beta);
+            return evaluatePosition();
+//            return quiescentSearch(alpha, beta);
         }
 //         TODO SORT MOVES
         ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
@@ -484,38 +485,6 @@ public class Algorithm {
 //        moves = chessGame.getAllMoves();
     }
 
-    /* NOT USED ATM | Used to pop all */
-    /*private void returnOriginalPosition() {
-//        System.out.println(boardStack.firstElement());
-        tempState = stateStack.firstElement();
-        System.out.println("first element: " + "turn: " + tempState.getTurn() + " & board: " + Arrays.toString(tempState.getBoard()));
-        chessGame.setBoardState(tempState.getBoard(), tempState.getTurn());
-        int size = stateStack.size();
-        for (int i = size; i > 0; i--) {
-            tempState = stateStack.pop();
-            logBoard(tempState);
-            System.out.println("Depth: " + i + " - turn: " + tempState.getTurn() + " & board: " + Arrays.toString(tempState.getBoard()));
-        }
-    }*/
-
-    public double searchAllCaptures(double alpha, double beta) {
-        double evaluation = evaluatePosition();
-        if (evaluation >= beta)
-            return beta;
-        alpha = max(alpha,evaluation);
-
-        ArrayList<Move> captureMoves = sortMoves(chessGame.getCaptureMoves());
-
-        for (Move m : captureMoves) {
-            makeMove(m);
-            evaluation = -searchAllCaptures(-beta, -alpha);
-            unmakeMove();
-            if(evaluation >= beta)
-                return beta;
-            alpha = max(evaluation, alpha);
-        }
-        return alpha;
-    }
 
     private double evaluatePosition() {
         char[] board = chessGame.get8By8Board();
@@ -530,7 +499,7 @@ public class Algorithm {
                     if(Character.isUpperCase(board[i]))
                         whiteEval += calculatedPosition.get(board[i]).get(i);
                     else
-                        blackEval -= calculatedPosition.get(board[i]).get(i);
+                        blackEval += calculatedPosition.get(board[i]).get(i);
                     /*if (Character.isUpperCase(board[i])) {
                         switch (board[i]) {
                             case 'P' -> whiteEval += pieceValues.get(board[i]) + pawnWhiteHeat.get(i);
@@ -553,7 +522,7 @@ public class Algorithm {
                     }*/
                 }
             }
-            return whiteEval+blackEval;
+            return whiteEval-blackEval;
 
 //        double evaluation = whiteEval - blackEval;
 //        int pointPerspective = (chessGame.isAIwhite()) ? 1 : -1;
@@ -564,32 +533,47 @@ public class Algorithm {
 //        return evaluation * pointPerspective;
     }
 
+
+
     /* Quiesent search is called when a leaf node is hit on the alpha beta algorithm.
     * THe main purpose of this is to look through captures / take bakes & so on.
     *
     * "Essentially, a quiescent search is an evaluation function that takes into account some dynamic possibilities."
     * https://web.archive.org/web/20071027170528/http://www.brucemo.com/compchess/programming/quiescent.htm */
-    private double quiescentSearch(int alpha, int beta) {
+    private double quiescentSearch(double alpha, double beta) {
+        double evaluation = evaluatePosition();
+        if (evaluation >= beta)
+            return beta;
+        alpha = max(alpha,evaluation);
 
+        ArrayList<Move> captureMoves = sortMoves(chessGame.getCaptureMoves());
 
-        return 0;
+        for (Move m : captureMoves) {
+            makeMove(m);
+            evaluation = -quiescentSearch(-beta, -alpha);
+            unmakeMove();
+            if(evaluation >= beta)
+                return beta;
+            alpha = max(evaluation, alpha);
+        }
+        return alpha;
+
     }
 
     private ArrayList<Move> sortMoves(ArrayList<Move> movesToSort) {
         char movingPiece;
         char targetPiece;
 //        System.out.println("PRE SORT");
-        ArrayList<Move> sorted = movesToSort;
-        for (Move m : sorted) {
+        for (Move m : movesToSort) {
             movingPiece = m.getPiece();
             targetPiece = m.getKillPiece();
 
-            try {
-                if(targetPiece != ' ' && targetPiece != '0')
-                    m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));
-            } catch (Exception e) {
-                System.out.println(e);
-            }
+            if(targetPiece == 'Q' || targetPiece == 'q')
+                System.out.println("queen getting attacked");
+
+            if(targetPiece != ' ' && targetPiece != '0')
+                m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));
+
 
             /* TODO (IF PROMOTION) */
 
@@ -602,8 +586,9 @@ public class Algorithm {
         /*System.out.println();
         System.out.println("POST SORT");*/
 
-        sorted.sort(Comparator.comparing(Move::getMoveScoreGuess));
-        return sorted;
+        movesToSort.sort(Collections.reverseOrder(Comparator.comparing(Move::getMoveScoreGuess)));
+
+        return movesToSort;
         /*for (Move m : movesToSort)
             System.out.print("MS: " + m.getMoveScoreGuess() + " ");
         System.out.println();*/

@@ -104,6 +104,7 @@ public class Game {
         return moves;
     }
     ArrayList<Move> captureMoves = new ArrayList<>();
+
     public ArrayList<Move> getCaptureMoves() {
         for (Move m : moves) {
             if (m.getKillPiece() != ' ' && m.getKillPiece() != '0')
