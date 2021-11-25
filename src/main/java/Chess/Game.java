@@ -3,9 +3,9 @@ package Chess;
 import Chess.Moves.Move;
 import Chess.Moves.MoveGen;
 import Chess.aI.Algorithm;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class Game {
     private static NewGUI GUI;
@@ -29,11 +29,14 @@ public class Game {
 
         AI = new Algorithm(this);
         this.isAIwhite = isAIwhite;
+
+        /* TOGGLES AI */
         if(wantAI) {
+            /* SET DEPTH OF AI */
+            AI.setDepth(3);
+            //if AI is white then run alphabeta and execute best move at start
             if (isAIwhite) {
-                /* SET DEPTH OF ALPHA BETA */
-                AI.setDepth(4);
-                //if AI is white then run alphabeta and execute best move at start
+
                 Move bestMove = AI.runAlphaBeta();
                 this.executeMove(bestMove);
             }
@@ -43,7 +46,7 @@ public class Game {
 
     public ArrayList<Integer> getOpponentAttackedSquares(char piece){
         if (piece == 'p' || piece == 'P') {
-            return moveGen.getPawnAttackedSqaures();
+            return moveGen.getOpponentAttackedSquares();
         }
 
         return new ArrayList<>();
@@ -100,6 +103,16 @@ public class Game {
     public ArrayList<Move> getAllMoves() {
         return moves;
     }
+    ArrayList<Move> captureMoves = new ArrayList<>();
+    public ArrayList<Move> getCaptureMoves() {
+        for (Move m : moves) {
+            if (m.getKillPiece() != ' ' && m.getKillPiece() != '0')
+                captureMoves.add(m);
+        }
+        System.out.println(captureMoves.toString());
+        return captureMoves;
+    }
+
 
     public void printMove(Move move) {
         System.out.println(

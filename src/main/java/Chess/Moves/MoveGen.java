@@ -1,8 +1,5 @@
 package Chess.Moves;
 
-import Chess.Board;
-import org.checkerframework.checker.units.qual.A;
-
 import java.util.ArrayList;
 
 public class MoveGen {
@@ -25,7 +22,9 @@ public class MoveGen {
     int[] file;
 
     /* Keeping track of attacked squares */
-    ArrayList<Integer> pawnAttackedSqaures = new ArrayList<>();
+    ArrayList<Integer> blackPawnAttackedSquares = new ArrayList<>();
+    ArrayList<Integer> whitePawnAttackedSquares = new ArrayList<>();
+
 
     /* Tracking moves for opponent */
 
@@ -85,6 +84,11 @@ public class MoveGen {
     public ArrayList<Move> updateAndGenerateMoves(char[] board, boolean isWhitesTurn) {
         this.whitesTurn = isWhitesTurn;
         this.board = board;
+
+        if(!whitesTurn)
+            blackPawnAttackedSquares.clear();
+        else
+            whitePawnAttackedSquares.clear();
 
         return generateMoves();
     }
@@ -165,9 +169,6 @@ public class MoveGen {
         /* Sets the indexes related to the offsets and input */
         startIndex = (piece == 'b' || piece == 'B') ? 4 : 0;
         endIndex= (piece == 'r' || piece == 'R') ? 4 : 8;
-
-
-//        piece = 'q';
 
         for (int i = startIndex; i < endIndex; i++) {
             /* Looping through all the possible direction squares */
@@ -275,11 +276,18 @@ public class MoveGen {
 
             } else {
                 /* Diagonal pawn captures */
-                if(isEnemyFire(targetPiece)) {
-                    tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                if(targetPiece != '0') {
+                    if (isEnemyFire(targetPiece)) {
+                        tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                    }
+
+                    /* Tracking squares attacked by pawns */
+                    if(whitesTurn)
+                        whitePawnAttackedSquares.add(targetSquare);
+                    else
+                        blackPawnAttackedSquares.add(targetSquare);
                 }
-                /* Tracking squares attacked by pawns */
-                pawnAttackedSqaures.add(targetSquare);
+
             }
 
         }
@@ -309,7 +317,10 @@ public class MoveGen {
         return "" + getRank(startSquare) + "" + getFile(startSquare);
     }
 
-    public ArrayList<Integer> getPawnAttackedSqaures() {
-        return pawnAttackedSqaures;
+    public ArrayList<Integer> getBlackPawnAttackedSquares() {
+        return blackPawnAttackedSquares;
+    }
+    public ArrayList<Integer> getOpponentAttackedSquares() {
+        return (whitesTurn) ? whitePawnAttackedSquares : blackPawnAttackedSquares;
     }
 }

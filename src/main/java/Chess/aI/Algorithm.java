@@ -2,16 +2,13 @@ package Chess.aI;
 
 import Chess.Game;
 import Chess.Moves.Move;
-import com.google.common.base.Stopwatch;
-import org.checkerframework.checker.units.qual.A;
 
-import javax.swing.*;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.time.StopWatch;
+
+import static java.lang.Math.max;
 
 /* Used to determine board state to undo move */
 record boardState(char[] board, boolean turn) {
@@ -54,7 +51,9 @@ public class Algorithm {
     ArrayList<Integer> queenWhiteHeat;
     /* King Piece-Square Tables (Heatmaps) */
     ArrayList<Integer> kingBlackHeat;
+    ArrayList<Integer> kingEndGameBlackHeat;
     ArrayList<Integer> kingWhiteHeat;
+    ArrayList<Integer> kingEndGameWhiteHeat;
 
     ArrayList<ArrayList<Integer>> whiteHeats = new ArrayList<>();
     ArrayList<ArrayList<Integer>> blackHeats = new ArrayList<>();
@@ -63,8 +62,6 @@ public class Algorithm {
     Map<Character, ArrayList<Integer>> calculatedPosition = Collections.synchronizedMap(new HashMap<>(12));
     private void setCalculatedPosition () {
         char[] piecelist = chessGame.getPieceList();
-        char [] test  = chessGame.get8By8Board();
-        int tempInt;
 
         ArrayList<Integer> calculatedPosValues;
 
@@ -86,96 +83,109 @@ public class Algorithm {
                 calculatedPosValues.add(valueOfc + colorHeats.get(counter).get(i));
             }
             calculatedPosition.put(c, calculatedPosValues);
-            System.out.println(calculatedPosValues);
+//            System.out.println(calculatedPosValues);
             counter++;
         }
-        System.out.println(calculatedPosition);
+//        System.out.println(calculatedPosition);
     }
 
     /* Sets up all piece-square tables (heatmaps) */
     private void setUpPieceSquareTables() {
 
-        pawnBlackHeat = new ArrayList<>(Arrays.asList(
-                -50, -40, -30, -30, -30, -30, -40, -50,
-                -40, -20, 0, 0, 0, 0, -20, -40,
-                -30, 0, 10, 15, 15, 10, 0, -30,
-                -30, 5, 15, 20, 20, 15, 5, -30,
-                -30, 0, 15, 20, 20, 15, 0, -30,
-                -30, 5, 10, 15, 15, 10, 5, -30,
-                -40, -20, 0, 5, 5, 0, -20, -40,
-                -50, -40, -30, -30, -30, -30, -40, -50
+        pawnWhiteHeat = new ArrayList<>(Arrays.asList(
+                0,  0,  0,  0,  0,  0,  0,  0,
+                50, 50, 50, 50, 50, 50, 50, 50,
+                10, 10, 20, 30, 30, 20, 10, 10,
+                5,  5, 10, 25, 25, 10,  5,  5,
+                0,  0,  0, 20, 20,  0,  0,  0,
+                5, -5,-10,  0,  0,-10, -5,  5,
+                5, 10, 10,-20,-20, 10, 10,  5,
+                0,  0,  0,  0,  0,  0,  0,  0
         ));
-        System.out.println("arraylist : " + pawnBlackHeat);
-        pawnWhiteHeat = pawnBlackHeat;
-        Collections.reverse(pawnWhiteHeat);
-        System.out.println("reversed : " + pawnWhiteHeat);
+//        System.out.println("arraylist : " + pawnWhiteHeat);
+        pawnBlackHeat = pawnWhiteHeat;
+        Collections.reverse(pawnBlackHeat);
+//        System.out.println("reversed : " + pawnWhiteHeat);
 
-        bishopBlackHeat = new ArrayList<>(Arrays.asList(
-                -20, -10, -10, -10, -10, -10, -10, -20,
-                -10, 0, 0, 0, 0, 0, 0, -10,
-                -10, 0, 5, 10, 10, 5, 0, -10,
-                -10, 5, 5, 10, 10, 5, 5, -10,
-                -10, 0, 10, 10, 10, 10, 0, -10,
-                -10, 10, 10, 10, 10, 10, 10, -10,
-                -10, 5, 0, 0, 0, 0, 5, -10,
-                -20, -10, -10, -10, -10, -10, -10, -20
+        bishopWhiteHeat = new ArrayList<>(Arrays.asList(
+                -20,-10,-10,-10,-10,-10,-10,-20,
+                -10,  0,  0,  0,  0,  0,  0,-10,
+                -10,  0,  5, 10, 10,  5,  0,-10,
+                -10,  5,  5, 10, 10,  5,  5,-10,
+                -10,  0, 10, 10, 10, 10,  0,-10,
+                -10, 10, 10, 10, 10, 10, 10,-10,
+                -10,  5,  0,  0,  0,  0,  5,-10,
+                -20,-10,-10,-10,-10,-10,-10,-20
         ));
-        bishopWhiteHeat = bishopBlackHeat;
-        Collections.reverse(bishopWhiteHeat);
+        bishopBlackHeat = bishopWhiteHeat;
+        Collections.reverse(bishopBlackHeat);
 
-         knightBlackHeat = new ArrayList<>(Arrays.asList(
-                 -50, -40, -30, -30, -30, -30, -40, -50,
-                 -40, -20, 0, 0, 0, 0, -20, -40,
-                 -30, 0, 10, 15, 15, 10, 0, -30,
-                 -30, 5, 15, 20, 20, 15, 5, -30,
-                 -30, 0, 15, 20, 20, 15, 0, -30,
-                 -40, -20, 0, 5, 5, 0, -20, -40,
-                 -40, -20, 0, 5, 5, 0, -20, -40,
-                 -50, -40, -30, -30, -30, -30, -40, -50
+         knightWhiteHeat = new ArrayList<>(Arrays.asList(
+                 -50,-40,-30,-30,-30,-30,-40,-50,
+                 -40,-20,  0,  0,  0,  0,-20,-40,
+                 -30,  0, 10, 15, 15, 10,  0,-30,
+                 -30,  5, 15, 20, 20, 15,  5,-30,
+                 -30,  0, 15, 20, 20, 15,  0,-30,
+                 -30,  5, 10, 15, 15, 10,  5,-30,
+                 -40,-20,  0,  5,  5,  0,-20,-40,
+                 -50,-40,-30,-30,-30,-30,-40,-50
         ));
-        knightWhiteHeat = knightBlackHeat;
-        Collections.reverse(knightWhiteHeat);
+        knightBlackHeat = knightWhiteHeat;
+        Collections.reverse(knightBlackHeat);
 
 
-        rookBlackHeat = new ArrayList<>(Arrays.asList(
-                0, 0, 0, 0, 0, 0, 0, 0,
-                5, 10, 10, 10, 10, 10, 10, 5,
-                -5, 0, 0, 0, 0, 0, 0, -5,
-                -5, 0, 0, 0, 0, 0, 0, -5,
-                -5, 0, 0, 0, 0, 0, 0, -5,
-                -5, 0, 0, 0, 0, 0, 0, -5,
-                -5, 0, 0, 0, 0, 0, 0, -5,
-                0, 0, 0, 5, 5, 0, 0, 0
+        rookWhiteHeat = new ArrayList<>(Arrays.asList(
+                0,  0,  0,  0,  0,  0,  0,  0,
+                5, 10, 10, 10, 10, 10, 10,  5,
+                -5,  0,  0,  0,  0,  0,  0, -5,
+                -5,  0,  0,  0,  0,  0,  0, -5,
+                -5,  0,  0,  0,  0,  0,  0, -5,
+                -5,  0,  0,  0,  0,  0,  0, -5,
+                -5,  0,  0,  0,  0,  0,  0, -5,
+                0,  0,  0,  5,  5,  0,  0,  0
         ));
-        rookWhiteHeat = rookBlackHeat;
-        Collections.reverse(rookWhiteHeat);
+        rookBlackHeat = rookWhiteHeat;
+        Collections.reverse(rookBlackHeat);
 
 
-        queenBlackHeat = new ArrayList<>(Arrays.asList(
-                -20, -10, -10, -5, -5, -10, -10, -20,
-                -10, 0, 0, 0, 0, 0, 0, -10,
-                -10, 0, 5, 5, 5, 5, 0, -10,
-                -5, 0, 5, 5, 5, 5, 0, -5,
-                 0, 0, 5, 5, 5, 5, 0, -5,
-                -10, 5, 5, 5, 5, 5, 0, -10,
-                -10, 0, 5, 0, 0, 0, 0, -10,
-                -20, -10, -10, -5, -5, -10, -10, -20
+        queenWhiteHeat = new ArrayList<>(Arrays.asList(
+                -20,-10,-10, -5, -5,-10,-10,-20,
+                -10,  0,  0,  0,  0,  0,  0,-10,
+                -10,  0,  5,  5,  5,  5,  0,-10,
+                -5,  0,  5,  5,  5,  5,  0, -5,
+                0,  0,  5,  5,  5,  5,  0, -5,
+                -10,  5,  5,  5,  5,  5,  0,-10,
+                -10,  0,  5,  0,  0,  0,  0,-10,
+                -20,-10,-10, -5, -5,-10,-10,-20
         ));
-        queenWhiteHeat = queenBlackHeat;
-        Collections.reverse(queenWhiteHeat);
+        queenBlackHeat = queenWhiteHeat;
+        Collections.reverse(queenBlackHeat);
 
-        kingBlackHeat = new ArrayList<>(Arrays.asList(
-                -30, -40, -40, -50, -50, -40, -40, -30,
-                -30, -40, -40, -50, -50, -40, -40, -30,
-                -30, -40, -40, -50, -50, -40, -40, -30,
-                -30, -40, -40, -50, -50, -40, -40, -30,
-                -20, -30, -30, -40, -40, -30, -30, -20,
-                -10, -20, -20, -20, -20, -20, -20, -10,
-                20, 20, 0, 0, 0, 0, 20, 20,
-                20, 30, 10, 0, 0, 10, 30, 20
+        kingWhiteHeat = new ArrayList<>(Arrays.asList(
+                -30,-40,-40,-50,-50,-40,-40,-30,
+                -30,-40,-40,-50,-50,-40,-40,-30,
+                -30,-40,-40,-50,-50,-40,-40,-30,
+                -30,-40,-40,-50,-50,-40,-40,-30,
+                -20,-30,-30,-40,-40,-30,-30,-20,
+                -10,-20,-20,-20,-20,-20,-20,-10,
+                -10,-10,-10,-10,-10,-10,-10,-10,
+                 20, 30, 10,  0,  0, 10, 30, 20
         ));
-        kingWhiteHeat = kingBlackHeat;
-        Collections.reverse(kingWhiteHeat);
+        kingBlackHeat = kingWhiteHeat;
+        Collections.reverse(kingBlackHeat);
+
+        kingEndGameWhiteHeat = new ArrayList<>(Arrays.asList(
+                -50,-40,-30,-20,-20,-30,-40,-50,
+                -30,-20,-10,  0,  0,-10,-20,-30,
+                -30,-10, 20, 30, 30, 20,-10,-30,
+                -30,-10, 30, 40, 40, 30,-10,-30,
+                -30,-10, 30, 40, 40, 30,-10,-30,
+                -30,-10, 20, 30, 30, 20,-10,-30,
+                -30,-30,  0,  0,  0,  0,-30,-30,
+                -50,-30,-30,-30,-30,-30,-30,-50
+        ));
+        kingEndGameBlackHeat = kingEndGameWhiteHeat;
+        Collections.reverse(kingEndGameBlackHeat);
 
 
         /*pawnBlackHeat = new int[] {
@@ -248,8 +258,6 @@ public class Algorithm {
                 20, 30, 10, 0, 0, 10, 30, 20};
         kingWhiteHeat = reverseArrays(kingBlackHeat);*/
 
-
-
         whiteHeats.add(kingWhiteHeat);
         whiteHeats.add(queenWhiteHeat);
         whiteHeats.add(rookWhiteHeat);
@@ -265,12 +273,6 @@ public class Algorithm {
         blackHeats.add(bishopBlackHeat);
         blackHeats.add(pawnBlackHeat);
 
-
-//        char[] pieces = chessGame.getPieceList();
-
-//        for (int i = 0; i < pieces.length; i++) {
-//            heatmaps.put(pieces[i],((i < 5) ? whiteHeats.get(i) : blackHeats.get(i)));
-//            System.out.println("added piece:" + pieces[i] + " & heatmap: " + Arrays.toString(heatmaps.get(pieces[i])));
 //        }
     }
 
@@ -282,8 +284,8 @@ public class Algorithm {
         int knightValue = 300;
         int bishopValue = 320;
         int rookValue = 500;
-        int queenValue = 1100;
-        int kingValue = 999999;
+        int queenValue = 900;
+        int kingValue = 90000;
 
         /* Mapping all pieces */
         pieceValues.put('K',kingValue);
@@ -331,7 +333,8 @@ public class Algorithm {
         double bestValue = Double.NEGATIVE_INFINITY;
 
         /* Moves */
-        ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
+        ArrayList<Move> moves = chessGame.getAllMoves();
+        sortMoves(chessGame.getAllMoves());
 
         Move bestMove = moves.get(0);
         System.out.println(keyGen());
@@ -342,8 +345,11 @@ public class Algorithm {
         /* Running alphabeta on current positions moves */
         for (Move m : moves) {
             makeMove(m);
-            tempValue = alphaBeta(DEPTH, alpha, beta, false);
-            System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
+//            tempValue = alphaBeta(DEPTH, alpha, beta, chessGame.isAIwhite());
+//            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isWhitesTurn()) ? 1 : -1);
+            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isAIwhite()) ? 1 : -1);
+
+//            System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
             if(tempValue > bestValue) {
                 bestValue = tempValue;
                 bestMove = m;
@@ -353,7 +359,9 @@ public class Algorithm {
         System.out.println("best move: " + bestMove.moveToString() + " bestValue: " + bestValue);
         stopWatch.stop();
 
-        try {
+        System.out.println("TIME : " + stopWatch.getTime(TimeUnit.MILLISECONDS));
+
+        /*try {
             FileWriter myWriter = new FileWriter("C:\\Users\\2100m\\Documents\\Code Projects\\SkakbotAI\\src\\main\\java\\Chess\\aI\\performanceTest.txt", true);
             myWriter.write("TIME OF FIRST MOVE WITH HASHMAP: " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " SECONDS\n");
             myWriter.flush();
@@ -363,8 +371,8 @@ public class Algorithm {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+        System.out.println("PERFORMANCE : " + stopWatch.getTime(TimeUnit.MILLISECONDS));*/
 
-        System.out.println("PERFORMANCE : " + stopWatch.getTime(TimeUnit.MILLISECONDS));
         return bestMove;
     }
 
@@ -392,8 +400,8 @@ public class Algorithm {
         }
 
         /* Check if game is over or something*/
-
-        ArrayList<Move> moves = chessGame.getAllMoves();
+        ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
+//        ArrayList<Move> moves = chessGame.getAllMoves();
         /*if(moves.isEmpty()) {
             if(chessGame.playerInCheck()) {
                 return Double.NEGATIVE_INFINITY;
@@ -434,6 +442,32 @@ public class Algorithm {
         }
     }
 
+    public double negaMaxAlphaBeta(int depth, double alpha, double beta, int turnMultiplier) {
+        if (depth == 0) {
+            return searchAllCaptures(alpha, beta);
+        }
+//         TODO SORT MOVES
+        ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
+//        ArrayList<Move> moves = chessGame.getAllMoves();
+
+        double bestValue = Double.NEGATIVE_INFINITY;
+        for (Move m : moves) {
+            makeMove(m);
+//             Our negated beta is opponents alpha (Negate so both sides are trying to maximize
+            double value = -negaMaxAlphaBeta(depth-1, -beta, -alpha, -turnMultiplier);
+            unmakeMove();
+            if(value > bestValue) {
+                bestValue = value;
+            }
+            alpha = max(alpha, bestValue);
+
+            if(alpha >= beta)
+                break;
+
+        }
+        return bestValue;
+    }
+
     /* Saves the current state of the board for later undoing, then makes the move on the board */
     public void makeMove(Move move) {
         /*add board before execute*/
@@ -464,6 +498,25 @@ public class Algorithm {
         }
     }*/
 
+    public double searchAllCaptures(double alpha, double beta) {
+        double evaluation = evaluatePosition();
+        if (evaluation >= beta)
+            return beta;
+        alpha = max(alpha,evaluation);
+
+        ArrayList<Move> captureMoves = sortMoves(chessGame.getCaptureMoves());
+
+        for (Move m : captureMoves) {
+            makeMove(m);
+            evaluation = -searchAllCaptures(-beta, -alpha);
+            unmakeMove();
+            if(evaluation >= beta)
+                return beta;
+            alpha = max(evaluation, alpha);
+        }
+        return alpha;
+    }
+
     private double evaluatePosition() {
         char[] board = chessGame.get8By8Board();
         double whiteEval = 0, blackEval = 0, curr = 0;
@@ -477,8 +530,7 @@ public class Algorithm {
                     if(Character.isUpperCase(board[i]))
                         whiteEval += calculatedPosition.get(board[i]).get(i);
                     else
-                        blackEval += calculatedPosition.get(board[i]).get(i);
-
+                        blackEval -= calculatedPosition.get(board[i]).get(i);
                     /*if (Character.isUpperCase(board[i])) {
                         switch (board[i]) {
                             case 'P' -> whiteEval += pieceValues.get(board[i]) + pawnWhiteHeat.get(i);
@@ -501,10 +553,15 @@ public class Algorithm {
                     }*/
                 }
             }
-        double evaluation = whiteEval - blackEval;
-        int pointPerspective = (chessGame.isAIwhite()) ? 1 : -1;
+            return whiteEval+blackEval;
+
+//        double evaluation = whiteEval - blackEval;
+//        int pointPerspective = (chessGame.isAIwhite()) ? 1 : -1;
 //        int pointPerspective = (chessGame.isWhitesTurn()) ? 1 : -1;
-        return evaluation * pointPerspective;
+//        System.out.println("EVALUATION " + evaluation + " TURN: " + chessGame.isAIwhite()
+//        + " EVAL * PERSPECT " + (evaluation * pointPerspective));
+
+//        return evaluation * pointPerspective;
     }
 
     /* Quiesent search is called when a leaf node is hit on the alpha beta algorithm.
@@ -512,23 +569,27 @@ public class Algorithm {
     *
     * "Essentially, a quiescent search is an evaluation function that takes into account some dynamic possibilities."
     * https://web.archive.org/web/20071027170528/http://www.brucemo.com/compchess/programming/quiescent.htm */
-    private double quiesentSearch(int alpha, int beta) {
+    private double quiescentSearch(int alpha, int beta) {
+
 
         return 0;
     }
 
     private ArrayList<Move> sortMoves(ArrayList<Move> movesToSort) {
-        char [] board = chessGame.getWorkloadBoard();
-        ArrayList<Move> sorted;
         char movingPiece;
         char targetPiece;
-        System.out.println("PRE SORT");
-        for (Move m : movesToSort) {
+//        System.out.println("PRE SORT");
+        ArrayList<Move> sorted = movesToSort;
+        for (Move m : sorted) {
             movingPiece = m.getPiece();
             targetPiece = m.getKillPiece();
 
-            if(targetPiece != ' ')
-                m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));
+            try {
+                if(targetPiece != ' ' && targetPiece != '0')
+                    m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));
+            } catch (Exception e) {
+                System.out.println(e);
+            }
 
             /* TODO (IF PROMOTION) */
 
@@ -536,23 +597,17 @@ public class Algorithm {
             if (chessGame.getOpponentAttackedSquares('p').contains(m.getTargetSquare()))
                 m.setMoveScoreGuess(-pieceValues.get(movingPiece));
 
-
-            System.out.print("MS: " + m.getMoveScoreGuess() + " ");
+//            System.out.print("MS: " + m.getMoveScoreGuess() + " ");
         }
-        System.out.println();
-        System.out.println("POST SORT");
-        movesToSort.sort(Comparator.comparing(Move::getMoveScoreGuess));
-        for (Move m : movesToSort)
+        /*System.out.println();
+        System.out.println("POST SORT");*/
+
+        sorted.sort(Comparator.comparing(Move::getMoveScoreGuess));
+        return sorted;
+        /*for (Move m : movesToSort)
             System.out.print("MS: " + m.getMoveScoreGuess() + " ");
-        System.out.println();
-        /*Arrays.sort(movesToSort, new Comparator<Move>(){
-            @Override
-            public int compare(Move m1, Move m2){
-                return m1.getMoveScoreGuess() - m2.getMoveScoreGuess();
-            }
-        });
-*/
-        return movesToSort;
+        System.out.println();*/
+
     }
 
 
