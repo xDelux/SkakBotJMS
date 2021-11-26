@@ -1,8 +1,5 @@
 package Chess;
 
-import Chess.Moves.MoveGen;
-import Chess.aI.Algorithm;
-
 import java.util.Scanner;
 
 public class Main {
