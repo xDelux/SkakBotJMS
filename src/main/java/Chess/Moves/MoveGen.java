@@ -169,7 +169,7 @@ public class MoveGen {
                                     break;
                                 }
                                 
-                                if(isKingPiece(piece)) {
+                                if(isKingPiece(targetPiece)) {
                                     if(isInCheck) {
                                         doubleCheck = true;
                                     }
@@ -204,7 +204,7 @@ public class MoveGen {
                         if (targetPiece == '0')
                             continue;
                         
-                        if(isKingPiece(piece)) {
+                        if(isKingPiece(targetPiece)) {
                             if(isInCheck) {
                                 doubleCheck = true;
                             }
@@ -231,9 +231,9 @@ public class MoveGen {
                     int[] pawnOffsets = (!whitesTurn) ? whitePawnOffsets : blackPawnOffsets;
                     for (int k = 1; k < pawnOffsets.length; k++) {
                         targetSquare = startSquare + pawnOffsets[k];
-
+                        targetPiece = board[targetSquare];
                         // Skip the foward move we only need the attackslines
-                        if(isKingPiece(piece)) {
+                        if(isKingPiece(targetPiece)) {
                             if(isInCheck) {
                                 doubleCheck = true;
                             }
