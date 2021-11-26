@@ -31,7 +31,8 @@ public class Algorithm {
     Stack<boardState> stateStack = new Stack<>();
 
 
-    double eval, maxEval, minEval;
+    double eval, bestEval, maxEval, minEval;
+    boolean turn = false;
     Game chessGame;
 
     /* Pawn Piece-Square Tables (Heatmaps) */
@@ -146,6 +147,7 @@ public class Algorithm {
                 8, 8, 8, 9, 9, 8, 8, 8,
                 6, 6, 5, 6, 6, 5, 6, 6,
                 4, 5, 5, 5, 5, 5, 5, 4,
+                0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0
         ));
         rookBlackHeat = rookWhiteHeat;
@@ -352,11 +354,11 @@ public class Algorithm {
         for (Move m : moves) {
 
             makeMove(m);
-//            tempValue = alphaBeta(DEPTH, alpha, beta, chessGame.isAIwhite());
+//            tempValue = alphaBeta(DEPTH, alpha, beta, false);
 //            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isWhitesTurn()) ? 1 : -1);
             tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta);
 
-//            System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
+            System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
             if(tempValue > bestValue) {
                 bestValue = tempValue;
                 bestMove = m;
@@ -458,20 +460,19 @@ public class Algorithm {
 //            return quiescentSearch(alpha, beta);
         }
 
-//        StopWatch sw = new StopWatch();
-//        sw.start();
         ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
-//        sw.stop();
-//        System.out.println("MOVES SORTED WITH TIME: " + sw.getTime(TimeUnit.MILLISECONDS));
-//        ArrayList<Move> moves = chessGame.getAllMoves();
 
+        maxEval = Double.NEGATIVE_INFINITY;
         for (Move m : moves) {
             makeMove(m);
 //             Our negated beta is opponents alpha (Negate so both sides are trying to maximize
             eval = -negaMaxAlphaBeta(depth-1, -beta, -alpha);
             unmakeMove();
+
             if(eval >= beta)
                 return beta;
+
+
 
             alpha = max(alpha, eval);
 
@@ -501,7 +502,6 @@ public class Algorithm {
             alpha = max(evaluation, alpha);
         }
         return alpha;
-
     }
 
     /* Saves the current state of the board for later undoing, then makes the move on the board */
@@ -531,11 +531,11 @@ public class Algorithm {
                 if (board[i] != ' ' && board[i] != '0') {
                     piece = board[i];
                      /*White eval */
-                    if(Character.isUpperCase(board[i]))
+                    /*if(Character.isUpperCase(board[i]))
                         whiteEval += calculatedPosition.get(board[i]).get(i);
                     else
-                        blackEval += calculatedPosition.get(board[i]).get(i);
-                    /*if (Character.isUpperCase(board[i])) {
+                        blackEval += calculatedPosition.get(board[i]).get(i);*/
+                    if (Character.isUpperCase(board[i])) {
                         switch (board[i]) {
                             case 'P' -> whiteEval += pieceValues.get(board[i]) + pawnWhiteHeat.get(i);
                             case 'N' -> whiteEval += pieceValues.get(board[i]) + knightWhiteHeat.get(i);
@@ -554,19 +554,16 @@ public class Algorithm {
                             case 'q' -> blackEval += pieceValues.get(board[i]) + queenBlackHeat.get(i);
                             case 'k' -> blackEval += pieceValues.get(board[i])+ kingBlackHeat.get(i);
                         }
-                    }*/
+                    }
                 }
             }
 
         double evaluation = whiteEval - blackEval;
-//        int pointPerspective = (chessGame.isAIwhite()) ? 1 : -1;
-        int pointPerspective = (chessGame.isWhitesTurn()) ? 1 : -1;
+        int pointPerspective = (chessGame.isAIwhite()) ? 1 : -1;
+//        int pointPerspective = (chessGame.isWhitesTurn()) ? 1 : -1;
 
-        return evaluation;
+        return evaluation * pointPerspective;
     }
-
-
-
 
 
     private ArrayList<Move> sortMoves(ArrayList<Move> movesToSort) {
