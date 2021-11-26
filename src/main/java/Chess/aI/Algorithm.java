@@ -11,13 +11,21 @@ import org.apache.commons.lang3.time.StopWatch;
 import static java.lang.Math.max;
 
 /* Used to determine board state to undo move */
-record boardState(char[] board, boolean turn) {
+record boardState(char[] board, boolean turn, boolean isWhiteWinner, boolean isBlackWinner) {
     public char[] getBoard() {
         return board;
     }
 
     public boolean getTurn() {
         return turn;
+    }
+
+    public boolean isWhiteWinner() {
+        return false;
+    }
+
+    public boolean isBlackWinner() {
+        return isBlackWinner;
     }
 }
 
@@ -399,6 +407,20 @@ public class Algorithm {
             //System.out.println("eveluate mismatch!");
         }*/
 
+        //check if game is won/lost in given position
+        if(chessGame.isBlackIsWinner()){
+            if(chessGame.isAIwhite())
+                return Double.MIN_VALUE;
+            else
+                return Double.MAX_VALUE;
+        }
+        else if(chessGame.isWhiteIsWinner()){
+            if(chessGame.isAIwhite())
+                return Double.MAX_VALUE;
+            else
+                return Double.MIN_VALUE;
+        }
+
         if (depth == 0) {
             eval = evaluatePosition();
             //evaluatedStates.put(stateKey, eval);
@@ -504,7 +526,7 @@ public class Algorithm {
     /* Saves the current state of the board for later undoing, then makes the move on the board */
     public void makeMove(Move move) {
         /*add board before execute*/
-        tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.isWhitesTurn());
+        tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.isWhitesTurn(), chessGame.isWhiteIsWinner(),chessGame.isBlackIsWinner());
         stateStack.add(tempState);
         chessGame.executeMove(move);
 //        moves = chessGame.getAllMoves();
@@ -513,10 +535,9 @@ public class Algorithm {
     /* Unmakes a move by popping the stack and then sets the board */
     public void unmakeMove() {
         tempState = stateStack.pop();
-        chessGame.setBoardState(tempState.getBoard(), tempState.getTurn());
+        chessGame.setBoardState(tempState.getBoard(), tempState.getTurn(), tempState.isWhiteWinner(), tempState.isBlackWinner());
 //        moves = chessGame.getAllMoves();
     }
-
 
     private double evaluatePosition() {
         char[] board = chessGame.get8By8Board();
@@ -561,10 +582,6 @@ public class Algorithm {
         return evaluation * pointPerspective;
     }
 
-
-
-
-
     private ArrayList<Move> sortMoves(ArrayList<Move> movesToSort) {
         char movingPiece;
         char targetPiece;
@@ -579,9 +596,7 @@ public class Algorithm {
             if(targetPiece != ' ' && targetPiece != '0')
                 m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));
 
-
             /* TODO (IF PROMOTION) */
-
 
             if (chessGame.getOpponentAttackedSquares('p').contains(m.getTargetSquare()))
                 m.setMoveScoreGuess(-pieceValues.get(movingPiece));

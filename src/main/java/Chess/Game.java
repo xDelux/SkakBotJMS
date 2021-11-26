@@ -20,13 +20,16 @@ public class Game {
     boolean whitesTurn = true;
     Algorithm AI;
     private final boolean isAIwhite;
-   Move lastMoveExecuted;
+    Move lastMoveExecuted;
+
+    private boolean whiteIsWinner = false;
+    private boolean blackIsWinner = false;
 
 
 
     /* Constructor of game */
     public Game(boolean isAIwhite, boolean wantAI) {
-        boardClass = new Board(false);
+        boardClass = new Board(true);
         moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
         moves = moveGen.generateMoves();
 
@@ -78,6 +81,10 @@ public class Game {
         lastMoveExecuted = move;
 //        opponentMoves.addAll(moves);
         if(boardClass.movePiece(move.getStartSquare(), move.getTargetSquare())) {
+            if(move.getKillPiece() == 'k')
+                whiteIsWinner = true;
+            else if(move.getKillPiece() == 'K')
+                blackIsWinner = true;
             switchTurns();
             moveGen.setLastMove(lastMoveExecuted);
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
@@ -89,6 +96,10 @@ public class Game {
             TRIGGERS AI TO MAKE A MOVE AFTERWARDS! */
 
         if(boardClass.movePieceWithConversion(startSquare, targetSquare)) {
+            if(get8By8Board()[targetSquare] == 'k' )
+                whiteIsWinner = true;
+            else if(get8By8Board()[targetSquare] == 'K')
+                blackIsWinner = true;
             switchTurns();
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
             //AI will make next move
@@ -101,6 +112,13 @@ public class Game {
             GUI.updateBoard();
         }
 
+    }
+    public boolean isWhiteIsWinner() {
+        return whiteIsWinner;
+    }
+
+    public boolean isBlackIsWinner() {
+        return blackIsWinner;
     }
 
     /* Get moves for a specific square on the chessboard (primarily used in GUI) */
@@ -151,9 +169,11 @@ public class Game {
         return boardClass.getBoard();
     }
 
-    public void setBoardState(char[] board, boolean turn) {
+    public void setBoardState(char[] board, boolean turn, boolean isWhiteWinner, boolean isBlackWinner) {
         whitesTurn = turn;
         boardClass.setBoard(board);
+        whiteIsWinner = isWhiteWinner;
+        blackIsWinner = isBlackWinner;
     }
 
     public boolean isWhitesTurn() {
