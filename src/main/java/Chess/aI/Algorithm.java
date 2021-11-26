@@ -344,10 +344,16 @@ public class Algorithm {
 
         /* Running alphabeta on current positions moves */
         for (Move m : moves) {
+            System.out.println("BEFORE MOVE");
+            System.out.println(chessGame.isAIwhite());
+            System.out.println(chessGame.isWhitesTurn());
             makeMove(m);
 //            tempValue = alphaBeta(DEPTH, alpha, beta, chessGame.isAIwhite());
+//            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isWhitesTurn()) ? 1 : -1);
             tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isWhitesTurn()) ? 1 : -1);
-//            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isAIwhite()) ? 1 : -1);
+            System.out.println("AFTER MOVE");
+            System.out.println(chessGame.isAIwhite());
+            System.out.println(chessGame.isWhitesTurn());
 
 //            System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
             if(tempValue > bestValue) {
@@ -444,7 +450,7 @@ public class Algorithm {
 
     public double negaMaxAlphaBeta(int depth, double alpha, double beta, int turnMultiplier) {
         if (depth == 0) {
-            return evaluatePosition();
+            return evaluatePosition() * turnMultiplier;
 //            return quiescentSearch(alpha, beta);
         }
 //         TODO SORT MOVES
@@ -568,8 +574,8 @@ public class Algorithm {
             movingPiece = m.getPiece();
             targetPiece = m.getKillPiece();
 
-            if(targetPiece == 'Q' || targetPiece == 'q')
-                System.out.println("queen getting attacked");
+//            if(targetPiece == 'Q' || targetPiece == 'q')
+//                System.out.println("queen getting attacked");
 
             if(targetPiece != ' ' && targetPiece != '0')
                 m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));

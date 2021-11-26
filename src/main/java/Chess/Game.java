@@ -33,7 +33,7 @@ public class Game {
         /* TOGGLES AI */
         if(wantAI) {
             /* SET DEPTH OF AI */
-            AI.setDepth(3);
+            AI.setDepth(4);
             //if AI is white then run alphabeta and execute best move at start
             if (isAIwhite) {
 
