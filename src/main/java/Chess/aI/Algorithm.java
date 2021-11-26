@@ -333,8 +333,8 @@ public class Algorithm {
         double bestValue = Double.NEGATIVE_INFINITY;
 
         /* Moves */
-        ArrayList<Move> moves = chessGame.getAllMoves();
-        sortMoves(chessGame.getAllMoves());
+        ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
+
 
         Move bestMove = moves.get(0);
         System.out.println(keyGen());
@@ -344,16 +344,11 @@ public class Algorithm {
 
         /* Running alphabeta on current positions moves */
         for (Move m : moves) {
-            System.out.println("BEFORE MOVE");
-            System.out.println(chessGame.isAIwhite());
-            System.out.println(chessGame.isWhitesTurn());
+
             makeMove(m);
 //            tempValue = alphaBeta(DEPTH, alpha, beta, chessGame.isAIwhite());
 //            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isWhitesTurn()) ? 1 : -1);
-            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isWhitesTurn()) ? 1 : -1);
-            System.out.println("AFTER MOVE");
-            System.out.println(chessGame.isAIwhite());
-            System.out.println(chessGame.isWhitesTurn());
+            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isAIwhite()) ? 1 : -1);
 
 //            System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
             if(tempValue > bestValue) {
@@ -386,75 +381,79 @@ public class Algorithm {
     /* TODO CONVERT TO NAGAMAX */
     /* MAYBE https://en.wikipedia.org/wiki/Principal_variation_search */
     /* ALPHA BETA ALGORITHM */
-    public double alphaBeta(int depth, double alpha, double beta, boolean maximizing) {
-        //check if already calculated
-        String stateKey = keyGen();
-        Double preValue = evaluatedStates.get(stateKey);
-        //System.out.println(stateKey);
-        if(preValue != null){
-            //System.out.println("evaluate MATCHED!!");
-            return preValue;
-        }
-        else{
-            //System.out.println("eveluate mismatch!");
-        }
-
-        if (depth == 0) {
-            eval = evaluatePosition();
-            evaluatedStates.put(stateKey, eval);
-            return eval;
-        }
-
-        /* Check if game is over or something*/
-        ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
-//        ArrayList<Move> moves = chessGame.getAllMoves();
-        /*if(moves.isEmpty()) {
-            if(chessGame.playerInCheck()) {
-                return Double.NEGATIVE_INFINITY;
-            }
-            return 0;
-        }*/
-        if (maximizing) {
-            for (Move move : moves) {
-                makeMove(move);
-                eval = alphaBeta(depth - 1, alpha, beta, false);
-                unmakeMove();
-
-                if(alpha < eval) {
-                    alpha = eval;
-                }
-
-                // Prune
-                if (beta <= alpha) {
-                    break;
-                }
-            }
-            return alpha;
-
-        } else {
-            for (Move move : moves) {
-                makeMove(move);
-                eval = alphaBeta(depth - 1, alpha, beta, true);
-                unmakeMove();
-                if(eval < beta){
-                    beta = eval;
-                }
-                // Prune
-                if (beta <= alpha) {
-                    break;
-                }
-            }
-            return beta;
-        }
-    }
+//    public double alphaBeta(int depth, double alpha, double beta, boolean maximizing) {
+//        //check if already calculated
+//        String stateKey = keyGen();
+//        Double preValue = evaluatedStates.get(stateKey);
+//        //System.out.println(stateKey);
+//        if(preValue != null){
+//            //System.out.println("evaluate MATCHED!!");
+//            return preValue;
+//        }
+//        else{
+//            //System.out.println("eveluate mismatch!");
+//        }
+//
+//        if (depth == 0) {
+//            eval = evaluatePosition();
+//            evaluatedStates.put(stateKey, eval);
+//            return eval;
+//        }
+//
+//        /* Check if game is over or something*/
+//        ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
+////        ArrayList<Move> moves = chessGame.getAllMoves();
+//        /*if(moves.isEmpty()) {
+//            if(chessGame.playerInCheck()) {
+//                return Double.NEGATIVE_INFINITY;
+//            }
+//            return 0;
+//        }*/
+//        if (maximizing) {
+//            for (Move move : moves) {
+//                makeMove(move);
+//                eval = alphaBeta(depth - 1, alpha, beta, false);
+//                unmakeMove();
+//
+//                if(alpha < eval) {
+//                    alpha = eval;
+//                }
+//
+//                // Prune
+//                if (beta <= alpha) {
+//                    break;
+//                }
+//            }
+//            return alpha;
+//
+//        } else {
+//            for (Move move : moves) {
+//                makeMove(move);
+//                eval = alphaBeta(depth - 1, alpha, beta, true);
+//                unmakeMove();
+//                if(eval < beta){
+//                    beta = eval;
+//                }
+//                // Prune
+//                if (beta <= alpha) {
+//                    break;
+//                }
+//            }
+//            return beta;
+//        }
+//    }
 
     public double negaMaxAlphaBeta(int depth, double alpha, double beta, int turnMultiplier) {
         if (depth == 0) {
-            return evaluatePosition() * turnMultiplier;
+            return evaluatePosition(turnMultiplier);
 //            return quiescentSearch(alpha, beta);
         }
-//         TODO SORT MOVES
+
+//        StopWatch sw = new StopWatch();
+//        sw.start();
         ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
+//        sw.stop();
+//        System.out.println("MOVES SORTED WITH TIME: " + sw.getTime(TimeUnit.MILLISECONDS));
 //        ArrayList<Move> moves = chessGame.getAllMoves();
 
         double bestValue = Double.NEGATIVE_INFINITY;
@@ -492,7 +491,7 @@ public class Algorithm {
     }
 
 
-    private double evaluatePosition() {
+    private double evaluatePosition(int perspective) {
         char[] board = chessGame.get8By8Board();
         double whiteEval = 0, blackEval = 0, curr = 0;
         char piece;
@@ -528,7 +527,7 @@ public class Algorithm {
                     }*/
                 }
             }
-            return whiteEval-blackEval;
+            return (whiteEval-blackEval) * perspective;
 
 //        double evaluation = whiteEval - blackEval;
 //        int pointPerspective = (chessGame.isAIwhite()) ? 1 : -1;
@@ -546,8 +545,8 @@ public class Algorithm {
     *
     * "Essentially, a quiescent search is an evaluation function that takes into account some dynamic possibilities."
     * https://web.archive.org/web/20071027170528/http://www.brucemo.com/compchess/programming/quiescent.htm */
-    private double quiescentSearch(double alpha, double beta) {
-        double evaluation = evaluatePosition();
+    private double quiescentSearch(double alpha, double beta, int tm) {
+        double evaluation = evaluatePosition(tm);
         if (evaluation >= beta)
             return beta;
         alpha = max(alpha,evaluation);
@@ -556,7 +555,7 @@ public class Algorithm {
 
         for (Move m : captureMoves) {
             makeMove(m);
-            evaluation = -quiescentSearch(-beta, -alpha);
+            evaluation = -quiescentSearch(-beta, -alpha, -tm);
             unmakeMove();
             if(evaluation >= beta)
                 return beta;
@@ -569,7 +568,7 @@ public class Algorithm {
     private ArrayList<Move> sortMoves(ArrayList<Move> movesToSort) {
         char movingPiece;
         char targetPiece;
-//        System.out.println("PRE SORT");
+
         for (Move m : movesToSort) {
             movingPiece = m.getPiece();
             targetPiece = m.getKillPiece();
@@ -589,15 +588,10 @@ public class Algorithm {
 
 //            System.out.print("MS: " + m.getMoveScoreGuess() + " ");
         }
-        /*System.out.println();
-        System.out.println("POST SORT");*/
 
         movesToSort.sort(Collections.reverseOrder(Comparator.comparing(Move::getMoveScoreGuess)));
 
         return movesToSort;
-        /*for (Move m : movesToSort)
-            System.out.print("MS: " + m.getMoveScoreGuess() + " ");
-        System.out.println();*/
 
     }
 
