@@ -3,9 +3,12 @@ package Chess;
 import Chess.Moves.Move;
 import Chess.Moves.MoveGen;
 import Chess.aI.Algorithm;
+import com.google.common.base.Stopwatch;
+import org.apache.commons.lang3.time.StopWatch;
 import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class Game {
     private static NewGUI GUI;
@@ -17,13 +20,16 @@ public class Game {
     boolean whitesTurn = true;
     Algorithm AI;
     private final boolean isAIwhite;
-   Move lastMoveExecuted;
+    Move lastMoveExecuted;
+
+    private boolean whiteIsWinner = false;
+    private boolean blackIsWinner = false;
 
 
 
     /* Constructor of game */
-    public Game(boolean isAIwhite, boolean wantAI) {
-        boardClass = new Board(false);
+    public Game(boolean isAIwhite, boolean wantAI, boolean test) {
+        boardClass = new Board(test);
         moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
         moves = moveGen.generateMoves();
 
@@ -33,7 +39,7 @@ public class Game {
         /* TOGGLES AI */
         if(wantAI) {
             /* SET DEPTH OF AI */
-            AI.setDepth(3);
+            AI.setDepth(4);
             //if AI is white then run alphabeta and execute best move at start
             if (isAIwhite) {
 
@@ -75,6 +81,10 @@ public class Game {
         lastMoveExecuted = move;
 //        opponentMoves.addAll(moves);
         if(boardClass.movePiece(move.getStartSquare(), move.getTargetSquare())) {
+            if(move.getKillPiece() == 'k')
+                whiteIsWinner = true;
+            else if(move.getKillPiece() == 'K')
+                blackIsWinner = true;
             switchTurns();
             moveGen.setLastMove(lastMoveExecuted);
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
@@ -86,14 +96,47 @@ public class Game {
             TRIGGERS AI TO MAKE A MOVE AFTERWARDS! */
 
         if(boardClass.movePieceWithConversion(startSquare, targetSquare)) {
+            if(get8By8Board()[targetSquare] == 'k' )
+                whiteIsWinner = true;
+            else if(get8By8Board()[targetSquare] == 'K')
+                blackIsWinner = true;
             switchTurns();
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
             //AI will make next move
+            StopWatch dinbish = new StopWatch();
+            dinbish.start();
             Move nextAIMove = AI.runAlphaBeta();
+            dinbish.stop();
+            System.out.println("time: " + dinbish.getTime(TimeUnit.MILLISECONDS));
             executeMove(nextAIMove);
             GUI.updateBoard();
         }
+    }
 
+    private void executeCastling(Move move) {
+        // For black right side castling
+        if(move.getStartSquare() == boardClass.getBoardIndex()[4] && move.getTargetSquare() == boardClass.getBoardIndex()[2]) {
+            
+        }
+        // For black left side castling
+        if(move.getStartSquare() == boardClass.getBoardIndex()[4] && move.getTargetSquare() == boardClass.getBoardIndex()[6]) {
+
+        }
+        // For white right side castling
+        if(move.getStartSquare() == boardClass.getBoardIndex()[60] && move.getTargetSquare() == boardClass.getBoardIndex()[62]) {
+
+        }
+        // For white left side castling
+        if(move.getStartSquare() == boardClass.getBoardIndex()[60] && move.getTargetSquare() == boardClass.getBoardIndex()[58]) {
+
+        }
+    }
+    public boolean isWhiteIsWinner() {
+        return whiteIsWinner;
+    }
+
+    public boolean isBlackIsWinner() {
+        return blackIsWinner;
     }
 
     /* Get moves for a specific square on the chessboard (primarily used in GUI) */
@@ -144,9 +187,11 @@ public class Game {
         return boardClass.getBoard();
     }
 
-    public void setBoardState(char[] board, boolean turn) {
+    public void setBoardState(char[] board, boolean turn, boolean isWhiteWinner, boolean isBlackWinner) {
         whitesTurn = turn;
         boardClass.setBoard(board);
+        whiteIsWinner = isWhiteWinner;
+        blackIsWinner = isBlackWinner;
     }
 
     public boolean isWhitesTurn() {

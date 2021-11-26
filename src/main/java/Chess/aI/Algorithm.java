@@ -11,13 +11,18 @@ import org.apache.commons.lang3.time.StopWatch;
 import static java.lang.Math.max;
 
 /* Used to determine board state to undo move */
-record boardState(char[] board, boolean turn) {
+record boardState(char[] board, boolean turn, boolean isWhiteWinner, boolean isBlackWinner) {
     public char[] getBoard() {
         return board;
     }
-
     public boolean getTurn() {
         return turn;
+    }
+    public boolean isWhiteWinner() {
+        return isWhiteWinner;
+    }
+    public boolean isBlackWinner() {
+        return isBlackWinner;
     }
 }
 
@@ -30,8 +35,7 @@ public class Algorithm {
     boardState tempState;
     Stack<boardState> stateStack = new Stack<>();
 
-
-    double eval, bestEval, maxEval, minEval;
+    double eval, maxEval, minEval;
     boolean turn = false;
     Game chessGame;
 
@@ -77,16 +81,12 @@ public class Algorithm {
 
             if(counter < whiteHeats.size()) {
                 colorHeats = whiteHeats;
-                for (int i = 63; i > 0; i--) {
-                    calculatedPosValues.add(valueOfc + colorHeats.get(counter).get(i));
-                }
             } else {
                 colorHeats = blackHeats;
                 counter = 0;
-                for (int i = 0; i < 64; i++) {
-                    calculatedPosValues.add(valueOfc + colorHeats.get(counter).get(i));
-                }
-
+            }
+            for (int i = 0; i < 64; i++) {
+                calculatedPosValues.add(valueOfc + colorHeats.get(counter).get(i));
             }
             calculatedPosition.put(c, calculatedPosValues);
 //            System.out.println(calculatedPosValues);
@@ -325,12 +325,10 @@ public class Algorithm {
         DEPTH = Depth;
     }
 
-
     /* METHOD FOR RUNNING ALPHA BETA */
     public Move runAlphaBeta() {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-
 
         /* Values found by evaluating positions*/
         double tempValue;
@@ -339,12 +337,7 @@ public class Algorithm {
         /* Moves */
         ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
 
-
         Move bestMove = moves.get(0);
-        System.out.println(keyGen());
-
-        /*clear evaluated list*/
-        evaluatedStates.clear();
 
         /* Start value alpha & beta */
         double alpha = Double.NEGATIVE_INFINITY;
@@ -354,12 +347,13 @@ public class Algorithm {
         for (Move m : moves) {
 
             makeMove(m);
-//            tempValue = alphaBeta(DEPTH, alpha, beta, false);
+            tempValue = alphaBeta(DEPTH, alpha, beta, false);
 //            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isWhitesTurn()) ? 1 : -1);
-            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta);
+            //tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta);
 
             System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
             if(tempValue > bestValue) {
+                System.out.println("new bestmove");
                 bestValue = tempValue;
                 bestMove = m;
             }
@@ -385,16 +379,14 @@ public class Algorithm {
         }
         System.out.println("PERFORMANCE : " + stopWatch.getTime(TimeUnit.MILLISECONDS));*/
 
+        //System.out.println("matches: " + matchcount + " mismatches: " + mismatchcount); // dynamic programming
         return bestMove;
     }
+    int matchcount = 0, mismatchcount = 0;
 
-
-    /* TODO CONVERT TO NAGAMAX */
-    /* MAYBE https://en.wikipedia.org/wiki/Principal_variation_search */
-    /* ALPHA BETA ALGORITHM */
     public double alphaBeta(int depth, double alpha, double beta, boolean maximizing) {
         //check if already calculated
-        String stateKey = keyGen();
+       /* String stateKey = keyGen(depth);
         Double preValue = evaluatedStates.get(stateKey);
         //System.out.println(stateKey);
         if(preValue != null){
@@ -403,11 +395,25 @@ public class Algorithm {
         }
         else{
             //System.out.println("eveluate mismatch!");
+        }*/
+
+        //check if game is won/lost in given position
+        if(chessGame.isBlackIsWinner()){
+            if(chessGame.isAIwhite())
+                return -Double.MAX_VALUE;
+            else
+                return Double.MAX_VALUE;
+        }
+        else if(chessGame.isWhiteIsWinner()){
+            if(chessGame.isAIwhite())
+                return Double.MAX_VALUE;
+            else
+                return -Double.MAX_VALUE;
         }
 
         if (depth == 0) {
             eval = evaluatePosition();
-            evaluatedStates.put(stateKey, eval);
+            //evaluatedStates.put(stateKey, eval);
             return eval;
         }
 
@@ -429,7 +435,6 @@ public class Algorithm {
                 if(alpha < eval) {
                     alpha = eval;
                 }
-
                 // Prune
                 if (beta <= alpha) {
                     break;
@@ -456,8 +461,9 @@ public class Algorithm {
 
     public double negaMaxAlphaBeta(int depth, double alpha, double beta) {
         if (depth == 0) {
-            return evaluatePosition();
-//            return quiescentSearch(alpha, beta);
+            eval = evaluatePosition();
+            //evaluatedStates.put(stateKey, eval); // dynamic programming
+            return eval;
         }
 
         ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
@@ -507,7 +513,7 @@ public class Algorithm {
     /* Saves the current state of the board for later undoing, then makes the move on the board */
     public void makeMove(Move move) {
         /*add board before execute*/
-        tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.isWhitesTurn());
+        tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.isWhitesTurn(), chessGame.isWhiteIsWinner(),chessGame.isBlackIsWinner());
         stateStack.add(tempState);
         chessGame.executeMove(move);
 //        moves = chessGame.getAllMoves();
@@ -516,10 +522,9 @@ public class Algorithm {
     /* Unmakes a move by popping the stack and then sets the board */
     public void unmakeMove() {
         tempState = stateStack.pop();
-        chessGame.setBoardState(tempState.getBoard(), tempState.getTurn());
+        chessGame.setBoardState(tempState.getBoard(), tempState.getTurn(), tempState.isWhiteWinner(), tempState.isBlackWinner());
 //        moves = chessGame.getAllMoves();
     }
-
 
     private double evaluatePosition() {
         char[] board = chessGame.get8By8Board();
@@ -528,7 +533,7 @@ public class Algorithm {
 
         //We look through the board and add the pieces plus the heap maps to evaluate the position
         for (int i = 0; i < board.length; i++) {
-                if (board[i] != ' ' && board[i] != '0') {
+                if (board[i] != ' ') {
                     piece = board[i];
                      /*White eval */
                     /*if(Character.isUpperCase(board[i]))
@@ -560,11 +565,9 @@ public class Algorithm {
 
         double evaluation = whiteEval - blackEval;
         int pointPerspective = (chessGame.isAIwhite()) ? 1 : -1;
-//        int pointPerspective = (chessGame.isWhitesTurn()) ? 1 : -1;
 
         return evaluation * pointPerspective;
     }
-
 
     private ArrayList<Move> sortMoves(ArrayList<Move> movesToSort) {
         char movingPiece;
@@ -580,9 +583,7 @@ public class Algorithm {
             if(targetPiece != ' ' && targetPiece != '0')
                 m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));
 
-
             /* TODO (IF PROMOTION) */
-
 
             if (chessGame.getOpponentAttackedSquares('p').contains(m.getTargetSquare()))
                 m.setMoveScoreGuess(-pieceValues.get(movingPiece));
@@ -597,7 +598,7 @@ public class Algorithm {
     }
 
 
-    private String keyGen(){
+    private String keyGen(int currentDepth){
         char[] board = chessGame.get8By8Board();
         StringBuilder keyBuilder = new StringBuilder();
         int spaceCounter = 0;
@@ -627,6 +628,7 @@ public class Algorithm {
         else{
             keyBuilder.append('b');
         }
+        keyBuilder.append(currentDepth);
         return keyBuilder.toString();
     }
 

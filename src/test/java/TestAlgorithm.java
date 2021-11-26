@@ -24,7 +24,7 @@ import static java.lang.System.currentTimeMillis;
 
 public class TestAlgorithm {
     Board board = new Board(false);
-    Game chessGame = new Game(false, false);
+    Game chessGame = new Game(false, false, false);
     Algorithm algo = new Algorithm(chessGame);
 
     @Before
