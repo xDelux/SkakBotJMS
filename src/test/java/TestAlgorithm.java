@@ -30,7 +30,7 @@ public class TestAlgorithm {
     @Before
     public void setUp() {
         board = new Board(false);
-        chessGame = new Game(false);
+        chessGame = new Game(false, false);
         algo = new Algorithm(chessGame);
     }
 

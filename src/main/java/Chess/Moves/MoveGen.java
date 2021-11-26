@@ -17,14 +17,10 @@ public class MoveGen {
     int[] blackPawnOffsets = new int[]{12, 13, 11};
 
     //initialize board and turn variable.
-    int[] boardIndex;
-    char[] board;
-    char[] rank;
-    int[] file;
-    boolean whitesTurn = true;
-    boolean isInCheck;
-    boolean doubleCheck;
-    char[] pinnedPieces;
+    int[] boardIndex, file;
+    char[] board, rank, pinnedPieces;
+    boolean whitesTurn = true, isInCheck = false, doubleCheck = false, bKingMoved = false, wKingMoved = false;
+    boolean brRookMoved = false, blRookMoved = false, wrRookMoved = false, wlRookMoved = false;
     int startSquare;
     int targetSquare;
     char targetPiece;
@@ -90,8 +86,13 @@ public class MoveGen {
         moves = new ArrayList<>();
         char piece;
         generateDefenseAndAttacks();
-        // TODO: Can't figure out why this doesn't work help please
-        /* if(doubleCheck) {
+        if(isInCheck) {
+            if(whitesTurn)
+                wKingMoved = true;
+            else
+                bKingMoved = true;
+        }
+        if(doubleCheck) {
             for (int j = 0; j < 64; j++) {
                 startSquare = boardIndex[j];
                 piece = board[startSquare];
@@ -106,24 +107,16 @@ public class MoveGen {
                     isInCheck = false;
                     
                     return moves;
+                } else {
+                    continue;
                 }
             } 
-        } */
+        }
 
         for (int i = 0; i < 64; i++) {
             /* Start from the first piece */
             startSquare = boardIndex[i];
             piece = board[startSquare];
-
-/*
-             TESTING
-*/
-//            System.out.println("SQUARE: [" +getRank(startSquare) + getFile(startSquare) + "] - " +startSquare + " PIECE: " + piece);
-//            System.out.println("Testing getFile() of all squares : ");
-//            System.out.println(getFile(startSquare));
-/*
-             TESTING ENDS
-*/
 
             if (piece == '0')
                 break;
@@ -141,6 +134,7 @@ public class MoveGen {
                     moves.addAll(generatePawnMoves(startSquare, piece));
             }
         }
+        addCastlingMove();
         return moves;
     }
 
@@ -369,7 +363,7 @@ public class MoveGen {
             tempMoves.add(genericMove(startSquare, targetSquare, piece));
 
         }
-
+        
         /* Returning found moves */
         return tempMoves;
     }
@@ -430,6 +424,74 @@ public class MoveGen {
         return tempMoves;
     }
 
+    private void checkLastMove() {
+        // Don't bother to check if the kings has moved
+        if(!wKingMoved && whitesTurn || !bKingMoved && !whitesTurn) {
+            if(isKingPiece(lastMove.piece)) {
+                if(whitesTurn) {
+                    bKingMoved = true;
+                } else {
+                    wKingMoved = true;
+                }
+            }
+            if(lastMove.piece == 'r' && lastMove.getStartSquare() == boardIndex[0])
+                brRookMoved = true;
+            if(lastMove.piece == 'r' && lastMove.getStartSquare() == boardIndex[7])
+                blRookMoved = true;
+            if(lastMove.piece == 'R' && lastMove.getStartSquare() == boardIndex[56])
+                wlRookMoved = true;
+            if(lastMove.piece == 'R' && lastMove.getStartSquare() == boardIndex[63])
+                wrRookMoved = true;    
+        }
+    }
+
+    private void addCastlingMove() {
+        checkLastMove();
+        if(whitesTurn) {
+            if(!wKingMoved) {
+                if(!wrRookMoved) {
+                    if(board[boardIndex[61]] == ' ' && board[boardIndex[62]] == ' ') {
+                        if(!attacks.contains(boardIndex[61]) && !attacks.contains(boardIndex[62])) {
+                            // Add white right castleMove
+                            moves.add(genericMove(60, 62, 'K'));
+                        }
+                    }
+                }
+                if(!wlRookMoved) {
+                    if(board[boardIndex[59]] == ' ' && board[boardIndex[58]] == ' ' && board[boardIndex[57]] == ' ') {
+                        if(!attacks.contains(boardIndex[59]) && !attacks.contains(boardIndex[58]) && !attacks.contains(boardIndex[57])) {
+                            // Add white left castleMove
+                            moves.add(genericMove(60, 58, 'K'));
+                        }
+                    }
+                }
+            }
+        } else{
+            if(!bKingMoved) {
+                if(!wrRookMoved) {
+                    if(board[boardIndex[1]] == ' ' && board[boardIndex[2]] == ' ' && board[boardIndex[3]] == ' ') {
+                        if(!attacks.contains(boardIndex[1]) && !attacks.contains(boardIndex[2]) && !attacks.contains(boardIndex[3])) {
+                            // Add black right castleMove
+                            moves.add(genericMove(4, 6, 'k'));
+                        }
+                    }
+                }
+                if(!wlRookMoved) {
+                    if(board[boardIndex[5]] == ' ' && board[boardIndex[6]] == ' ' ) {
+                        if(!attacks.contains(boardIndex[5]) && !attacks.contains(boardIndex[6])) {
+                            // Add black left castleMove
+                            moves.add(genericMove(4, 2, 'k'));
+                        }
+                    }
+                }
+            }
+        }
+        //if the king has not been in check, and has not moved
+        //if then theres a rook that has not moved
+        //if theres not a piece in between
+        //then add castling 
+    }
+
     public Move genericMove(int startSquare, int targetSquare, char piece){
         return new Move(
                 new String[] {posToString(startSquare), posToString(targetSquare)},
@@ -450,5 +512,6 @@ public class MoveGen {
     public void setLastMove(Move move) {
         move = lastMove;
     }
+    
 
 }

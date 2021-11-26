@@ -19,8 +19,8 @@ public class Game {
    Move lastMoveExecuted;
 
     /* Constructor of game */
-    public Game(boolean isAIwhite) {
-        boardClass = new Board(false);
+    public Game(boolean isAIwhite, boolean test) {
+        boardClass = new Board(test);
         moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
         moves = moveGen.generateMoves();
         AI = new Algorithm(this);
@@ -49,6 +49,7 @@ public class Game {
     * switches whose turn it is & then generates new moves for that position */
     public void executeMove (Move move) {
         lastMoveExecuted = move;
+        
         if(boardClass.movePiece(move.getStartSquare(), move.getTargetSquare())) {
             switchTurns();
             moveGen.setLastMove(lastMoveExecuted);
@@ -68,7 +69,25 @@ public class Game {
             executeMove(nextAIMove);
             GUI.updateBoard();
         }
+    }
 
+    private void executeCastling(Move move) {
+        // For black right side castling
+        if(move.getStartSquare() == boardClass.getBoardIndex()[4] && move.getTargetSquare() == boardClass.getBoardIndex()[2]) {
+            
+        }
+        // For black left side castling
+        if(move.getStartSquare() == boardClass.getBoardIndex()[4] && move.getTargetSquare() == boardClass.getBoardIndex()[6]) {
+
+        }
+        // For white right side castling
+        if(move.getStartSquare() == boardClass.getBoardIndex()[60] && move.getTargetSquare() == boardClass.getBoardIndex()[62]) {
+
+        }
+        // For white left side castling
+        if(move.getStartSquare() == boardClass.getBoardIndex()[60] && move.getTargetSquare() == boardClass.getBoardIndex()[58]) {
+
+        }
     }
 
     /* Get moves for a specific square on the chessboard (primarily used in GUI) */
