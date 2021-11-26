@@ -175,7 +175,7 @@ public class Algorithm {
                 -20,-30,-30,-40,-40,-30,-30,-20,
                 -10,-20,-20,-20,-20,-20,-20,-10,
                 -10,-10,-10,-10,-10,-10,-10,-10,
-                 20, 30, 10,  0,  0, 10, 30, 20
+                 5, 10, 5,  0,  0, 5, 10, 5
         ));
         kingBlackHeat = kingWhiteHeat;
         Collections.reverse(kingBlackHeat);
@@ -345,7 +345,6 @@ public class Algorithm {
 
         /* Running alphabeta on current positions moves */
         for (Move m : moves) {
-
             makeMove(m);
             tempValue = alphaBeta(DEPTH, alpha, beta, false);
 //            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isWhitesTurn()) ? 1 : -1);
@@ -577,9 +576,6 @@ public class Algorithm {
             movingPiece = m.getPiece();
             targetPiece = m.getKillPiece();
 
-//            if(targetPiece == 'Q' || targetPiece == 'q')
-//                System.out.println("queen getting attacked");
-
             if(targetPiece != ' ' && targetPiece != '0')
                 m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));
 
@@ -588,7 +584,6 @@ public class Algorithm {
             if (chessGame.getOpponentAttackedSquares('p').contains(m.getTargetSquare()))
                 m.setMoveScoreGuess(-pieceValues.get(movingPiece));
 
-//            System.out.print("MS: " + m.getMoveScoreGuess() + " ");
         }
 
         movesToSort.sort(Collections.reverseOrder(Comparator.comparing(Move::getMoveScoreGuess)));
