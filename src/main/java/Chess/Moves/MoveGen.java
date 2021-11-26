@@ -134,7 +134,7 @@ public class MoveGen {
                     moves.addAll(generatePawnMoves(startSquare, piece));
             }
         }
-        addCastlingMove();
+        //addCastlingMove();
         return moves;
     }
 
@@ -168,8 +168,8 @@ public class MoveGen {
                                 if (targetPiece == '0') {
                                     break;
                                 }
-                                
-                                if(isKingPiece(targetPiece)) {
+
+                                if(!isOpponentFriendlyFire(piece, targetPiece) && isKingPiece(targetPiece)) {
                                     if(isInCheck) {
                                         doubleCheck = true;
                                     }
@@ -177,7 +177,7 @@ public class MoveGen {
                                 } 
 
                                 /* if target piece is friendly break but add it first since its protected*/
-                                if(Character.isLowerCase(piece) && Character.isLowerCase(targetPiece)) {
+                                if(isOpponentFriendlyFire(piece, targetPiece)) {
                                     if(!attacks.contains(targetSquare)) {
                                         attacks.add(targetSquare);
                                     } 
@@ -203,8 +203,8 @@ public class MoveGen {
                         /* if target piece is OUT OF BOUNDS */
                         if (targetPiece == '0')
                             continue;
-                        
-                        if(isKingPiece(targetPiece)) {
+
+                            if(!isOpponentFriendlyFire(piece, targetPiece) && isKingPiece(targetPiece)) {
                             if(isInCheck) {
                                 doubleCheck = true;
                             }
@@ -212,7 +212,7 @@ public class MoveGen {
                         }
                             
                         /* if target piece is friendly continue */
-                        if (Character.isLowerCase(piece) && Character.isLowerCase(targetPiece)) {
+                            if(isOpponentFriendlyFire(piece, targetPiece)) {
                             if(!attacks.contains(targetSquare)) {
                                 attacks.add(targetSquare);
                             }
@@ -233,7 +233,7 @@ public class MoveGen {
                         targetSquare = startSquare + pawnOffsets[k];
                         targetPiece = board[targetSquare];
                         // Skip the foward move we only need the attackslines
-                        if(isKingPiece(targetPiece)) {
+                        if(!isOpponentFriendlyFire(piece, targetPiece) && isKingPiece(targetPiece)) {
                             if(isInCheck) {
                                 doubleCheck = true;
                             }
@@ -452,7 +452,7 @@ public class MoveGen {
                     if(board[boardIndex[61]] == ' ' && board[boardIndex[62]] == ' ') {
                         if(!attacks.contains(boardIndex[61]) && !attacks.contains(boardIndex[62])) {
                             // Add white right castleMove
-                            moves.add(genericMove(60, 62, 'K', ' '));
+                            //moves.add(genericMove(60, 62, 'K', ' '));
                         }
                     }
                 }
@@ -460,7 +460,7 @@ public class MoveGen {
                     if(board[boardIndex[59]] == ' ' && board[boardIndex[58]] == ' ' && board[boardIndex[57]] == ' ') {
                         if(!attacks.contains(boardIndex[59]) && !attacks.contains(boardIndex[58]) && !attacks.contains(boardIndex[57])) {
                             // Add white left castleMove
-                            moves.add(genericMove(60, 58, 'K', ' '));
+                            //moves.add(genericMove(60, 58, 'K', ' '));
                         }
                     }
                 }
@@ -471,7 +471,7 @@ public class MoveGen {
                     if(board[boardIndex[1]] == ' ' && board[boardIndex[2]] == ' ' && board[boardIndex[3]] == ' ') {
                         if(!attacks.contains(boardIndex[1]) && !attacks.contains(boardIndex[2]) && !attacks.contains(boardIndex[3])) {
                             // Add black right castleMove
-                            moves.add(genericMove(4, 6, 'k',' '));
+                            //moves.add(genericMove(4, 6, 'k',' '));
                         }
                     }
                 }
@@ -479,7 +479,7 @@ public class MoveGen {
                     if(board[boardIndex[5]] == ' ' && board[boardIndex[6]] == ' ' ) {
                         if(!attacks.contains(boardIndex[5]) && !attacks.contains(boardIndex[6])) {
                             // Add black left castleMove
-                            moves.add(genericMove(4, 2, 'k', ' '));
+                            // moves.add(genericMove(4, 2, 'k', ' '));
                         }
                     }
                 }
