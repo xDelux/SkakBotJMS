@@ -42,6 +42,8 @@ public class Algorithm {
     double eval, maxEval, minEval;
     Game chessGame;
 
+    private final int DEPTH = 4;
+
     int pawnValue = 100;
     int knightValue = 300;
     int bishopValue = 320;
@@ -122,10 +124,10 @@ public class Algorithm {
     }
 
 
-    static int DEPTH;
-    public void setDepth(int Depth) {
+
+    /*public void setDepth(int Depth) {
         DEPTH = Depth;
-    }
+    }*/
     public Move runAlphaBeta() {
         /* Start value alpha & beta */
         double alpha = Double.NEGATIVE_INFINITY;
@@ -139,10 +141,11 @@ public class Algorithm {
         ArrayList<Move> moves = chessGame.getAllMoves();
 
         Move bestMove = moves.get(0);
-        System.out.println(keyGen());
 
-        /*clear evaluated list*/
-        evaluatedStates.clear();
+        /*clear evaluated list (dynamic programming)*/
+        /*evaluatedStates.clear();
+        matchcount = 0;
+        mismatchcount = 0;*/
 
         /* Running alphabeta on current positions moves */
         for (Move m : moves) {
@@ -156,25 +159,28 @@ public class Algorithm {
             unmakeMove();
         }
         System.out.println("best move: " + bestMove.moveToString() + " bestValue: " + bestValue);
+        //System.out.println("matches: " + matchcount + " mismatches: " + mismatchcount); // dynamic programming
         return bestMove;
     }
-
+    int matchcount = 0, mismatchcount = 0;
     public double alphaBeta(int depth, double alpha, double beta, boolean maximizing) {
-        //check if already calculated
-        String stateKey = keyGen();
+        /*//check if already calculated // dynamic programming
+        String stateKey = keyGen(depth);
         Double preValue = evaluatedStates.get(stateKey);
         //System.out.println(stateKey);
         if(preValue != null){
+            matchcount++;
             //System.out.println("evaluate MATCHED!!");
             return preValue;
         }
         else{
+            mismatchcount++;
             //System.out.println("eveluate mismatch!");
-        }
+        }*/
 
         if (depth == 0) {
             eval = evaluatePosition();
-            evaluatedStates.put(stateKey, eval);
+            //evaluatedStates.put(stateKey, eval); // dynamic programming
             return eval;
         }
 
@@ -192,16 +198,15 @@ public class Algorithm {
                 makeMove(move);
                 eval = alphaBeta(depth - 1, alpha, beta, false);
                 unmakeMove();
-
                 if(alpha < eval) {
                     alpha = eval;
                 }
-
                 // Prune
                 if (beta <= alpha) {
                     break;
                 }
             }
+            //evaluatedStates.put(stateKey, alpha); // dynamic programming
             return alpha;
 
         } else {
@@ -217,6 +222,7 @@ public class Algorithm {
                     break;
                 }
             }
+            //evaluatedStates.put(stateKey, beta); // dynamic programming
             return beta;
         }
     }
@@ -286,7 +292,7 @@ public class Algorithm {
         return evaluation * pointPerspective;
     }
 
-    private String keyGen(){
+    private String keyGen(int currentDepth){
         char[] board = chessGame.get8By8Board();
         StringBuilder keyBuilder = new StringBuilder();
         int spaceCounter = 0;
@@ -316,6 +322,7 @@ public class Algorithm {
         else{
             keyBuilder.append('b');
         }
+        keyBuilder.append(currentDepth);
         return keyBuilder.toString();
     }
 

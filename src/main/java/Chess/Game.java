@@ -3,6 +3,8 @@ package Chess;
 import Chess.Moves.Move;
 import Chess.Moves.MoveGen;
 import Chess.aI.Algorithm;
+import com.google.common.base.Stopwatch;
+import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -20,7 +22,7 @@ public class Game {
 
     /* Constructor of game */
     public Game(boolean isAIwhite) {
-        boardClass = new Board(false);
+        boardClass = new Board(true);
         moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
         moves = moveGen.generateMoves();
         AI = new Algorithm(this);
@@ -64,7 +66,11 @@ public class Game {
             switchTurns();
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
             //AI will make next move
+            StopWatch dinbish = new StopWatch();
+            dinbish.start();
             Move nextAIMove = AI.runAlphaBeta();
+            dinbish.stop();
+            System.out.println("time: " + dinbish.getTime(TimeUnit.MILLISECONDS));
             executeMove(nextAIMove);
             GUI.updateBoard();
         }
