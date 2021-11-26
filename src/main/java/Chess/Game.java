@@ -51,6 +51,7 @@ public class Game {
         lastMoveExecuted = move;
         if(boardClass.movePiece(move.getStartSquare(), move.getTargetSquare())) {
             switchTurns();
+            moveGen.setLastMove(lastMoveExecuted);
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
         }
     }

@@ -23,11 +23,12 @@ public class MoveGen {
     int[] file;
     boolean whitesTurn = true;
     boolean isInCheck;
-    int kingAttackCount;
+    boolean doubleCheck;
     char[] pinnedPieces;
     int startSquare;
     int targetSquare;
     char targetPiece;
+    Move lastMove;
 
     private void setupRanksAndFiles() {
         rank = new char[] {
@@ -64,6 +65,8 @@ public class MoveGen {
     //initialize move list
     ArrayList<Move> moves;
     ArrayList<Move> tempMoves;
+    ArrayList<Integer> attacks;
+    ArrayList<Integer> defences;
 
     //constructor
     public MoveGen(int[] boardIndex, char[] board, boolean whitesTurn) {
@@ -86,6 +89,27 @@ public class MoveGen {
     public ArrayList<Move> generateMoves() {
         moves = new ArrayList<>();
         char piece;
+        generateDefenseAndAttacks();
+        // TODO: Can't figure out why this doesn't work help please
+        /* if(doubleCheck) {
+            for (int j = 0; j < 64; j++) {
+                startSquare = boardIndex[j];
+                piece = board[startSquare];
+
+                if(piece == '0') {
+                    break;
+                }
+                
+                if(isKingPiece(piece) && isFriendlyFire(piece)) {
+                    moves.addAll(generateKingOrKnightMoves(startSquare, piece));
+                    doubleCheck = false;
+                    isInCheck = false;
+                    
+                    return moves;
+                }
+            } 
+        } */
+
         for (int i = 0; i < 64; i++) {
             /* Start from the first piece */
             startSquare = boardIndex[i];
@@ -121,7 +145,119 @@ public class MoveGen {
     }
 
 
+    private void generateDefenseAndAttacks() {
+        attacks = new ArrayList<>();
+        defences = new ArrayList<>();
+        int startIndex, endIndex;
+        char piece;
+        for (int i = 0; i < 64; i++) {
+            startSquare = boardIndex[i];
+            piece = board[startSquare];
 
+            if(piece == '0') {
+                continue;
+            }
+
+            if(isEnemyFire(piece)) {
+                 if(!isPawnPiece(piece)) {
+                    if(isSlidingPiece(piece)) {
+                        startIndex = (piece == 'b' || piece == 'B') ? 4 : 0;
+                        endIndex= (piece == 'r' || piece == 'R') ? 4 : 8;
+                        for (int j = startIndex; j < endIndex; j++) {
+                            /* Looping through all the possible direction squares */
+                            for (targetSquare = startSquare + directionOffsets[j];; targetSquare+= directionOffsets[j]) {
+                                /* Setting target square and what piece stands on it */
+                                //targetSquare = startSquare + directionOffsets[i];
+                                targetPiece = board[targetSquare];
+                
+                                /* if target piece is OUT OF BOUNDS */
+                                if (targetPiece == '0') {
+                                    break;
+                                }
+                                
+                                if(isKingPiece(piece)) {
+                                    if(isInCheck == true) {
+                                        doubleCheck = true;
+                                    }
+                                    isInCheck = true;
+                                } 
+
+                                /* if target piece is friendly break but add it first since its protected*/
+                                if(Character.isLowerCase(piece) && Character.isLowerCase(targetPiece)) {
+                                    if(!attacks.contains(targetSquare)) {
+                                        attacks.add(targetSquare);
+                                    } 
+                                    break;
+                                }
+                                     
+                                /* Adds newly found attack to list only if it's not in the list already */
+                                if(!attacks.contains(targetSquare)) {
+                                    attacks.add(targetSquare);
+                                }                    
+                            }
+                        }
+
+                    }
+                    if (isKingPiece(piece) || isKnightPiece(piece)) {
+                        int[] offset = (isKingPiece(piece)) ? directionOffsets : knightOffsets;
+                        for (int dos : offset) {
+                        /* Looping through all the possible direction squares */
+                        /* Setting target square and what piece stands on it */
+                        targetSquare = startSquare + dos;
+                        targetPiece = board[targetSquare];
+
+                        /* if target piece is OUT OF BOUNDS */
+                        if (targetPiece == '0')
+                            continue;
+                        
+                        if(isKingPiece(piece)) {
+                            if(isInCheck == true) {
+                                doubleCheck = true;
+                            }
+                            isInCheck = true;
+                        }
+                            
+                        /* if target piece is friendly continue */
+                        if (Character.isLowerCase(piece) && Character.isLowerCase(targetPiece)) {
+                            if(!attacks.contains(targetSquare)) {
+                                attacks.add(targetSquare);
+                            }
+                            continue;
+                        }
+                            
+
+                        /* Adds newly found attack to list only if it's not in the list already */
+                        if(!attacks.contains(targetSquare)) {
+                            attacks.add(targetSquare);
+                        }
+                        
+        }
+                    }
+                 } else {
+                    int[] pawnOffsets = (!whitesTurn) ? whitePawnOffsets : blackPawnOffsets;
+                    for (int k = 0; k < pawnOffsets.length; k++) {
+                        targetSquare = startSquare + pawnOffsets[k];
+                        // Skip the foward move we only need the attackslines
+                        if(k == 0) {
+                            continue;
+                        } else {
+
+                            if(isKingPiece(piece)) {
+                                if(isInCheck == true) {
+                                    doubleCheck = true;
+                                }
+                                isInCheck = true;
+                            }
+                            // Check if the pawnmove already is contained in attacks;
+                            if(!attacks.contains(targetSquare)) {
+                                attacks.add(targetSquare);
+                            }
+                        }   
+                    }
+                }
+            }
+        }
+    }
 
 
     /* Checking if a piece is the same color as the player */
@@ -210,7 +346,7 @@ public class MoveGen {
     private ArrayList<Move> generateKingOrKnightMoves(int startSquare, char piece) {
         tempMoves = new ArrayList<>();
         int[] offset = (isKingPiece(piece)) ? directionOffsets : knightOffsets;
-
+        boolean isKing = isKingPiece(piece);
         for (int dos : offset) {
             /* Looping through all the possible direction squares */
             /* Setting target square and what piece stands on it */
@@ -224,7 +360,11 @@ public class MoveGen {
             /* if target piece is friendly break */
             if (isFriendlyFire(targetPiece))
                 continue;
-
+            
+            /* If the piece is the king and the targetSquare is being attacked dont add move  */
+            if(isKing && attacks.contains(targetSquare)) {
+                continue;
+            }    
             /* Adds newly found move to list */
             tempMoves.add(genericMove(startSquare, targetSquare, piece));
 
@@ -261,7 +401,7 @@ public class MoveGen {
                 if (isEnemyFire(targetPiece))
                     continue;
 
-                /* Adds newly found move to list */
+                /* Adds newly found move to list, dont add if we are only checking for attacks */
                 tempMoves.add(genericMove(startSquare, targetSquare, piece));
 
                 /* CHECKING IF PAWN HASNT MOVED */
@@ -306,4 +446,9 @@ public class MoveGen {
     public String posToString(int startSquare) {
         return "" + getRank(startSquare) + "" + getFile(startSquare);
     }
+
+    public void setLastMove(Move move) {
+        move = lastMove;
+    }
+
 }
