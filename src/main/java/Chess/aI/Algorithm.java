@@ -11,13 +11,18 @@ import org.apache.commons.lang3.time.StopWatch;
 import static java.lang.Math.max;
 
 /* Used to determine board state to undo move */
-record boardState(char[] board, boolean turn) {
+record boardState(char[] board, boolean turn, boolean isWhiteWinner, boolean isBlackWinner) {
     public char[] getBoard() {
         return board;
     }
-
     public boolean getTurn() {
         return turn;
+    }
+    public boolean isWhiteWinner() {
+        return isWhiteWinner;
+    }
+    public boolean isBlackWinner() {
+        return isBlackWinner;
     }
 }
 
@@ -29,7 +34,6 @@ public class Algorithm {
     /* Stack for keeping board position to undo moves */
     boardState tempState;
     Stack<boardState> stateStack = new Stack<>();
-
 
     double eval, maxEval, minEval;
     Game chessGame;
@@ -325,7 +329,6 @@ public class Algorithm {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-
         /* Values found by evaluating positions*/
         double tempValue;
         double bestValue = Double.NEGATIVE_INFINITY;
@@ -333,14 +336,7 @@ public class Algorithm {
         /* Moves */
         ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
 
-
         Move bestMove = moves.get(0);
-
-
-        /*clear evaluated list (dynamic programming)*/
-        /*evaluatedStates.clear();
-        matchcount = 0;
-        mismatchcount = 0;*/
 
         /* Start value alpha & beta */
         double alpha = Double.NEGATIVE_INFINITY;
@@ -356,6 +352,7 @@ public class Algorithm {
 
             System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
             if(tempValue > bestValue) {
+                System.out.println("new bestmove");
                 bestValue = tempValue;
                 bestMove = m;
             }
@@ -399,6 +396,20 @@ public class Algorithm {
             //System.out.println("eveluate mismatch!");
         }*/
 
+        //check if game is won/lost in given position
+        if(chessGame.isBlackIsWinner()){
+            if(chessGame.isAIwhite())
+                return -Double.MAX_VALUE;
+            else
+                return Double.MAX_VALUE;
+        }
+        else if(chessGame.isWhiteIsWinner()){
+            if(chessGame.isAIwhite())
+                return Double.MAX_VALUE;
+            else
+                return -Double.MAX_VALUE;
+        }
+
         if (depth == 0) {
             eval = evaluatePosition();
             //evaluatedStates.put(stateKey, eval);
@@ -423,7 +434,6 @@ public class Algorithm {
                 if(alpha < eval) {
                     alpha = eval;
                 }
-
                 // Prune
                 if (beta <= alpha) {
                     break;
@@ -504,7 +514,7 @@ public class Algorithm {
     /* Saves the current state of the board for later undoing, then makes the move on the board */
     public void makeMove(Move move) {
         /*add board before execute*/
-        tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.isWhitesTurn());
+        tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.isWhitesTurn(), chessGame.isWhiteIsWinner(),chessGame.isBlackIsWinner());
         stateStack.add(tempState);
         chessGame.executeMove(move);
 //        moves = chessGame.getAllMoves();
@@ -513,10 +523,9 @@ public class Algorithm {
     /* Unmakes a move by popping the stack and then sets the board */
     public void unmakeMove() {
         tempState = stateStack.pop();
-        chessGame.setBoardState(tempState.getBoard(), tempState.getTurn());
+        chessGame.setBoardState(tempState.getBoard(), tempState.getTurn(), tempState.isWhiteWinner(), tempState.isBlackWinner());
 //        moves = chessGame.getAllMoves();
     }
-
 
     private double evaluatePosition() {
         char[] board = chessGame.get8By8Board();
@@ -561,10 +570,6 @@ public class Algorithm {
         return evaluation * pointPerspective;
     }
 
-
-
-
-
     private ArrayList<Move> sortMoves(ArrayList<Move> movesToSort) {
         char movingPiece;
         char targetPiece;
@@ -579,9 +584,7 @@ public class Algorithm {
             if(targetPiece != ' ' && targetPiece != '0')
                 m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));
 
-
             /* TODO (IF PROMOTION) */
-
 
             if (chessGame.getOpponentAttackedSquares('p').contains(m.getTargetSquare()))
                 m.setMoveScoreGuess(-pieceValues.get(movingPiece));
