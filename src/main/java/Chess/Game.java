@@ -33,7 +33,7 @@ public class Game {
         /* TOGGLES AI */
         if(wantAI) {
             /* SET DEPTH OF AI */
-            AI.setDepth(4);
+            AI.setDepth(3);
             //if AI is white then run alphabeta and execute best move at start
             if (isAIwhite) {
 
@@ -44,9 +44,16 @@ public class Game {
         //then wait for input from gui for player move. Every playermove should then result in triggering AI move.
     }
 
-    public ArrayList<Integer> getOpponentAttackedSquares(char piece){
+    /*public ArrayList<Integer> getOpponentAttackedSquares(char piece){
         if (piece == 'p' || piece == 'P') {
             return moveGen.getOpponentAttackedSquares();
+        }
+
+        return new ArrayList<>();
+    }*/
+    public ArrayList<Integer> getOpponentAttackedSquares(char piece){
+        if (piece == 'p' || piece == 'P') {
+            return moveGen.getAttacks();
         }
 
         return new ArrayList<>();
