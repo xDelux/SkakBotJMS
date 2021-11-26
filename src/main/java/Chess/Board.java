@@ -61,7 +61,7 @@ public class Board {
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
         };
-        System.out.println("start index: board[26] | "+ boardInt[26] + "\nNow adding offset for vertical: +12 | board[26+12] | " + boardInt[26+12]);
+//        System.out.println("start index: board[26] | "+ boardInt[26] + "\nNow adding offset for vertical: +12 | board[26+12] | " + boardInt[26+12]);
     }
 
     private void setupBoardWithCustomStartingPosition () {
@@ -161,10 +161,11 @@ public class Board {
         return false;
     }
 
+
+
     public char[] getBoard() {
         return board;
     }
-
     public void setBoard(char[] board) {
         this.board = board;
     }

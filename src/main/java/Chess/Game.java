@@ -5,12 +5,13 @@ import Chess.Moves.MoveGen;
 import Chess.aI.Algorithm;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.lang3.time.StopWatch;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class Game {
     private static NewGUI GUI;
+    ArrayList<Move> opponentMoves;
     ArrayList<Move> moves;
     ArrayList<Move> tempMoves;
     Board boardClass;
@@ -20,22 +21,38 @@ public class Game {
     private final boolean isAIwhite;
    Move lastMoveExecuted;
 
+
+
     /* Constructor of game */
-    public Game(boolean isAIwhite) {
-        boardClass = new Board(true);
+    public Game(boolean isAIwhite, boolean wantAI) {
+        boardClass = new Board(false);
         moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
         moves = moveGen.generateMoves();
+
         AI = new Algorithm(this);
         this.isAIwhite = isAIwhite;
-        if(isAIwhite){
+
+        /* TOGGLES AI */
+        if(wantAI) {
+            /* SET DEPTH OF AI */
+            AI.setDepth(4);
             //if AI is white then run alphabeta and execute best move at start
-            Move bestMove = AI.runAlphaBeta();
-            this.executeMove(bestMove);
+            if (isAIwhite) {
+
+                Move bestMove = AI.runAlphaBeta();
+                this.executeMove(bestMove);
+            }
         }
         //then wait for input from gui for player move. Every playermove should then result in triggering AI move.
     }
 
+    public ArrayList<Integer> getOpponentAttackedSquares(char piece){
+        if (piece == 'p' || piece == 'P') {
+            return moveGen.getOpponentAttackedSquares();
+        }
 
+        return new ArrayList<>();
+    }
 
     public boolean isAIwhite(){
         return isAIwhite;
@@ -51,6 +68,7 @@ public class Game {
     * switches whose turn it is & then generates new moves for that position */
     public void executeMove (Move move) {
         lastMoveExecuted = move;
+//        opponentMoves.addAll(moves);
         if(boardClass.movePiece(move.getStartSquare(), move.getTargetSquare())) {
             switchTurns();
             moveGen.setLastMove(lastMoveExecuted);
@@ -92,6 +110,17 @@ public class Game {
     public ArrayList<Move> getAllMoves() {
         return moves;
     }
+    ArrayList<Move> captureMoves = new ArrayList<>();
+
+    public ArrayList<Move> getCaptureMoves() {
+        for (Move m : moves) {
+            if (m.getKillPiece() != ' ' && m.getKillPiece() != '0')
+                captureMoves.add(m);
+        }
+        System.out.println(captureMoves.toString());
+        return captureMoves;
+    }
+
 
     public void printMove(Move move) {
         System.out.println(
@@ -134,5 +163,9 @@ public class Game {
 
     public void setGUI(NewGUI gui) {
         this.GUI = gui;
+    }
+
+    public char[] getPieceList() {
+        return new char[] {'K', 'Q', 'R', 'N', 'B', 'P', 'k', 'q', 'r', 'n', 'b', 'p'};
     }
 }
