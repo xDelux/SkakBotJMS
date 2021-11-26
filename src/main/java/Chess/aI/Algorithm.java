@@ -15,15 +15,12 @@ record boardState(char[] board, boolean turn, boolean isWhiteWinner, boolean isB
     public char[] getBoard() {
         return board;
     }
-
     public boolean getTurn() {
         return turn;
     }
-
     public boolean isWhiteWinner() {
-        return false;
+        return isWhiteWinner;
     }
-
     public boolean isBlackWinner() {
         return isBlackWinner;
     }
@@ -37,7 +34,6 @@ public class Algorithm {
     /* Stack for keeping board position to undo moves */
     boardState tempState;
     Stack<boardState> stateStack = new Stack<>();
-
 
     double eval, maxEval, minEval;
     Game chessGame;
@@ -333,7 +329,6 @@ public class Algorithm {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-
         /* Values found by evaluating positions*/
         double tempValue;
         double bestValue = Double.NEGATIVE_INFINITY;
@@ -341,14 +336,7 @@ public class Algorithm {
         /* Moves */
         ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
 
-
         Move bestMove = moves.get(0);
-
-
-        /*clear evaluated list (dynamic programming)*/
-        /*evaluatedStates.clear();
-        matchcount = 0;
-        mismatchcount = 0;*/
 
         /* Start value alpha & beta */
         double alpha = Double.NEGATIVE_INFINITY;
@@ -364,6 +352,7 @@ public class Algorithm {
 
             System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
             if(tempValue > bestValue) {
+                System.out.println("new bestmove");
                 bestValue = tempValue;
                 bestMove = m;
             }
@@ -410,7 +399,7 @@ public class Algorithm {
         //check if game is won/lost in given position
         if(chessGame.isBlackIsWinner()){
             if(chessGame.isAIwhite())
-                return Double.MIN_VALUE;
+                return -Double.MAX_VALUE;
             else
                 return Double.MAX_VALUE;
         }
@@ -418,7 +407,7 @@ public class Algorithm {
             if(chessGame.isAIwhite())
                 return Double.MAX_VALUE;
             else
-                return Double.MIN_VALUE;
+                return -Double.MAX_VALUE;
         }
 
         if (depth == 0) {
@@ -445,7 +434,6 @@ public class Algorithm {
                 if(alpha < eval) {
                     alpha = eval;
                 }
-
                 // Prune
                 if (beta <= alpha) {
                     break;
