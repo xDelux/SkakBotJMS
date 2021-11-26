@@ -156,7 +156,7 @@ public class MoveGen {
                  if(!isPawnPiece(piece)) {
                     if(isSlidingPiece(piece)) {
                         startIndex = (piece == 'b' || piece == 'B') ? 4 : 0;
-                        endIndex= (piece == 'r' || piece == 'R') ? 4 : 8;
+                        endIndex = (piece == 'r' || piece == 'R') ? 4 : 8;
                         for (int j = startIndex; j < endIndex; j++) {
                             /* Looping through all the possible direction squares */
                             for (targetSquare = startSquare + directionOffsets[j];; targetSquare+= directionOffsets[j]) {
@@ -170,7 +170,7 @@ public class MoveGen {
                                 }
                                 
                                 if(isKingPiece(piece)) {
-                                    if(isInCheck == true) {
+                                    if(isInCheck) {
                                         doubleCheck = true;
                                     }
                                     isInCheck = true;
@@ -205,7 +205,7 @@ public class MoveGen {
                             continue;
                         
                         if(isKingPiece(piece)) {
-                            if(isInCheck == true) {
+                            if(isInCheck) {
                                 doubleCheck = true;
                             }
                             isInCheck = true;
@@ -229,24 +229,20 @@ public class MoveGen {
                     }
                  } else {
                     int[] pawnOffsets = (!whitesTurn) ? whitePawnOffsets : blackPawnOffsets;
-                    for (int k = 0; k < pawnOffsets.length; k++) {
+                    for (int k = 1; k < pawnOffsets.length; k++) {
                         targetSquare = startSquare + pawnOffsets[k];
-                        // Skip the foward move we only need the attackslines
-                        if(k == 0) {
-                            continue;
-                        } else {
 
-                            if(isKingPiece(piece)) {
-                                if(isInCheck == true) {
-                                    doubleCheck = true;
-                                }
-                                isInCheck = true;
+                        // Skip the foward move we only need the attackslines
+                        if(isKingPiece(piece)) {
+                            if(isInCheck) {
+                                doubleCheck = true;
                             }
-                            // Check if the pawnmove already is contained in attacks;
-                            if(!attacks.contains(targetSquare)) {
-                                attacks.add(targetSquare);
-                            }
-                        }   
+                            isInCheck = true;
+                        }
+                        // Check if the pawnmove already is contained in attacks;
+                        if(!attacks.contains(targetSquare)) {
+                            attacks.add(targetSquare);
+                        }
                     }
                 }
             }
@@ -266,6 +262,9 @@ public class MoveGen {
             return true;
 
         return false;
+    }
+    private boolean isOpponentFriendlyFire(char piece, char otherPiece) {
+        return (Character.isUpperCase(piece) && Character.isUpperCase(otherPiece) || Character.isLowerCase(piece) && Character.isLowerCase(piece));
     }
     private boolean isEnemyFire(char piece) {
         if(whitesTurn && Character.isLowerCase(piece))
@@ -321,7 +320,7 @@ public class MoveGen {
                     break;
 
                 /* Adds newly found move to list */
-                moves.add(genericMove(startSquare, targetSquare, piece));
+                moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
 
                 /* If opponents piece is on the square can't move any further */
                 if (isEnemyFire(targetPiece))
@@ -360,7 +359,7 @@ public class MoveGen {
                 continue;
             }    
             /* Adds newly found move to list */
-            tempMoves.add(genericMove(startSquare, targetSquare, piece));
+            tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
 
         }
         
@@ -396,7 +395,7 @@ public class MoveGen {
                     continue;
 
                 /* Adds newly found move to list, dont add if we are only checking for attacks */
-                tempMoves.add(genericMove(startSquare, targetSquare, piece));
+                tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
 
                 /* CHECKING IF PAWN HASNT MOVED */
                 // TODO: below doesnt care if black or white
@@ -406,7 +405,7 @@ public class MoveGen {
                     targetPiece = board[targetSquare];
                     /* IF SQUARE IS EMPTY : MOVE UP TWO AS MOVE*/
                     if (!isEnemyFire(targetPiece)) {
-                        tempMoves.add(genericMove(startSquare, targetSquare, piece));
+                        tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
                     }
                     /*if (targetPiece == ' ') {
                         tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
@@ -416,7 +415,7 @@ public class MoveGen {
             } else {
                 /* Diagonal pawn captures */
                 if(isEnemyFire(targetPiece))
-                    tempMoves.add(genericMove(startSquare, targetSquare, piece));
+                    tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
             }
 
         }
@@ -453,7 +452,7 @@ public class MoveGen {
                     if(board[boardIndex[61]] == ' ' && board[boardIndex[62]] == ' ') {
                         if(!attacks.contains(boardIndex[61]) && !attacks.contains(boardIndex[62])) {
                             // Add white right castleMove
-                            moves.add(genericMove(60, 62, 'K'));
+                            moves.add(genericMove(60, 62, 'K', ' '));
                         }
                     }
                 }
@@ -461,7 +460,7 @@ public class MoveGen {
                     if(board[boardIndex[59]] == ' ' && board[boardIndex[58]] == ' ' && board[boardIndex[57]] == ' ') {
                         if(!attacks.contains(boardIndex[59]) && !attacks.contains(boardIndex[58]) && !attacks.contains(boardIndex[57])) {
                             // Add white left castleMove
-                            moves.add(genericMove(60, 58, 'K'));
+                            moves.add(genericMove(60, 58, 'K', ' '));
                         }
                     }
                 }
@@ -472,7 +471,7 @@ public class MoveGen {
                     if(board[boardIndex[1]] == ' ' && board[boardIndex[2]] == ' ' && board[boardIndex[3]] == ' ') {
                         if(!attacks.contains(boardIndex[1]) && !attacks.contains(boardIndex[2]) && !attacks.contains(boardIndex[3])) {
                             // Add black right castleMove
-                            moves.add(genericMove(4, 6, 'k'));
+                            moves.add(genericMove(4, 6, 'k',' '));
                         }
                     }
                 }
@@ -480,7 +479,7 @@ public class MoveGen {
                     if(board[boardIndex[5]] == ' ' && board[boardIndex[6]] == ' ' ) {
                         if(!attacks.contains(boardIndex[5]) && !attacks.contains(boardIndex[6])) {
                             // Add black left castleMove
-                            moves.add(genericMove(4, 2, 'k'));
+                            moves.add(genericMove(4, 2, 'k', ' '));
                         }
                     }
                 }
@@ -492,11 +491,12 @@ public class MoveGen {
         //then add castling 
     }
 
-    public Move genericMove(int startSquare, int targetSquare, char piece){
+    
+    public Move genericMove(int startSquare, int targetSquare, char piece, char killPiece){
         return new Move(
                 new String[] {posToString(startSquare), posToString(targetSquare)},
                 new int[] {startSquare, targetSquare},
-                piece);
+                piece, killPiece);
     }
 
     public int getFile(int startSquare) {
@@ -507,6 +507,10 @@ public class MoveGen {
     }
     public String posToString(int startSquare) {
         return "" + getRank(startSquare) + "" + getFile(startSquare);
+    }
+
+    public ArrayList<Integer> getAttacks() {
+        return attacks;
     }
 
     public void setLastMove(Move move) {

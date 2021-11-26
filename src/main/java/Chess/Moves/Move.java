@@ -1,5 +1,6 @@
 package Chess.Moves;
 
+
 public class Move {
     int[] posIndex;
     String[] pos;
@@ -7,11 +8,19 @@ public class Move {
     int moveValue;
     char killPiece;
 
-    public Move (String[] pos, int[] posIndex, char piece) {
-        this.pos = pos;
-        this.posIndex = posIndex;
-        this.piece = piece;
+
+
+    /* TODO TESTING SORT */
+    int moveScoreGuess;
+
+    public int getMoveScoreGuess() {
+        return this.moveScoreGuess;
     }
+
+    public void setMoveScoreGuess(int moveScoreGuess) {
+        this.moveScoreGuess = moveScoreGuess;
+    }
+
     public Move (String[] pos, int[] posIndex, char piece, char killPiece) {
         this.pos = pos;
         this.posIndex = posIndex;
@@ -22,12 +31,15 @@ public class Move {
         return "MOVE: Piece  " + piece + "  from  " + pos[0] + " -> " + pos[1];
     }
 
+
     public char getPiece() {
         return piece;
     }
+    public char getKillPiece() {
+        return killPiece;
+    }
 
-    public int getStartSquare
-            () {
+    public int getStartSquare() {
         return posIndex[0];
     }
     public int getTargetSquare() {

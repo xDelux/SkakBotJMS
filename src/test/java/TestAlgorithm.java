@@ -23,15 +23,13 @@ import static java.lang.System.currentTimeMillis;
 
 
 public class TestAlgorithm {
-    Board board;
-    Game chessGame;
-    Algorithm algo;
+    Board board = new Board(false);
+    Game chessGame = new Game(false, false, false);
+    Algorithm algo = new Algorithm(chessGame);
 
     @Before
     public void setUp() {
-        board = new Board(false);
-        chessGame = new Game(false, false);
-        algo = new Algorithm(chessGame);
+        System.out.println(chessGame.get8By8Board());
     }
 
     @After
@@ -42,11 +40,11 @@ public class TestAlgorithm {
     @Test
     public void testingNumberOfPositions() {
         StopWatch stopWatch = new StopWatch();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 1; i <= 6; i++) {
             stopWatch.start();
             int numb = algo.getNumberOfPositions(i);
             stopWatch.stop();
-            System.out.println("NUMBER OF POSITIONS AT DEPTH " + i + ": " + numb);
+            System.out.println("NUMBER OF POSITIONS AT DEPTH " + i + ": " + numb + " | EXECUTION TIME: " + stopWatch.getTime(TimeUnit.SECONDS) + " SECONDS");
             stopWatch.reset();
         }
     }
