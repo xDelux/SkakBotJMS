@@ -76,16 +76,12 @@ public class Algorithm {
 
             if(counter < whiteHeats.size()) {
                 colorHeats = whiteHeats;
-                for (int i = 63; i > 0; i--) {
-                    calculatedPosValues.add(valueOfc + colorHeats.get(counter).get(i));
-                }
             } else {
                 colorHeats = blackHeats;
                 counter = 0;
-                for (int i = 0; i < 64; i++) {
-                    calculatedPosValues.add(valueOfc + colorHeats.get(counter).get(i));
-                }
-
+            }
+            for (int i = 0; i < 64; i++) {
+                calculatedPosValues.add(valueOfc + colorHeats.get(counter).get(i));
             }
             calculatedPosition.put(c, calculatedPosValues);
 //            System.out.println(calculatedPosValues);
@@ -146,6 +142,7 @@ public class Algorithm {
                 8, 8, 8, 9, 9, 8, 8, 8,
                 6, 6, 5, 6, 6, 5, 6, 6,
                 4, 5, 5, 5, 5, 5, 5, 4,
+                0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0
         ));
         rookBlackHeat = rookWhiteHeat;
@@ -338,7 +335,6 @@ public class Algorithm {
 
 
         Move bestMove = moves.get(0);
-        System.out.println(keyGen());
 
 
         /*clear evaluated list (dynamic programming)*/
@@ -354,11 +350,11 @@ public class Algorithm {
         for (Move m : moves) {
 
             makeMove(m);
-//            tempValue = alphaBeta(DEPTH, alpha, beta, chessGame.isAIwhite());
+            tempValue = alphaBeta(DEPTH, alpha, beta, false);
 //            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isWhitesTurn()) ? 1 : -1);
-            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta);
+            //tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta);
 
-//            System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
+            System.out.println("Move: " + m.moveToString() + " evaluated to: " + tempValue);
             if(tempValue > bestValue) {
                 bestValue = tempValue;
                 bestMove = m;
@@ -389,40 +385,23 @@ public class Algorithm {
         return bestMove;
     }
     int matchcount = 0, mismatchcount = 0;
+
     public double alphaBeta(int depth, double alpha, double beta, boolean maximizing) {
-        /*//check if already calculated // dynamic programming
-        String stateKey = keyGen(depth);
+        //check if already calculated
+       /* String stateKey = keyGen(depth);
         Double preValue = evaluatedStates.get(stateKey);
         //System.out.println(stateKey);
         if(preValue != null){
-            matchcount++;
             //System.out.println("evaluate MATCHED!!");
             return preValue;
         }
         else{
-            mismatchcount++;
             //System.out.println("eveluate mismatch!");
         }*/
 
-    /* TODO CONVERT TO NAGAMAX */
-    /* MAYBE https://en.wikipedia.org/wiki/Principal_variation_search */
-    /* ALPHA BETA ALGORITHM */
-    public double alphaBeta(int depth, double alpha, double beta, boolean maximizing) {
-        //check if already calculated
-        String stateKey = keyGen();
-        Double preValue = evaluatedStates.get(stateKey);
-        //System.out.println(stateKey);
-        if(preValue != null){
-            //System.out.println("evaluate MATCHED!!");
-            return preValue;
-        }
-        else{
-            //System.out.println("eveluate mismatch!");
-        }
-
         if (depth == 0) {
             eval = evaluatePosition();
-            evaluatedStates.put(stateKey, eval);
+            //evaluatedStates.put(stateKey, eval);
             return eval;
         }
 
@@ -546,14 +525,14 @@ public class Algorithm {
 
         //We look through the board and add the pieces plus the heap maps to evaluate the position
         for (int i = 0; i < board.length; i++) {
-                if (board[i] != ' ' && board[i] != '0') {
+                if (board[i] != ' ') {
                     piece = board[i];
                      /*White eval */
-                    if(Character.isUpperCase(board[i]))
+                    /*if(Character.isUpperCase(board[i]))
                         whiteEval += calculatedPosition.get(board[i]).get(i);
                     else
-                        blackEval += calculatedPosition.get(board[i]).get(i);
-                    /*if (Character.isUpperCase(board[i])) {
+                        blackEval += calculatedPosition.get(board[i]).get(i);*/
+                    if (Character.isUpperCase(board[i])) {
                         switch (board[i]) {
                             case 'P' -> whiteEval += pieceValues.get(board[i]) + pawnWhiteHeat.get(i);
                             case 'N' -> whiteEval += pieceValues.get(board[i]) + knightWhiteHeat.get(i);
@@ -572,15 +551,14 @@ public class Algorithm {
                             case 'q' -> blackEval += pieceValues.get(board[i]) + queenBlackHeat.get(i);
                             case 'k' -> blackEval += pieceValues.get(board[i])+ kingBlackHeat.get(i);
                         }
-                    }*/
+                    }
                 }
             }
 
         double evaluation = whiteEval - blackEval;
-//        int pointPerspective = (chessGame.isAIwhite()) ? 1 : -1;
-        int pointPerspective = (chessGame.isWhitesTurn()) ? 1 : -1;
+        int pointPerspective = (chessGame.isAIwhite()) ? 1 : -1;
 
-        return evaluation;
+        return evaluation * pointPerspective;
     }
 
 

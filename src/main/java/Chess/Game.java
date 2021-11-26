@@ -8,6 +8,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class Game {
     private static NewGUI GUI;
@@ -35,7 +36,7 @@ public class Game {
         /* TOGGLES AI */
         if(wantAI) {
             /* SET DEPTH OF AI */
-            AI.setDepth(3);
+            AI.setDepth(4);
             //if AI is white then run alphabeta and execute best move at start
             if (isAIwhite) {
 
