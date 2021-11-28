@@ -99,14 +99,14 @@ public class Algorithm {
     private void setUpPieceSquareTables() {
 
         pawnWhiteHeat = new ArrayList<>(Arrays.asList(
-                0,  0,  0,  0,  0,  0,  0,  0,
+                0, 0, 0, 0, 0, 0, 0, 0,
                 7, 7, 13, 23, 26, 13, 7, 7,
                 -2, -2, 4, 12, 15, 4, -2, -2,
-                -3,  -3, 2, 9, 11, 2,  -3,  -3,
-                -4,  -4,  0, 6, 8,  0,  -4,  -4,
-                -4, -5,-10,  0,  0,-10, -5,  5,
-                -4, -4, 0, 4, 6, 0, -4,  -4,
-                0,  0,  0,  0,  0,  0,  0,  0
+                -3, -3, 2, 9, 11, 2, -3, -3,
+                -4, -4, 0, 6, 8, 0, -4, -4,
+                -4, -5, -10, 0, 0, -10, -5, 5,
+                -4, -4, 0, 4, 6, 0, -4, -4,
+                0, 0, 0, 0, 0, 0, 0, 0
         ));
 //        System.out.println("arraylist : " + pawnWhiteHeat);
         pawnBlackHeat = pawnWhiteHeat;
