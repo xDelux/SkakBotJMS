@@ -171,6 +171,11 @@ public class MoveGen {
                                 if (targetPiece == '0') {
                                     break;
                                 }
+                                // If its an enemy add to attacks but break;
+                                if(!isKingPiece(targetPiece) && !isOpponentFriendlyFire(piece, targetPiece)) {
+                                    attacks.add(targetSquare);
+                                    break;
+                                }
 
                                 if(!isOpponentFriendlyFire(piece, targetPiece) && isKingPiece(targetPiece)) {
                                     if(isInCheck) {
