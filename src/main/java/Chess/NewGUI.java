@@ -321,14 +321,19 @@ public class NewGUI {
             for (Move m : moves){
                 tileToColor = chessGame.rewriteThis(m.getTargetSquare());
                 System.out.println(tileToColor);
-                tiles.get(tileToColor).setBackground(colorMovePossible);
+                try{
+                    tiles.get(tileToColor).setBackground(colorMovePossible);
+                } catch (IndexOutOfBoundsException ignored) {}
+
 //                tilesA[indexOf].setBackground(colorMovePossible);
             }
         } else {
             for (Move m : moves) {
                 tileToColor = chessGame.rewriteThis(m.getTargetSquare());
-                TilePanel temp = tiles.get(tileToColor);
-                temp.setBackground(temp.defaultColor);
+                try {
+                    TilePanel temp = tiles.get(tileToColor);
+                    temp.setBackground(temp.defaultColor);
+                } catch (IndexOutOfBoundsException ignored) {}
             }
         }
     }

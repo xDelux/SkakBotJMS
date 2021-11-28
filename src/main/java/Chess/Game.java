@@ -17,7 +17,7 @@ public class Game {
     ArrayList<Move> tempMoves;
     Board boardClass;
     MoveGen moveGen;
-    boolean whitesTurn = true;
+    boolean whitesTurn = true, updateGUI = false;
     Algorithm AI;
     private final boolean isAIwhite;
     Move lastMoveExecuted;
@@ -85,8 +85,10 @@ public class Game {
                 whiteIsWinner = true;
             else if(move.getKillPiece() == 'K')
                 blackIsWinner = true;
+            checkForPromotions();
             switchTurns();
             moveGen.setLastMove(lastMoveExecuted);
+
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
         }
     }
@@ -100,6 +102,7 @@ public class Game {
                 whiteIsWinner = true;
             else if(get8By8Board()[targetSquare] == 'K')
                 blackIsWinner = true;
+            checkForPromotions();
             switchTurns();
             moves = moveGen.updateAndGenerateMoves(boardClass.getBoard(), whitesTurn);
             //AI will make next move
@@ -137,6 +140,19 @@ public class Game {
 
     public boolean isBlackIsWinner() {
         return blackIsWinner;
+    }
+
+    public void checkForPromotions() {
+        for (int i = 0; i < 8; i++) {
+            if(boardClass.board[boardClass.getBoardIndex()[i]] == 'P') {
+                boardClass.board[boardClass.getBoardIndex()[i]] = 'Q';
+            }
+        }
+        for (int i = 56; i < 64; i++) {
+            if(boardClass.board[boardClass.getBoardIndex()[i]] == 'p') {
+                boardClass.board[boardClass.getBoardIndex()[i]] = 'q';
+            }
+        }
     }
 
     /* Get moves for a specific square on the chessboard (primarily used in GUI) */
