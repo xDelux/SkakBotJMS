@@ -403,30 +403,30 @@ public class MoveGen {
             /* Setting target square and what piece stands on it */
             targetSquare = startSquare + dos;
             targetPiece = board[targetSquare];
-
-            // If the piece is pinned only add moves that removes the check
-            if (!isKingPiece(piece)) {
-                if(pinnedSquares.contains(startSquare) && !isInCheck) {
-                    //Only check if one of the target squares is the attacker
-                    if(attackingPieces.contains(targetSquare))
-                        moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
-                    else
-                        continue;
-                }
-
-                // If we are in check only add moves that prevent the check
-                if(isInCheck) {
-                    if(attackingPieces.contains(targetSquare) || checkLines.contains(targetSquare))
-                        if(!pinnedSquares.contains(startSquare))
-                            moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
-                    else
-                        continue;
-                }
-            }
-
             /* if target piece is OUT OF BOUNDS */
             if (targetPiece == '0')
                 continue;
+
+            // If the piece is pinned only add moves that removes the check
+            if(!isKing){
+                if (pinnedSquares.contains(startSquare) && !isInCheck) {
+                    //Only check if one of the target squares is the attacker
+                    if (attackingPieces.contains(targetSquare)) {
+                        moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                    }
+                    continue;
+                }
+                // If we are in check only add moves that prevent the check
+                if (isInCheck) {
+                    if (attackingPieces.contains(targetSquare) || checkLines.contains(targetSquare))
+                        if (!pinnedSquares.contains(startSquare)) {
+                            moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                        }
+                    continue;
+                }
+            }
+
+
 
             /* if target piece is friendly break */
             if (isFriendlyFire(targetPiece))
@@ -453,7 +453,6 @@ public class MoveGen {
         /* PAWN MOVES BASED ON WHOS TURN IT IS. */
         int[] pawnOffsets = (whitesTurn) ? whitePawnOffsets : blackPawnOffsets;
 
-
         for (int i = 0; i < pawnOffsets.length; i++) {
             /* Setting target square and what piece stands on it */
             targetSquare = startSquare + pawnOffsets[i];
@@ -462,6 +461,14 @@ public class MoveGen {
             /* if target piece is OUT OF BOUNDS */
             if (targetPiece == '0')
                 continue;
+
+            if(isInCheck) {
+                if(attackingPieces.contains(targetSquare) || checkLines.contains(targetSquare) && i == 0)
+                    if(!pinnedSquares.contains(startSquare))
+                        moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                    else
+                        continue;
+            }
 
             // If the piece is pinned only add moves that removes the check
             if(pinnedSquares.contains(startSquare) && !isInCheck) {
@@ -473,13 +480,7 @@ public class MoveGen {
             }
 
             // If we are in check only add moves that prevent the check
-            if(isInCheck) {
-                if(attackingPieces.contains(targetSquare) || checkLines.contains(targetSquare))
-                    if(!pinnedSquares.contains(startSquare))
-                        moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
-                else
-                    continue;
-            }
+
 
             /* if target piece is friendly break */
             if (isFriendlyFire(targetPiece))
