@@ -40,7 +40,7 @@ public class TestAlgorithm {
     @Test
     public void testingNumberOfPositions() {
         StopWatch stopWatch = new StopWatch();
-        for (int i = 1; i <= 6; i++) {
+        for (int i = 1; i <= 5; i++) {
             stopWatch.start();
             int numb = algo.getNumberOfPositions(i);
             stopWatch.stop();

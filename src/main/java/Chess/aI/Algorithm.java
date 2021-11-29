@@ -359,11 +359,10 @@ public class Algorithm {
             unmakeMove();
         }
 
-//        System.out.println("TIMING ALPHA BETA : ");
-        System.out.println("TIMING NEGAMAX : ");
         System.out.println("best move: " + bestMove.moveToString() + " bestValue: " + bestValue);
-        stopWatch.stop();
 
+        System.out.println("TIMING ALPHA BETA : ");
+        stopWatch.stop();
         System.out.println("TIME : " + stopWatch.getTime(TimeUnit.MILLISECONDS));
 
         /*try {
