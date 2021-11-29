@@ -7,6 +7,7 @@ public class Move {
     char piece;
     int moveValue;
     char killPiece;
+    boolean castleMove;
 
 
 
@@ -27,6 +28,13 @@ public class Move {
         this.piece = piece;
         this.killPiece = killPiece;
     }
+    public Move (String[] pos, int[] posIndex, char piece, boolean castling) {
+        this.pos = pos;
+        this.posIndex = posIndex;
+        this.piece = piece;
+        this.castleMove = castling;
+        this.killPiece = ' ';
+    }
     public String moveToString () {
         return "MOVE: Piece  " + piece + "  from  " + pos[0] + " -> " + pos[1];
     }
@@ -38,7 +46,9 @@ public class Move {
     public char getKillPiece() {
         return killPiece;
     }
-
+    public boolean getCastling() {
+        return castleMove;
+    }
     public int getStartSquare() {
         return posIndex[0];
     }

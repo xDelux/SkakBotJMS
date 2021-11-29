@@ -327,9 +327,6 @@ public class Algorithm {
 
     /* METHOD FOR RUNNING ALPHA BETA */
     public Move runAlphaBeta() {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-
         /* Values found by evaluating positions*/
         double tempValue;
         double bestValue = Double.NEGATIVE_INFINITY;
@@ -360,10 +357,6 @@ public class Algorithm {
         }
 
         System.out.println("best move: " + bestMove.moveToString() + " bestValue: " + bestValue);
-
-        System.out.println("TIMING ALPHA BETA : ");
-        stopWatch.stop();
-        System.out.println("TIME : " + stopWatch.getTime(TimeUnit.MILLISECONDS));
 
         /*try {
             FileWriter myWriter = new FileWriter("C:\\Users\\2100m\\Documents\\Code Projects\\SkakbotAI\\src\\main\\java\\Chess\\aI\\performanceTest.txt", true);
@@ -396,17 +389,30 @@ public class Algorithm {
         }*/
 
         //check if game is won/lost in given position
+//        if(chessGame.isBlackIsWinner()){
+//            if(chessGame.isAIwhite())
+//                return -Double.MAX_VALUE;
+//            else
+//                return Double.MAX_VALUE;
+//        }
+//        else if(chessGame.isWhiteIsWinner()){
+//            if(chessGame.isAIwhite())
+//                return Double.MAX_VALUE;
+//            else
+//                return -Double.MAX_VALUE;
+//        }
+
         if(chessGame.isBlackIsWinner()){
             if(chessGame.isAIwhite())
-                return -Double.MAX_VALUE;
+                return Double.NEGATIVE_INFINITY;
             else
-                return Double.MAX_VALUE;
+                return Double.POSITIVE_INFINITY;
         }
         else if(chessGame.isWhiteIsWinner()){
             if(chessGame.isAIwhite())
-                return Double.MAX_VALUE;
+                return Double.POSITIVE_INFINITY;
             else
-                return -Double.MAX_VALUE;
+                return Double.NEGATIVE_INFINITY;
         }
 
         if (depth == 0) {
@@ -511,7 +517,7 @@ public class Algorithm {
     /* Saves the current state of the board for later undoing, then makes the move on the board */
     public void makeMove(Move move) {
         /*add board before execute*/
-        tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.isWhitesTurn(), chessGame.isWhiteIsWinner(),chessGame.isBlackIsWinner());
+        tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.isWhitesTurn(), chessGame.isWhiteIsWinner(), chessGame.isBlackIsWinner());
         stateStack.add(tempState);
         chessGame.executeMove(move);
 //        moves = chessGame.getAllMoves();
@@ -577,6 +583,9 @@ public class Algorithm {
 
             if(targetPiece != ' ' && targetPiece != '0')
                 m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));
+
+            if(m.getCastling())
+                m.setMoveScoreGuess(1000);
 
             /* TODO (IF PROMOTION) */
 
