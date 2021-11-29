@@ -81,10 +81,12 @@ public class Game {
         lastMoveExecuted = move;
 //        opponentMoves.addAll(moves);
         if(boardClass.movePiece(move.getStartSquare(), move.getTargetSquare())) {
+
             if(move.getKillPiece() == 'k')
                 whiteIsWinner = true;
             else if(move.getKillPiece() == 'K')
                 blackIsWinner = true;
+
             checkForPromotions();
             switchTurns();
             moveGen.setLastMove(lastMoveExecuted);
@@ -96,7 +98,6 @@ public class Game {
     public void executeMoveByIndex (int startSquare, int targetSquare) {
         /* ONLY USED BY GUI
             TRIGGERS AI TO MAKE A MOVE AFTERWARDS! */
-
         if(boardClass.movePieceWithConversion(startSquare, targetSquare)) {
             if(get8By8Board()[targetSquare] == 'k' )
                 whiteIsWinner = true;
@@ -115,11 +116,10 @@ public class Game {
             GUI.updateBoard();
         }
     }
-
     private void executeCastling(Move move) {
         // For black right side castling
         if(move.getStartSquare() == boardClass.getBoardIndex()[4] && move.getTargetSquare() == boardClass.getBoardIndex()[2]) {
-            
+
         }
         // For black left side castling
         if(move.getStartSquare() == boardClass.getBoardIndex()[4] && move.getTargetSquare() == boardClass.getBoardIndex()[6]) {

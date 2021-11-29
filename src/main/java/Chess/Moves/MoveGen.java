@@ -62,7 +62,8 @@ public class MoveGen {
     ArrayList<Move> moves;
     ArrayList<Move> tempMoves;
     ArrayList<Integer> pinnedSquares;
-    ArrayList<Integer> attackers;
+    ArrayList<Integer> attackingPieces;
+    ArrayList<Integer> checkLines;
     ArrayList<Integer> attacks;
 
 
@@ -85,6 +86,7 @@ public class MoveGen {
     /* GENERATION OF EVERY MOVE
     * Every square is checked for moves within the current board position  */
     public ArrayList<Move> generateMoves() {
+        isInCheck = doubleCheck = false;
         moves = new ArrayList<>();
         char piece;
         generateDefenseAndAttacks();
@@ -109,8 +111,6 @@ public class MoveGen {
                     isInCheck = false;
                     
                     return moves;
-                } else {
-                    continue;
                 }
             } 
         }
@@ -143,44 +143,11 @@ public class MoveGen {
         return moves;
     }
 
-    private void generateCheckMoves() {
-        moves = new ArrayList<>();
-        char piece;
-        for (int i = 0; i < 64; i++) {
-            startSquare = boardIndex[i];
-            piece = board[startSquare];
-            if(isKingPiece(piece) && isFriendlyFire(piece)) {
-                int tempSquare = startSquare;
-                //Cast rays and see what pieces are pinned and what pieces are attacking
-                for (int j = 0; j < directionOffsets.length; j++) {
-                    ArrayList<Integer> tempAtt = new ArrayList<>();
-                    ArrayList<Integer> tempPin = new ArrayList<>();
-                    while(true) {
-
-                            tempSquare += directionOffsets[j];
-                            piece = board[tempSquare];
-                            if(piece == '0') {
-                                tempSquare = startSquare;
-                                break;
-                            }
-                            //if there's a friendly piece in front it can possibly be pinned add to array
-                            if(isFriendlyFire(piece)) {
-                                pinnedSquares.add(tempSquare);
-                            }
-                            // Check for enemy if theres no more than 1
-                            if(isEnemyFire(piece)) {
-                                attackers.add(tempSquare);
-                            }
-                            if(pinnedSquares.size() == 1 && attackers.size() > 1) {
-                                pinnedSquares = temp
-                            }
-                    }
-                }
-            }
-        }
-    }
     private void generateDefenseAndAttacks() {
         attacks = new ArrayList<>();
+        checkLines = new ArrayList<>();
+        pinnedSquares = new ArrayList<>();
+        attackingPieces = new ArrayList<>();
         int startIndex, endIndex;
         char piece;
         for (int i = 0; i < 64; i++) {
@@ -191,100 +158,121 @@ public class MoveGen {
                 continue;
             }
 
-            if(isEnemyFire(piece)) {
-                 if(!isPawnPiece(piece)) {
-                    if(isSlidingPiece(piece)) {
+            if (isEnemyFire(piece)) {
+                if (!isPawnPiece(piece)) {
+                    if (isSlidingPiece(piece)) {
                         startIndex = (piece == 'b' || piece == 'B') ? 4 : 0;
                         endIndex = (piece == 'r' || piece == 'R') ? 4 : 8;
                         for (int j = startIndex; j < endIndex; j++) {
+                            int pinCount = 0, possiblePin = 0;
                             /* Looping through all the possible direction squares */
-                            for (targetSquare = startSquare + directionOffsets[j];; targetSquare+= directionOffsets[j]) {
+                            for (targetSquare = startSquare + directionOffsets[j]; ;targetSquare += directionOffsets[j]) {
                                 /* Setting target square and what piece stands on it */
                                 //targetSquare = startSquare + directionOffsets[i];
                                 targetPiece = board[targetSquare];
-                
+
                                 /* if target piece is OUT OF BOUNDS */
                                 if (targetPiece == '0') {
                                     break;
                                 }
-                                // If its an enemy add to attacks but break;
-                                if(!isKingPiece(targetPiece) && !isOpponentFriendlyFire(piece, targetPiece)) {
-                                    attacks.add(targetSquare);
-                                    break;
-                                }
 
-                                if(!isOpponentFriendlyFire(piece, targetPiece) && isKingPiece(targetPiece)) {
-
-                                    if(isInCheck) {
-                                        doubleCheck = true;
+                                if(targetPiece != ' ') {
+                                    if (!isKingPiece(targetPiece) && isOpponent(piece, targetPiece)) {
+                                        if (pinCount == 0) {
+                                            attacks.add(targetSquare);
+                                            possiblePin = targetSquare;
+                                            pinCount++;
+                                        } else {
+                                            break;
+                                        }
                                     }
-                                    isInCheck = true;
-                                } 
-
-                                /* if target piece is friendly break but add it first since its protected*/
-                                if(isOpponentFriendlyFire(piece, targetPiece)) {
-                                    if(!attacks.contains(targetSquare)) {
+                                    // If the piece is not friendly and is the king set check to true but if check is aready true it's doublecheck
+                                    if (isOpponent(piece, targetPiece) && isKingPiece(targetPiece)) {
+                                        // If there's a piece that is pinned it's not check but than square the piece is on get added to pinnedSquares
+                                        if (pinCount == 1) {
+                                            pinnedSquares.add(possiblePin);
+                                            attackingPieces.add(startSquare);
+                                            break;
+                                        }
+                                        // If we are in check already we got doubletrouble
+                                        if (isInCheck) {
+                                            doubleCheck = true;
+                                        }
+                                        // We add the attackline from the king to the attacker so we can we the information for blocking moves.
+                                        int temp = targetSquare- directionOffsets[j];
+                                        while(temp != startSquare) {
+                                            checkLines.add(temp);
+                                            temp = temp - directionOffsets[j];
+                                        }
+                                        attackingPieces.add(startSquare);
                                         attacks.add(targetSquare);
-                                    } 
-                                    break;
+                                        isInCheck = true;
+                                    }
+
+                                    /* if target piece is friendly break but add it first since its protected*/
+                                    if (!isOpponent(piece, targetPiece) && targetPiece != ' ') {
+                                        if (!attacks.contains(targetSquare)) {
+                                            attacks.add(targetSquare);
+                                        }
+                                        break;
+                                    }
+
                                 }
-                                     
                                 /* Adds newly found attack to list only if it's not in the list already */
-                                if(!attacks.contains(targetSquare)) {
+                                if (!attacks.contains(targetSquare) && pinCount == 0) {
                                     attacks.add(targetSquare);
-                                }                    
+                                }
                             }
                         }
-
                     }
                     if (isKingPiece(piece) || isKnightPiece(piece)) {
                         int[] offset = (isKingPiece(piece)) ? directionOffsets : knightOffsets;
                         for (int dos : offset) {
-                        /* Looping through all the possible direction squares */
-                        /* Setting target square and what piece stands on it */
-                        targetSquare = startSquare + dos;
-                        targetPiece = board[targetSquare];
+                            /* Looping through all the possible direction squares */
+                            /* Setting target square and what piece stands on it */
+                            targetSquare = startSquare + dos;
+                            targetPiece = board[targetSquare];
 
-                        /* if target piece is OUT OF BOUNDS */
-                        if (targetPiece == '0')
-                            continue;
+                            /* if target piece is OUT OF BOUNDS */
+                            if (targetPiece == '0')
+                                continue;
 
-                            if(!isOpponentFriendlyFire(piece, targetPiece) && isKingPiece(targetPiece)) {
-
+                            if(isOpponent(piece, targetPiece) && isKingPiece(targetPiece)) {
                                 if(isInCheck) {
                                     doubleCheck = true;
                                 }
                                 isInCheck = true;
+                                attackingPieces.add(startSquare);
                             }
                             
-                        /* if target piece is friendly continue */
-                            if(isOpponentFriendlyFire(piece, targetPiece)) {
+                            /* if target piece is friendly continue */
+                            if(!isOpponent(piece, targetPiece)) {
+                                if(!attacks.contains(targetSquare)) {
+                                    attacks.add(targetSquare);
+                                }
+                                continue;
+                            }
+
+                            /* Adds newly found attack to list only if it's not in the list already */
                             if(!attacks.contains(targetSquare)) {
                                 attacks.add(targetSquare);
                             }
-                            continue;
                         }
-                            
-
-                        /* Adds newly found attack to list only if it's not in the list already */
-                        if(!attacks.contains(targetSquare)) {
-                            attacks.add(targetSquare);
-                        }
-                        
-        }
                     }
-                 } else {
+                }
+                else {
                     int[] pawnOffsets = (!whitesTurn) ? whitePawnOffsets : blackPawnOffsets;
                     for (int k = 1; k < pawnOffsets.length; k++) {
                         targetSquare = startSquare + pawnOffsets[k];
                         targetPiece = board[targetSquare];
                         // Skip the foward move we only need the attackslines
-                        if(!isOpponentFriendlyFire(piece, targetPiece) && isKingPiece(targetPiece)) {
+                        if(isOpponent(piece, targetPiece) && isKingPiece(targetPiece)) {
 
                             if(isInCheck) {
                                 doubleCheck = true;
                             }
                             isInCheck = true;
+                            attackingPieces.add(startSquare);
                         }
                         // Check if the pawnmove already is contained in attacks;
                         if(!attacks.contains(targetSquare)) {
@@ -313,6 +301,11 @@ public class MoveGen {
     private boolean isOpponentFriendlyFire(char piece, char otherPiece) {
         return (Character.isUpperCase(piece) && Character.isUpperCase(otherPiece) || Character.isLowerCase(piece) && Character.isLowerCase(piece));
     }
+
+    private boolean isOpponent(char piece, char targetPiece) {
+        return (Character.isUpperCase(piece) && Character.isLowerCase(targetPiece) || Character.isLowerCase(piece) && Character.isUpperCase(targetPiece));
+    }
+
     private boolean isEnemyFire(char piece) {
         if(whitesTurn && Character.isLowerCase(piece))
             return true;
@@ -348,10 +341,10 @@ public class MoveGen {
         startIndex = (piece == 'b' || piece == 'B') ? 4 : 0;
         endIndex= (piece == 'r' || piece == 'R') ? 4 : 8;
 
-
 //        piece = 'q';
 
         for (int i = startIndex; i < endIndex; i++) {
+
             /* Looping through all the possible direction squares */
             for (targetSquare = startSquare + directionOffsets[i];; targetSquare+= directionOffsets[i]) {
                 /* Setting target square and what piece stands on it */
@@ -361,6 +354,24 @@ public class MoveGen {
                 /* if target piece is OUT OF BOUNDS */
                 if (targetPiece == '0')
                     break;
+
+                // If the piece is pinned only add moves that removes the check
+                if(pinnedSquares.contains(startSquare)) {
+                    //Only check if one of the target squares is the attacker
+                    if(attackingPieces.contains(targetSquare) && !(attackingPieces.size() > 1)) {
+                        moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                        continue; }
+                    else
+                        continue;
+                }
+
+                // If we are in check only add moves that prevent the check
+                if(isInCheck) {
+                    if(attackingPieces.contains(targetSquare) || checkLines.contains(targetSquare))
+                            moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                    else
+                        continue;
+                }
 
                 /* if target piece is friendly break */
                 if (isFriendlyFire(targetPiece))
@@ -392,6 +403,26 @@ public class MoveGen {
             /* Setting target square and what piece stands on it */
             targetSquare = startSquare + dos;
             targetPiece = board[targetSquare];
+
+            // If the piece is pinned only add moves that removes the check
+            if (!isKingPiece(piece)) {
+                if(pinnedSquares.contains(startSquare) && !isInCheck) {
+                    //Only check if one of the target squares is the attacker
+                    if(attackingPieces.contains(targetSquare))
+                        moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                    else
+                        continue;
+                }
+
+                // If we are in check only add moves that prevent the check
+                if(isInCheck) {
+                    if(attackingPieces.contains(targetSquare) || checkLines.contains(targetSquare))
+                        if(!pinnedSquares.contains(startSquare))
+                            moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                    else
+                        continue;
+                }
+            }
 
             /* if target piece is OUT OF BOUNDS */
             if (targetPiece == '0')
@@ -431,6 +462,24 @@ public class MoveGen {
             /* if target piece is OUT OF BOUNDS */
             if (targetPiece == '0')
                 continue;
+
+            // If the piece is pinned only add moves that removes the check
+            if(pinnedSquares.contains(startSquare) && !isInCheck) {
+                //Only check if one of the target squares is the attacker
+                if(attackingPieces.contains(targetSquare))
+                    moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                else
+                    continue;
+            }
+
+            // If we are in check only add moves that prevent the check
+            if(isInCheck) {
+                if(attackingPieces.contains(targetSquare) || checkLines.contains(targetSquare))
+                    if(!pinnedSquares.contains(startSquare))
+                        moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                else
+                    continue;
+            }
 
             /* if target piece is friendly break */
             if (isFriendlyFire(targetPiece))
@@ -489,7 +538,7 @@ public class MoveGen {
                     wlRookMoved = true;
                 if(lastMove.piece == 'R' && lastMove.getStartSquare() == boardIndex[63])
                     wrRookMoved = true;
-            } catch (NullPointerException e) {}
+            } catch (NullPointerException ignored) {}
         }
     }
 
@@ -503,7 +552,7 @@ public class MoveGen {
                     if(board[boardIndex[61]] == ' ' && board[boardIndex[62]] == ' ') {
                         if(!attacks.contains(boardIndex[61]) && !attacks.contains(boardIndex[62])) {
                             // Add white right castleMove
-                            tempMoves.add(genericMove(60, 62, piece, ' '));
+                            tempMoves.add(genericMove(boardIndex[60], boardIndex[62], piece, ' '));
                         }
                     }
                 }
@@ -511,7 +560,7 @@ public class MoveGen {
                     if(board[boardIndex[59]] == ' ' && board[boardIndex[58]] == ' ' && board[boardIndex[57]] == ' ') {
                         if(!attacks.contains(boardIndex[59]) && !attacks.contains(boardIndex[58]) && !attacks.contains(boardIndex[57])) {
                             // Add white left castleMove
-                            tempMoves.add(genericMove(60, 58, piece, ' '));
+                            tempMoves.add(genericMove(boardIndex[60], boardIndex[58], piece, ' '));
                         }
                     }
                 }
@@ -522,7 +571,7 @@ public class MoveGen {
                     if(board[boardIndex[1]] == ' ' && board[boardIndex[2]] == ' ' && board[boardIndex[3]] == ' ') {
                         if(!attacks.contains(boardIndex[1]) && !attacks.contains(boardIndex[2]) && !attacks.contains(boardIndex[3])) {
                             // Add black right castleMove
-                            tempMoves.add(genericMove(4, 6, piece,' '));
+                            tempMoves.add(genericMove(boardIndex[4], boardIndex[6], piece,' '));
                         }
                     }
                 }
@@ -530,7 +579,7 @@ public class MoveGen {
                     if(board[boardIndex[5]] == ' ' && board[boardIndex[6]] == ' ' ) {
                         if(!attacks.contains(boardIndex[5]) && !attacks.contains(boardIndex[6])) {
                             // Add black left castleMove
-                            tempMoves.add(genericMove(4, 2, piece, ' '));
+                            tempMoves.add(genericMove(boardIndex[4], boardIndex[2], piece, ' '));
                         }
                     }
                 }
