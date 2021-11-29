@@ -128,13 +128,16 @@ public class MoveGen {
                 if(!isPawnPiece(piece)) {
                     if (isSlidingPiece(piece))
                         moves.addAll(generateSlidingMoves(startSquare, piece));
+                    if(isKingPiece(piece)) {
+                        moves.addAll(addCastlingMove(piece));
+                    }
                     if (isKingPiece(piece) || isKnightPiece(piece))
                         moves.addAll(generateKingOrKnightMoves(startSquare, piece));
                 } else
                     moves.addAll(generatePawnMoves(startSquare, piece));
             }
         }
-        //addCastlingMove();
+
         return moves;
     }
 
@@ -166,6 +169,11 @@ public class MoveGen {
                 
                                 /* if target piece is OUT OF BOUNDS */
                                 if (targetPiece == '0') {
+                                    break;
+                                }
+                                // If its an enemy add to attacks but break;
+                                if(!isKingPiece(targetPiece) && !isOpponentFriendlyFire(piece, targetPiece)) {
+                                    attacks.add(targetSquare);
                                     break;
                                 }
 
@@ -426,33 +434,37 @@ public class MoveGen {
     private void checkLastMove() {
         // Don't bother to check if the kings has moved
         if(!wKingMoved && whitesTurn || !bKingMoved && !whitesTurn) {
-            if(isKingPiece(lastMove.piece)) {
-                if(whitesTurn) {
-                    bKingMoved = true;
-                } else {
-                    wKingMoved = true;
+            try {
+                if(isKingPiece(lastMove.piece)) {
+                    if(whitesTurn) {
+                        bKingMoved = true;
+                    } else {
+                        wKingMoved = true;
+                    }
                 }
-            }
-            if(lastMove.piece == 'r' && lastMove.getStartSquare() == boardIndex[0])
-                brRookMoved = true;
-            if(lastMove.piece == 'r' && lastMove.getStartSquare() == boardIndex[7])
-                blRookMoved = true;
-            if(lastMove.piece == 'R' && lastMove.getStartSquare() == boardIndex[56])
-                wlRookMoved = true;
-            if(lastMove.piece == 'R' && lastMove.getStartSquare() == boardIndex[63])
-                wrRookMoved = true;    
+                if(lastMove.piece == 'r' && lastMove.getStartSquare() == boardIndex[0])
+                    brRookMoved = true;
+                if(lastMove.piece == 'r' && lastMove.getStartSquare() == boardIndex[7])
+                    blRookMoved = true;
+                if(lastMove.piece == 'R' && lastMove.getStartSquare() == boardIndex[56])
+                    wlRookMoved = true;
+                if(lastMove.piece == 'R' && lastMove.getStartSquare() == boardIndex[63])
+                    wrRookMoved = true;
+            } catch (NullPointerException e) {}
         }
     }
 
-    private void addCastlingMove() {
+
+    private ArrayList<Move> addCastlingMove(char piece) {
         checkLastMove();
+        ArrayList<Move> tempMoves = new ArrayList<>();
         if(whitesTurn) {
             if(!wKingMoved) {
                 if(!wrRookMoved) {
                     if(board[boardIndex[61]] == ' ' && board[boardIndex[62]] == ' ') {
                         if(!attacks.contains(boardIndex[61]) && !attacks.contains(boardIndex[62])) {
                             // Add white right castleMove
-                            //moves.add(genericMove(60, 62, 'K', ' '));
+                            tempMoves.add(genericMove(60, 62, piece, ' '));
                         }
                     }
                 }
@@ -460,7 +472,7 @@ public class MoveGen {
                     if(board[boardIndex[59]] == ' ' && board[boardIndex[58]] == ' ' && board[boardIndex[57]] == ' ') {
                         if(!attacks.contains(boardIndex[59]) && !attacks.contains(boardIndex[58]) && !attacks.contains(boardIndex[57])) {
                             // Add white left castleMove
-                            //moves.add(genericMove(60, 58, 'K', ' '));
+                            tempMoves.add(genericMove(60, 58, piece, ' '));
                         }
                     }
                 }
@@ -471,7 +483,7 @@ public class MoveGen {
                     if(board[boardIndex[1]] == ' ' && board[boardIndex[2]] == ' ' && board[boardIndex[3]] == ' ') {
                         if(!attacks.contains(boardIndex[1]) && !attacks.contains(boardIndex[2]) && !attacks.contains(boardIndex[3])) {
                             // Add black right castleMove
-                            //moves.add(genericMove(4, 6, 'k',' '));
+                            tempMoves.add(genericMove(4, 6, piece,' '));
                         }
                     }
                 }
@@ -479,16 +491,13 @@ public class MoveGen {
                     if(board[boardIndex[5]] == ' ' && board[boardIndex[6]] == ' ' ) {
                         if(!attacks.contains(boardIndex[5]) && !attacks.contains(boardIndex[6])) {
                             // Add black left castleMove
-                            // moves.add(genericMove(4, 2, 'k', ' '));
+                            tempMoves.add(genericMove(4, 2, piece, ' '));
                         }
                     }
                 }
             }
         }
-        //if the king has not been in check, and has not moved
-        //if then theres a rook that has not moved
-        //if theres not a piece in between
-        //then add castling 
+        return tempMoves;
     }
 
     
