@@ -18,7 +18,7 @@ public class MoveGen {
 
     //initialize board and turn variable.
     int[] boardIndex, file;
-    char[] board, rank;
+    char[] board, rank, pinnedPieces;
     boolean whitesTurn = true, isInCheck = false, doubleCheck = false, bKingMoved = false, wKingMoved = false;
     boolean brRookMoved = false, blRookMoved = false, wrRookMoved = false, wlRookMoved = false;
     int startSquare;
@@ -552,7 +552,7 @@ public class MoveGen {
                     if(board[boardIndex[61]] == ' ' && board[boardIndex[62]] == ' ') {
                         if(!attacks.contains(boardIndex[61]) && !attacks.contains(boardIndex[62])) {
                             // Add white right castleMove
-                            tempMoves.add(genericMove(boardIndex[60], boardIndex[62], piece, ' '));
+                            tempMoves.add(genericCastleMove(boardIndex[60], boardIndex[62], piece, true));
                         }
                     }
                 }
@@ -560,7 +560,7 @@ public class MoveGen {
                     if(board[boardIndex[59]] == ' ' && board[boardIndex[58]] == ' ' && board[boardIndex[57]] == ' ') {
                         if(!attacks.contains(boardIndex[59]) && !attacks.contains(boardIndex[58]) && !attacks.contains(boardIndex[57])) {
                             // Add white left castleMove
-                            tempMoves.add(genericMove(boardIndex[60], boardIndex[58], piece, ' '));
+                            tempMoves.add(genericCastleMove(boardIndex[60], boardIndex[58], piece, true));
                         }
                     }
                 }
@@ -571,7 +571,7 @@ public class MoveGen {
                     if(board[boardIndex[1]] == ' ' && board[boardIndex[2]] == ' ' && board[boardIndex[3]] == ' ') {
                         if(!attacks.contains(boardIndex[1]) && !attacks.contains(boardIndex[2]) && !attacks.contains(boardIndex[3])) {
                             // Add black right castleMove
-                            tempMoves.add(genericMove(boardIndex[4], boardIndex[6], piece,' '));
+                            tempMoves.add(genericCastleMove(boardIndex[4], boardIndex[6], piece,true));
                         }
                     }
                 }
@@ -579,7 +579,7 @@ public class MoveGen {
                     if(board[boardIndex[5]] == ' ' && board[boardIndex[6]] == ' ' ) {
                         if(!attacks.contains(boardIndex[5]) && !attacks.contains(boardIndex[6])) {
                             // Add black left castleMove
-                            tempMoves.add(genericMove(boardIndex[4], boardIndex[2], piece, ' '));
+                            tempMoves.add(genericCastleMove(boardIndex[4], boardIndex[2], piece, true));
                         }
                     }
                 }
@@ -594,6 +594,12 @@ public class MoveGen {
                 new String[] {posToString(startSquare), posToString(targetSquare)},
                 new int[] {startSquare, targetSquare},
                 piece, killPiece);
+    }
+    public Move genericCastleMove(int startSquare, int targetSquare, char piece, boolean castling){
+        return new Move(
+                new String[] {posToString(startSquare), posToString(targetSquare)},
+                new int[] {startSquare, targetSquare},
+                piece, castling);
     }
 
     public int getFile(int startSquare) {
@@ -611,7 +617,7 @@ public class MoveGen {
     }
 
     public void setLastMove(Move move) {
-        move = lastMove;
+        lastMove = move;
     }
     
 

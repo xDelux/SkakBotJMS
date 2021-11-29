@@ -8,7 +8,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class NewGUI {
     //oldCode.GUI general values
@@ -38,17 +37,13 @@ public class NewGUI {
     private int boardIndex[];
     private int boardToInt[];
     private MoveGen moveGen;
-    private Game chessGame;
+    private final Game chessGame;
 
     //constructor
     public NewGUI(Game chessGame) {
         this.chessGame = chessGame;
 //        this.moveGen = mg;
         this.board = chessGame.get8By8Board();
-
-//        this.board = mg.workloadBoard();
-//        this.boardIndex = mg.returnBoardIndex();
-//        this.boardToInt = mg.returnBoardInt();
 
         //setup all frames and panels
         FRAME_DIMENSION = new Dimension(900,900);
@@ -60,24 +55,13 @@ public class NewGUI {
         //panels
         letterPanel = new JPanel();
         letterPanel.setLayout(new GridLayout(1,8));
-//        letterPanel.setSize(new Dimension(,200));
-//        letterPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-//        letterPanel.setLayout(new BoxLayout(letterPanel,BoxLayout.X_AXIS));
-//        letterPanel.setSize(300,500);
 
         numberPanel = new JPanel();
         numberPanel.setLayout(new GridLayout(9  ,1));
-//        numberPanel.setSize(new Dimension(200,200));
-//        numberPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-//        numberPanel.setLayout(new BoxLayout(numberPanel,BoxLayout.Y_AXIS));
-//        numberPanel.setSize(800,300);
 
         gamePanel = new JPanel();
         gamePanel.setLayout(new GridLayout(9,8));
-//        gamePanel.setSize(new Dimension(500,500));
 
-//        gamePanel.setPreferredSize(new Dimension(600,600));
-//        gamePanel.setBounds(0,0,window.getWidth(),window.getHeight());
 
         JPanel smallBox = new JPanel(new GridLayout(1,1));
         smallBox.add(new JLabel("T"));
@@ -85,9 +69,6 @@ public class NewGUI {
         //create tiles for board
         boolean nextTileBright = true;
 
-//        Color white = Color.WHITE;
-//        Color black = Color.LIGHT_GRAY;
-        Listener listener = new Listener();
 
         //Setting up files
         JLabel tempLabel;
@@ -106,12 +87,15 @@ public class NewGUI {
         char piece;
         int counter = 0;
 
+        Listener listener = new Listener();
+
         for (int i = 0; i < 64; i++) {
 //            System.out.println("TILE: " + i);
             piece = board[i];
-            temp = new TilePanel(i, piece, nextTileBright, listener);
+            temp = new TilePanel(i, piece, nextTileBright);
+//            temp.addMouseListener(listener);
             tiles.add(temp);
-            setBoard(temp);
+            setBoardTileIcon(temp);
             gamePanel.add(temp.getTilePanel());
             if(counter==7)
                 counter = 0;
@@ -144,13 +128,22 @@ public class NewGUI {
     public void updateBoard(){
         char[] board_backend = chessGame.get8By8Board();
         for (int i = 0; i < tiles.size(); i++) {
-            tiles.get(i).tilePiece = board_backend[i];
-            setBoard(tiles.get(i));
+            if(i == 60)
+                System.out.println();
+            char piece = board_backend[i];
+            tiles.get(i).setTilePiece(piece);
+            setBoardTileIcon(tiles.get(i));
         }
+        for (int i = 60; i < 63; i++) {
+            System.out.println(tiles.get(i).getTilePiece());
+        }
+        tileMoves = chessGame.getSpecificMoves(61);
+        for (Move m : tileMoves)
+            System.out.println(m.moveToString());
+//        System.out.println(tileMoves.toString());
+
     }
-
-    public void setBoard(TilePanel tile){
-
+    public void setBoardTileIcon(TilePanel tile){
         //converting letter representation from backend to unicode representation for oldCode.GUI
         switch (tile.getTilePiece()) {
             case ' ' -> tile.setTileIcon("transparent");
@@ -179,7 +172,7 @@ public class NewGUI {
         boolean transparent = false;
         Color defaultColor;
 
-        TilePanel(int i, char piece, boolean isBright, Listener listener){
+        TilePanel(int i, char piece, boolean isBright){
             setLayout(new BorderLayout());
             label.setHorizontalAlignment(JLabel.CENTER);
 
@@ -188,7 +181,9 @@ public class NewGUI {
             tilePiece = piece;
             defaultColor = isBright ? LIGHT : DARK;
             setBackground(defaultColor);
-            addMouseListener(listener);
+            Listener mouseListener = new Listener();
+            addMouseListener(mouseListener);
+//            addMouseListener(listener);
 
         }
 
@@ -205,8 +200,7 @@ public class NewGUI {
         public void setTileIcon(String icon){
             //label.getWidth & getHeight
             ImageIcon imageIcon = new ImageIcon(new ImageIcon("src/main/java/Chess/res/" + icon + ".png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
-            if(icon.equals("transparent"))
-                transparent = true;
+            transparent = icon.equals("transparent");
             label.setIcon(imageIcon);
             add(label);
 //            System.out.println(new java.io.File("src/ressources/kb.png").exists());
@@ -222,6 +216,9 @@ public class NewGUI {
             return tilePos;
         }
         public char getTilePiece() { return  tilePiece; }
+        public void setTilePiece(char tilePiece) {
+            this.tilePiece = tilePiece;
+        }
 
         public void setPicked(boolean isPicked, ArrayList<Move> moves){
             if(isPicked){
@@ -241,6 +238,12 @@ public class NewGUI {
     private class Listener implements MouseListener{
         @Override
         public void mouseClicked(MouseEvent e) {
+        }
+        @Override
+        public void mousePressed(MouseEvent e) {
+        }
+        @Override
+        public void mouseReleased(MouseEvent e) {
             targetTile = (TilePanel) e.getSource();
 
 //            System.out.println("\nTILE CLICKED: " + targetTile);
@@ -266,12 +269,12 @@ public class NewGUI {
                     }
                     if(targetTrue) {
                         //make move
-                        targetTile.setTileIcon(startTile.getTileIcon());
-                        startTile.setTileIcon("transparent");
+//                        targetTile.setTileIcon(startTile.getTileIcon());
+//                        startTile.setTileIcon("transparent");
                         pickedMovePiece = false;
                         startTile.setPicked(false, tileMoves);
                         System.out.println("GUI attempting move: " + startTile.getTilePos() + " " + targetTile.getTilePos());
-                        chessGame.executeMoveByIndex(startTile.getTilePos(), targetTile.getTilePos());
+                        chessGame.executeMoveFromGui(startTile.getTilePos(), targetTile.getTilePos());
 
 //                        moveGen.moveByIndex(startTile.tilePos, targetTile.tilePos);
                     }
@@ -279,7 +282,7 @@ public class NewGUI {
                 }
             } else{
                 // if clicked on empty tile then return cause you cant move it.
-                if(targetTile.getTransparency()){
+                if(targetTile.getTransparency()) {
                     return;
                 }
 
@@ -291,21 +294,11 @@ public class NewGUI {
                  * 12x12 array containing the pieces. Because a "Move" contains index of the piece
                  * position before it performs a move.  */
                 tileMoves = chessGame.getSpecificMoves(startTile.getTilePos());
-//                tileMoves = moveGen.getSpecificMoves(boardIndex[startTile.getTilePos()]);
 
                 targetTile.setPicked(true, tileMoves);
                 pickedMovePiece = true;
 
             }
-
-
-//            System.out.println(tileClicked + ", " + tileClicked);
-        }
-        @Override
-        public void mousePressed(MouseEvent e) {
-        }
-        @Override
-        public void mouseReleased(MouseEvent e) {
         }
         @Override
         public void mouseEntered(MouseEvent e) {

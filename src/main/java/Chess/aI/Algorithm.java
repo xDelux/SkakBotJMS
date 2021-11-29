@@ -36,6 +36,7 @@ public class Algorithm {
     Stack<boardState> stateStack = new Stack<>();
 
     double eval, maxEval, minEval;
+    boolean turn = false;
     Game chessGame;
 
     /* Pawn Piece-Square Tables (Heatmaps) */
@@ -98,14 +99,14 @@ public class Algorithm {
     private void setUpPieceSquareTables() {
 
         pawnWhiteHeat = new ArrayList<>(Arrays.asList(
-                0,  0,  0,  0,  0,  0,  0,  0,
+                0, 0, 0, 0, 0, 0, 0, 0,
                 7, 7, 13, 23, 26, 13, 7, 7,
                 -2, -2, 4, 12, 15, 4, -2, -2,
-                -3,  -3, 2, 9, 11, 2,  -3,  -3,
-                -4,  -4,  0, 6, 8,  0,  -4,  -4,
-                -4, -5,-10,  0,  0,-10, -5,  5,
-                -4, -4, 0, 4, 6, 0, -4,  -4,
-                0,  0,  0,  0,  0,  0,  0,  0
+                -3, -3, 2, 9, 11, 2, -3, -3,
+                -4, -4, 0, 6, 8, 0, -4, -4,
+                -4, -5, -10, 0, 0, -10, -5, 5,
+                -4, -4, 0, 4, 6, 0, -4, -4,
+                0, 0, 0, 0, 0, 0, 0, 0
         ));
 //        System.out.println("arraylist : " + pawnWhiteHeat);
         pawnBlackHeat = pawnWhiteHeat;
@@ -174,7 +175,7 @@ public class Algorithm {
                 -20,-30,-30,-40,-40,-30,-30,-20,
                 -10,-20,-20,-20,-20,-20,-20,-10,
                 -10,-10,-10,-10,-10,-10,-10,-10,
-                 20, 30, 10,  0,  0, 10, 30, 20
+                 5, 10, 5,  0,  0, 5, 10, 5
         ));
         kingBlackHeat = kingWhiteHeat;
         Collections.reverse(kingBlackHeat);
@@ -326,9 +327,6 @@ public class Algorithm {
 
     /* METHOD FOR RUNNING ALPHA BETA */
     public Move runAlphaBeta() {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-
         /* Values found by evaluating positions*/
         double tempValue;
         double bestValue = Double.NEGATIVE_INFINITY;
@@ -344,7 +342,6 @@ public class Algorithm {
 
         /* Running alphabeta on current positions moves */
         for (Move m : moves) {
-
             makeMove(m);
             tempValue = alphaBeta(DEPTH, alpha, beta, false);
 //            tempValue = negaMaxAlphaBeta(DEPTH, alpha, beta, (chessGame.isWhitesTurn()) ? 1 : -1);
@@ -359,12 +356,7 @@ public class Algorithm {
             unmakeMove();
         }
 
-//        System.out.println("TIMING ALPHA BETA : ");
-        System.out.println("TIMING NEGAMAX : ");
         System.out.println("best move: " + bestMove.moveToString() + " bestValue: " + bestValue);
-        stopWatch.stop();
-
-        System.out.println("TIME : " + stopWatch.getTime(TimeUnit.MILLISECONDS));
 
         /*try {
             FileWriter myWriter = new FileWriter("C:\\Users\\2100m\\Documents\\Code Projects\\SkakbotAI\\src\\main\\java\\Chess\\aI\\performanceTest.txt", true);
@@ -397,17 +389,30 @@ public class Algorithm {
         }*/
 
         //check if game is won/lost in given position
+//        if(chessGame.isBlackIsWinner()){
+//            if(chessGame.isAIwhite())
+//                return -Double.MAX_VALUE;
+//            else
+//                return Double.MAX_VALUE;
+//        }
+//        else if(chessGame.isWhiteIsWinner()){
+//            if(chessGame.isAIwhite())
+//                return Double.MAX_VALUE;
+//            else
+//                return -Double.MAX_VALUE;
+//        }
+
         if(chessGame.isBlackIsWinner()){
             if(chessGame.isAIwhite())
-                return -Double.MAX_VALUE;
+                return Double.NEGATIVE_INFINITY;
             else
-                return Double.MAX_VALUE;
+                return Double.POSITIVE_INFINITY;
         }
         else if(chessGame.isWhiteIsWinner()){
             if(chessGame.isAIwhite())
-                return Double.MAX_VALUE;
+                return Double.POSITIVE_INFINITY;
             else
-                return -Double.MAX_VALUE;
+                return Double.NEGATIVE_INFINITY;
         }
 
         if (depth == 0) {
@@ -465,20 +470,19 @@ public class Algorithm {
             return eval;
         }
 
-//        StopWatch sw = new StopWatch();
-//        sw.start();
         ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
-//        sw.stop();
-//        System.out.println("MOVES SORTED WITH TIME: " + sw.getTime(TimeUnit.MILLISECONDS));
-//        ArrayList<Move> moves = chessGame.getAllMoves();
 
+        maxEval = Double.NEGATIVE_INFINITY;
         for (Move m : moves) {
             makeMove(m);
 //             Our negated beta is opponents alpha (Negate so both sides are trying to maximize
             eval = -negaMaxAlphaBeta(depth-1, -beta, -alpha);
             unmakeMove();
+
             if(eval >= beta)
                 return beta;
+
+
 
             alpha = max(alpha, eval);
 
@@ -508,13 +512,12 @@ public class Algorithm {
             alpha = max(evaluation, alpha);
         }
         return alpha;
-
     }
 
     /* Saves the current state of the board for later undoing, then makes the move on the board */
     public void makeMove(Move move) {
         /*add board before execute*/
-        tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.isWhitesTurn(), chessGame.isWhiteIsWinner(),chessGame.isBlackIsWinner());
+        tempState = new boardState(chessGame.getWorkloadBoard().clone(), chessGame.isWhitesTurn(), chessGame.isWhiteIsWinner(), chessGame.isBlackIsWinner());
         stateStack.add(tempState);
         chessGame.executeMove(move);
 //        moves = chessGame.getAllMoves();
@@ -578,18 +581,17 @@ public class Algorithm {
             movingPiece = m.getPiece();
             targetPiece = m.getKillPiece();
 
-//            if(targetPiece == 'Q' || targetPiece == 'q')
-//                System.out.println("queen getting attacked");
-
             if(targetPiece != ' ' && targetPiece != '0')
                 m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));
+
+            if(m.getCastling())
+                m.setMoveScoreGuess(1000);
 
             /* TODO (IF PROMOTION) */
 
             if (chessGame.getOpponentAttackedSquares('p').contains(m.getTargetSquare()))
                 m.setMoveScoreGuess(-pieceValues.get(movingPiece));
 
-//            System.out.print("MS: " + m.getMoveScoreGuess() + " ");
         }
 
         movesToSort.sort(Collections.reverseOrder(Comparator.comparing(Move::getMoveScoreGuess)));
