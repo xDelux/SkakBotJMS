@@ -18,7 +18,7 @@ public class MoveGen {
 
     //initialize board and turn variable.
     int[] boardIndex, file;
-    char[] board, rank, pinnedPieces;
+    char[] board, rank;
     boolean whitesTurn = true, isInCheck = false, doubleCheck = false, bKingMoved = false, wKingMoved = false;
     boolean brRookMoved = false, blRookMoved = false, wrRookMoved = false, wlRookMoved = false;
     int startSquare;
@@ -61,8 +61,10 @@ public class MoveGen {
     //initialize move list
     ArrayList<Move> moves;
     ArrayList<Move> tempMoves;
+    ArrayList<Integer> pinnedSquares;
+    ArrayList<Integer> attackers;
     ArrayList<Integer> attacks;
-    ArrayList<Integer> defences;
+
 
     //constructor
     public MoveGen(int[] boardIndex, char[] board, boolean whitesTurn) {
@@ -141,10 +143,44 @@ public class MoveGen {
         return moves;
     }
 
+    private void generateCheckMoves() {
+        moves = new ArrayList<>();
+        char piece;
+        for (int i = 0; i < 64; i++) {
+            startSquare = boardIndex[i];
+            piece = board[startSquare];
+            if(isKingPiece(piece) && isFriendlyFire(piece)) {
+                int tempSquare = startSquare;
+                //Cast rays and see what pieces are pinned and what pieces are attacking
+                for (int j = 0; j < directionOffsets.length; j++) {
+                    ArrayList<Integer> tempAtt = new ArrayList<>();
+                    ArrayList<Integer> tempPin = new ArrayList<>();
+                    while(true) {
 
+                            tempSquare += directionOffsets[j];
+                            piece = board[tempSquare];
+                            if(piece == '0') {
+                                tempSquare = startSquare;
+                                break;
+                            }
+                            //if there's a friendly piece in front it can possibly be pinned add to array
+                            if(isFriendlyFire(piece)) {
+                                pinnedSquares.add(tempSquare);
+                            }
+                            // Check for enemy if theres no more than 1
+                            if(isEnemyFire(piece)) {
+                                attackers.add(tempSquare);
+                            }
+                            if(pinnedSquares.size() == 1 && attackers.size() > 1) {
+                                pinnedSquares = temp
+                            }
+                    }
+                }
+            }
+        }
+    }
     private void generateDefenseAndAttacks() {
         attacks = new ArrayList<>();
-        defences = new ArrayList<>();
         int startIndex, endIndex;
         char piece;
         for (int i = 0; i < 64; i++) {
@@ -178,6 +214,7 @@ public class MoveGen {
                                 }
 
                                 if(!isOpponentFriendlyFire(piece, targetPiece) && isKingPiece(targetPiece)) {
+
                                     if(isInCheck) {
                                         doubleCheck = true;
                                     }
@@ -213,11 +250,12 @@ public class MoveGen {
                             continue;
 
                             if(!isOpponentFriendlyFire(piece, targetPiece) && isKingPiece(targetPiece)) {
-                            if(isInCheck) {
-                                doubleCheck = true;
+
+                                if(isInCheck) {
+                                    doubleCheck = true;
+                                }
+                                isInCheck = true;
                             }
-                            isInCheck = true;
-                        }
                             
                         /* if target piece is friendly continue */
                             if(isOpponentFriendlyFire(piece, targetPiece)) {
@@ -242,6 +280,7 @@ public class MoveGen {
                         targetPiece = board[targetSquare];
                         // Skip the foward move we only need the attackslines
                         if(!isOpponentFriendlyFire(piece, targetPiece) && isKingPiece(targetPiece)) {
+
                             if(isInCheck) {
                                 doubleCheck = true;
                             }
