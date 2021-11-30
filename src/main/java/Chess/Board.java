@@ -2,7 +2,7 @@ package Chess;
 
 import java.util.Arrays;
 
-public class Board {
+public class Board implements Cloneable {
     /* BOARD ARRAYS */
     public int[] boardIndex = new int[64];
     public int[] boardInt = new int[144];
@@ -205,5 +205,9 @@ public class Board {
     }
     public void setBoard(char[] board) {
         this.board = board;
+    }
+    public Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
     }
 }

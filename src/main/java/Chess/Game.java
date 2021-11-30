@@ -10,7 +10,7 @@ import org.checkerframework.checker.units.qual.A;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class Game {
+public class Game implements Cloneable {
     private static NewGUI GUI;
     ArrayList<Move> opponentMoves;
     ArrayList<Move> moves;
@@ -278,5 +278,13 @@ public class Game {
 
     public char[] getPieceList() {
         return new char[]{'K', 'Q', 'R', 'N', 'B', 'P', 'k', 'q', 'r', 'n', 'b', 'p'};
+    }
+
+    public Board getBoardClass () {
+        return boardClass;
+    }
+    public Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
     }
 }

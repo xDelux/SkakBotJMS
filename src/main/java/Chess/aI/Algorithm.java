@@ -1,12 +1,15 @@
 package Chess.aI;
 
+import Chess.Board;
 import Chess.Game;
 import Chess.Moves.Move;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import org.apache.commons.lang3.time.StopWatch;
+import java.util.*;
+
+import com.google.common.collect.Lists;
 
 import static java.lang.Math.max;
 
@@ -26,7 +29,7 @@ record boardState(char[] board, boolean turn, boolean isWhiteWinner, boolean isB
     }
 }
 
-public class Algorithm {
+public class Algorithm implements Cloneable {
 
     HashMap<String, Double> evaluatedStates =  new HashMap<>();
 
@@ -320,12 +323,13 @@ public class Algorithm {
 
 
     /* Depth value and setter method */
-    static int DEPTH;
+    public static int DEPTH;
     public void setDepth(int Depth) {
         DEPTH = Depth;
     }
 
     /* METHOD FOR RUNNING ALPHA BETA */
+
     public Move runAlphaBeta() {
         /* Values found by evaluating positions*/
         double tempValue;
@@ -682,5 +686,10 @@ public class Algorithm {
         }
 
         return numberOfPositions;
+    }
+
+    public Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
     }
 }

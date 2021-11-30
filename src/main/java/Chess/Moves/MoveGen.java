@@ -3,7 +3,7 @@ package Chess.Moves;
 import Chess.Board;
 import java.util.ArrayList;
 
-public class MoveGen {
+public class MoveGen implements Cloneable {
     /*
     DIRECTION OFFSETS FOR THE 12x12 BOARD
     -------------------------------------
@@ -620,6 +620,10 @@ public class MoveGen {
     public void setLastMove(Move move) {
         lastMove = move;
     }
-    
+
+    public Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
+    }
 
 }
