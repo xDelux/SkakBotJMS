@@ -3,9 +3,7 @@ package Chess;
 import Chess.Moves.Move;
 import Chess.Moves.MoveGen;
 import Chess.aI.Algorithm;
-import com.google.common.base.Stopwatch;
 import org.apache.commons.lang3.time.StopWatch;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -46,6 +44,7 @@ public class Game {
             if (isAIwhite) {
 
                 Move bestMove = AI.runAlphaBeta();
+                System.out.println(AI.getShannonNumbers(4));
                 this.executeMove(bestMove);
             }
         }

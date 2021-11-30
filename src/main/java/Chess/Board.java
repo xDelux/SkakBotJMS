@@ -75,7 +75,7 @@ public class Board {
     }
 
     private void setupBoardWithCustomStartingPosition () {
-        /*board = new char[]{
+        board = new char[]{
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', 'r', 'n', 'b', 'q', 'k', 'b', ' ', 'r', '0', '0',
@@ -88,7 +88,7 @@ public class Board {
                 '0', '0', 'R', 'N', ' ', 'Q', 'K', 'B', 'N', 'R', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
-        };*/
+        };
         /*board = new char[]{
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
@@ -103,7 +103,7 @@ public class Board {
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
         };*/
-        board = new char[]{
+        /*board = new char[]{
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0', '0',
@@ -116,7 +116,7 @@ public class Board {
                 '0', '0', ' ', ' ', ' ', 'b', ' ', ' ', ' ', ' ', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
                 '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
-        };
+        };*/
     }
     private void setupBoardChar () {
         /* TESTING BOARD | SWAPPED ARRAY ATM */
@@ -190,13 +190,11 @@ public class Board {
     }
     /* Moves a piece on the board.
     * Used when operating on moves */
-    public boolean movePiece(int startSquare, int targetSquare) {
+    public void movePiece(int startSquare, int targetSquare) {
         if(!(startSquare == '0' || targetSquare == '0')) {
             board[targetSquare] = board[startSquare];
             board[startSquare] = ' ';
-            return true;
         }
-        return false;
     }
 
 
