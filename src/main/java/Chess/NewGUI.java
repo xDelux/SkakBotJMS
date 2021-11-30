@@ -5,6 +5,8 @@ import Chess.Moves.MoveGen;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -61,6 +63,23 @@ public class NewGUI {
 
         gamePanel = new JPanel();
         gamePanel.setLayout(new GridLayout(9,8));
+
+        //buttonpanel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 5));
+
+        //make buttons and add to panel
+        JLabel chooseColor = new JLabel("Choose color you'd like:");
+        buttonPanel.add(chooseColor);
+        JButton blackButton = new JButton("Black");
+        blackButton.addActionListener(new BlackButtonListener());
+        buttonPanel.add(blackButton);
+        JButton whiteButton = new JButton("White");
+        whiteButton.addActionListener(new WhiteButtonListener());
+        buttonPanel.add(whiteButton);
+        JButton newGameButton = new JButton("Start Game");
+        newGameButton.addActionListener(new NewGameButtonListener());
+        buttonPanel.add(newGameButton);
 
 
         JPanel smallBox = new JPanel(new GridLayout(1,1));
@@ -119,6 +138,7 @@ public class NewGUI {
         window.add(numberPanel, BorderLayout.LINE_END);
         window.add(gamePanel, BorderLayout.CENTER);
         window.add(letterPanel, BorderLayout.PAGE_END);
+        window.add(buttonPanel, BorderLayout.PAGE_END);
 
         //show frame
         window.pack();
@@ -153,6 +173,25 @@ public class NewGUI {
             case 'q' -> tile.setTileIcon("qb");
             case 'k' -> tile.setTileIcon("kb");
 //                        tiles[i]].setIcon('\u265A');
+        }
+    }
+
+    private class BlackButtonListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            chessGame.playerChooseColor(false);
+        }
+    }
+    private class WhiteButtonListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            chessGame.playerChooseColor(true);
+        }
+    }
+    private class NewGameButtonListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            chessGame.startNewGame();
         }
     }
 
@@ -192,9 +231,14 @@ public class NewGUI {
 
         public void setTileIcon(String icon){
             //label.getWidth & getHeight
-            ImageIcon imageIcon = new ImageIcon(new ImageIcon("src/main/java/Chess/res/" + icon + ".png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
+            //ImageIcon imageIcon = new ImageIcon(new ImageIcon("src/main/java/Chess/res/" + icon + ".png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
+            ImageIcon imageIcon = new ImageIcon(getClass().getResource("/" + icon + ".png"));
+            Image img = imageIcon.getImage().getScaledInstance(60,60,Image.SCALE_SMOOTH);
+
+
             transparent = icon.equals("transparent");
-            label.setIcon(imageIcon);
+            //label.setIcon(imageIcon);
+            label.setIcon(new ImageIcon(img));
             add(label);
 //            System.out.println(new java.io.File("src/ressources/kb.png").exists());
         }

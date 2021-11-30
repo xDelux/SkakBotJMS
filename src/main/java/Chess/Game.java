@@ -17,37 +17,26 @@ public class Game {
     MoveGen moveGen;
     boolean whitesTurn = true, updateGUI = false;
     Algorithm AI;
-    private final boolean isAIwhite;
+    private boolean playerPickedColor = false;
+    private boolean isAIwhite = false;
     boolean WhiteRightBlackLeftCastling;
     Move lastMoveExecuted;
 
     private boolean whiteIsWinner;
     private boolean blackIsWinner;
-
+    private boolean isTestOn;
 
     /* Constructor of game */
-    public Game(boolean isAIwhite, boolean wantAI, boolean test) {
+    public Game(boolean isTestOn) {
+        this.isTestOn = isTestOn;
         whiteIsWinner = false;
         blackIsWinner = false;
-        boardClass = new Board(test);
+        boardClass = new Board(isTestOn);
         moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
         moves = moveGen.generateMoves();
 
         AI = new Algorithm(this);
-        this.isAIwhite = isAIwhite;
-
-        /* TOGGLES AI */
-        if (wantAI) {
-            /* SET DEPTH OF AI */
-            AI.setDepth(4);
-            //if AI is white then run alphabeta and execute best move at start
-            if (isAIwhite) {
-
-                Move bestMove = AI.runAlphaBeta();
-                System.out.println(AI.getShannonNumbers(4));
-                this.executeMove(bestMove);
-            }
-        }
+        AI.setDepth(4);
         //then wait for input from gui for player move. Every playermove should then result in triggering AI move.
     }
 
@@ -68,6 +57,29 @@ public class Game {
 
     public boolean isAIwhite() {
         return isAIwhite;
+    }
+    public void playerChooseColor(boolean isPlayerWhite){
+        if(isPlayerWhite){
+            this.isAIwhite = false;
+        }
+        else{
+            this.isAIwhite = true;
+        }
+        playerPickedColor = true;
+    }
+
+    public void startNewGame(){
+        if(playerPickedColor){
+            //boardClass = new Board(isTestOn);
+            //moveGen = new MoveGen(boardClass.getBoardIndex(), boardClass.getBoard(), true);
+
+            if (isAIwhite) {
+                //if AI is white then run alphabeta and execute best move at start
+                Move bestMove = AI.runAlphaBeta();
+                this.executeMove(bestMove);
+                GUI.updateBoard();
+            }
+        }
     }
 
     /* Just to avoid writing the same over and over again */
