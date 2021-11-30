@@ -5,16 +5,16 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         //figure out if ai is white or black:
-        Scanner scanner = new Scanner(System.in);
+        /*Scanner scanner = new Scanner(System.in);
         System.out.println("Do you want to play as black(b) or white (w)? input b or w followed by enter");
         String input = scanner.nextLine();
         boolean isAIwhite;
-        isAIwhite = input.charAt(0) != 'w'; //AI will be opposite of input :)
+        isAIwhite = input.charAt(0) != 'w'; //AI will be opposite of input :)*/
 
 
 //        Board board = new Board(true);
 //        MoveGen moveGen = new MoveGen();
-        Game chessGame = new Game(isAIwhite, true, false);
+        Game chessGame = new Game(false);
         NewGUI gui = new NewGUI(chessGame);
         chessGame.setGUI(gui);
         //Algorithm AI = new Algorithm(chessGame);

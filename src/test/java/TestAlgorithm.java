@@ -24,7 +24,7 @@ import static java.lang.System.currentTimeMillis;
 
 public class TestAlgorithm {
     Board board = new Board(false);
-    Game chessGame = new Game(false, false, false);
+    Game chessGame = new Game(false);
     Algorithm algo = new Algorithm(chessGame);
 
     @Before
@@ -40,7 +40,7 @@ public class TestAlgorithm {
     @Test
     public void testingNumberOfPositions() {
         StopWatch stopWatch = new StopWatch();
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 4; i++) {
             stopWatch.start();
             int numb = algo.getNumberOfPositions(i);
             stopWatch.stop();

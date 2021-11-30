@@ -6,7 +6,6 @@ import Chess.Moves.Move;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.time.StopWatch;
 
 import static java.lang.Math.max;
 
