@@ -14,7 +14,7 @@ public class Main {
 
 //        Board board = new Board(true);
 //        MoveGen moveGen = new MoveGen();
-        Game chessGame = new Game(true);
+        Game chessGame = new Game(false);
         NewGUI gui = new NewGUI(chessGame);
         chessGame.setGUI(gui);
         //Algorithm AI = new Algorithm(chessGame);

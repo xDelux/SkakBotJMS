@@ -310,7 +310,7 @@ public class NewGUI {
 //                        startTile.setTileIcon("transparent");
                         pickedMovePiece = false;
                         startTile.setPicked(false, tileMoves);
-                        System.out.println("GUI attempting move: " + startTile.getTilePos() + " " + targetTile.getTilePos());
+                        //System.out.println("GUI attempting move: " + startTile.getTilePos() + " " + targetTile.getTilePos());
                         chessGame.executeMoveFromGui(startTile.getTilePos(), targetTile.getTilePos());
 
 //                        moveGen.moveByIndex(startTile.tilePos, targetTile.tilePos);
@@ -350,7 +350,7 @@ public class NewGUI {
         if(isPicked) {
             for (Move m : moves){
                 tileToColor = chessGame.rewriteThis(m.getTargetSquare());
-                System.out.println(tileToColor);
+                //System.out.println(tileToColor);
                 try{
                     tiles.get(tileToColor).setBackground(colorMovePossible);
                 } catch (IndexOutOfBoundsException ignored) {}

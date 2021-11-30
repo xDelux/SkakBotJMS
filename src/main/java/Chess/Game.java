@@ -163,25 +163,26 @@ public class Game {
         if((move.getStartSquare() + 24 == move.getTargetSquare() || move.getStartSquare()-24 == move.getTargetSquare()) && (move.getPiece() == 'p' || move.getPiece() == 'P')) {
             moveGen.setEnPassant(move.getTargetSquare());
         }
+
         // Left up en passant
-        if( move.getPiece() == 'P' && move.getStartSquare()-11 == move.getTargetSquare() && move.getPiece() == ' ') {
+        if( move.getPiece() == 'P' && move.getStartSquare()-11 == move.getTargetSquare() && move.getKillPiece() == ' ' ) {
             // Remove the pawn above the en passant
-            boardClass.getBoard()[boardClass.getBoardIndex()[move.getTargetSquare()+12]] = ' ';
+            boardClass.getBoard()[move.getTargetSquare()+12] = ' ';
         }
         // Right up en passant
-        if(move.getPiece() == 'P' && (move.getStartSquare()-13 ==move.getTargetSquare() && move.getPiece() == ' ')) {
+        if(move.getPiece() == 'P' && (move.getStartSquare()-13 == move.getTargetSquare()) && move.getKillPiece() == ' ') {
             // Remove the pawn above the en passant
-            boardClass.getBoard()[boardClass.getBoardIndex()[move.getTargetSquare()+12]] = ' ';
+            boardClass.getBoard()[move.getTargetSquare()+12] = ' ';
         }
         // Right down en passant
-        if( move.getPiece() == 'p' && move.getStartSquare()+11 == move.getTargetSquare()) {
+        if( move.getPiece() == 'p' && move.getStartSquare()+11 == move.getTargetSquare() && move.getKillPiece() == ' ') {
             // Remove the pawn above the en passant
-            boardClass.getBoard()[boardClass.getBoardIndex()[move.getTargetSquare()-12]] = ' ';
+            boardClass.getBoard()[move.getTargetSquare()-12] = ' ';
         }
         // Left down en passant
-        if(move.getPiece() == 'p' && (move.getStartSquare()+13 ==move.getTargetSquare() && move.getPiece() == ' ')) {
+        if(move.getPiece() == 'p' && (move.getStartSquare()+13 == move.getTargetSquare()) && move.getKillPiece() == ' ') {
             // Remove the pawn above the en passant
-            boardClass.getBoard()[boardClass.getBoardIndex()[move.getTargetSquare()-12]] = ' ';
+            boardClass.getBoard()[move.getTargetSquare()-12] = ' ';
         }
     }
 

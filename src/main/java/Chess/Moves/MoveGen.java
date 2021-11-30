@@ -470,7 +470,6 @@ public class MoveGen {
                 if(attackingPieces.contains(targetSquare) && i != 0 || checkLines.contains(targetSquare) && i == 0)
                     if(!pinnedSquares.contains(startSquare))
                         moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
-                    else
                         continue;
             }
 
@@ -539,7 +538,7 @@ public class MoveGen {
 
     private void checkLastMove() {
         // Don't bother to check if the kings has moved
-        if(!wKingMoved && whitesTurn || !bKingMoved && !whitesTurn) {
+        if(!wKingMoved && !whitesTurn || !bKingMoved && whitesTurn) {
             try {
                 if(isKingPiece(lastMove.piece)) {
                     if(whitesTurn) {
@@ -567,7 +566,7 @@ public class MoveGen {
         if(whitesTurn) {
             if(!wKingMoved) {
                 if(!wrRookMoved) {
-                    if(board[boardIndex[61]] == ' ' && board[boardIndex[62]] == ' ') {
+                    if(board[boardIndex[61]] == ' ' && board[boardIndex[62]] == ' ' && board[boardIndex[63]] == 'R') {
                         if(!attacks.contains(boardIndex[61]) && !attacks.contains(boardIndex[62])) {
                             // Add white right castleMove
                             tempMoves.add(genericCastleMove(boardIndex[60], boardIndex[62], piece, true));
@@ -575,7 +574,7 @@ public class MoveGen {
                     }
                 }
                 if(!wlRookMoved) {
-                    if(board[boardIndex[59]] == ' ' && board[boardIndex[58]] == ' ' && board[boardIndex[57]] == ' ') {
+                    if(board[boardIndex[59]] == ' ' && board[boardIndex[58]] == ' ' && board[boardIndex[57]] == ' ' && board[boardIndex[56]] == 'R') {
                         if(!attacks.contains(boardIndex[59]) && !attacks.contains(boardIndex[58]) && !attacks.contains(boardIndex[57])) {
                             // Add white left castleMove
                             tempMoves.add(genericCastleMove(boardIndex[60], boardIndex[58], piece, true));
@@ -585,19 +584,19 @@ public class MoveGen {
             }
         } else{
             if(!bKingMoved) {
-                if(!wrRookMoved) {
-                    if(board[boardIndex[1]] == ' ' && board[boardIndex[2]] == ' ' && board[boardIndex[3]] == ' ') {
+                if(!brRookMoved) {
+                    if(board[boardIndex[1]] == ' ' && board[boardIndex[2]] == ' ' && board[boardIndex[3]] == ' ' && board[boardIndex[0]] == 'r') {
                         if(!attacks.contains(boardIndex[1]) && !attacks.contains(boardIndex[2]) && !attacks.contains(boardIndex[3])) {
                             // Add black right castleMove
-                            tempMoves.add(genericCastleMove(boardIndex[4], boardIndex[6], piece,true));
+                            tempMoves.add(genericCastleMove(boardIndex[4], boardIndex[2], piece,true));
                         }
                     }
                 }
-                if(!wlRookMoved) {
-                    if(board[boardIndex[5]] == ' ' && board[boardIndex[6]] == ' ' ) {
+                if(!blRookMoved) {
+                    if(board[boardIndex[5]] == ' ' && board[boardIndex[6]] == ' ' && board[boardIndex[7]] == 'r') {
                         if(!attacks.contains(boardIndex[5]) && !attacks.contains(boardIndex[6])) {
                             // Add black left castleMove
-                            tempMoves.add(genericCastleMove(boardIndex[4], boardIndex[2], piece, true));
+                            tempMoves.add(genericCastleMove(boardIndex[4], boardIndex[6], piece, true));
                         }
                     }
                 }

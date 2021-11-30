@@ -359,8 +359,11 @@ public class Algorithm {
 
         /* Moves */
         ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
-
+        if(moves.isEmpty()) {
+            return null;
+        }
         Move bestMove = moves.get(0);
+
 
         /* Start value alpha & beta */
         double alpha = Double.NEGATIVE_INFINITY;
@@ -384,7 +387,7 @@ public class Algorithm {
         }
 
         System.out.println("best move: " + bestMove.moveToString() + " bestValue: " + bestValue);
-        System.out.println("EVALUATED MOVES: " + counter);
+        //System.out.println("EVALUATED MOVES: " + counter);
         counter = 0;
         /*try {
             FileWriter myWriter = new FileWriter("C:\\Users\\2100m\\Documents\\Code Projects\\SkakbotAI\\src\\main\\java\\Chess\\aI\\performanceTest.txt", true);
