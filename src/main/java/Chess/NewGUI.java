@@ -238,9 +238,14 @@ public class NewGUI {
 
         public void setTileIcon(String icon){
             //label.getWidth & getHeight
-            ImageIcon imageIcon = new ImageIcon(new ImageIcon("src/main/java/Chess/res/" + icon + ".png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
+            //ImageIcon imageIcon = new ImageIcon(new ImageIcon("src/main/java/Chess/res/" + icon + ".png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
+            ImageIcon imageIcon = new ImageIcon(getClass().getResource("/" + icon + ".png"));
+            Image img = imageIcon.getImage().getScaledInstance(60,60,Image.SCALE_SMOOTH);
+
+
             transparent = icon.equals("transparent");
-            label.setIcon(imageIcon);
+            //label.setIcon(imageIcon);
+            label.setIcon(new ImageIcon(img));
             add(label);
 //            System.out.println(new java.io.File("src/ressources/kb.png").exists());
         }
