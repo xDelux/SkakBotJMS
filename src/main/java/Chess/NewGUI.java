@@ -148,18 +148,11 @@ public class NewGUI {
     public void updateBoard(){
         char[] board_backend = chessGame.get8By8Board();
         for (int i = 0; i < tiles.size(); i++) {
-            if(i == 60)
-                System.out.println();
             char piece = board_backend[i];
             tiles.get(i).setTilePiece(piece);
             setBoardTileIcon(tiles.get(i));
         }
-        for (int i = 60; i < 63; i++) {
-            System.out.println(tiles.get(i).getTilePiece());
-        }
-        tileMoves = chessGame.getSpecificMoves(61);
-        for (Move m : tileMoves)
-            System.out.println(m.moveToString());
+//        tileMoves = chessGame.getSpecificMoves(61);
 //        System.out.println(tileMoves.toString());
 
     }

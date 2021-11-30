@@ -4,8 +4,6 @@ import Chess.Game;
 import Chess.Moves.Move;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 
 import static java.lang.Math.max;
 
@@ -29,6 +27,8 @@ public class Algorithm {
 
     HashMap<String, Double> evaluatedStates =  new HashMap<>();
 
+    /* position counter */
+    int counter;
 
     /* Stack for keeping board position to undo moves */
     boardState tempState;
@@ -308,6 +308,32 @@ public class Algorithm {
         pieceValues.put('p',pawnValue);
     }
 
+    Map<Character, Integer> captureValueFactor = Collections.synchronizedMap(new HashMap<>());
+    Map<Character, Character> pieceCapturePiece = Collections.synchronizedMap(new HashMap<>());
+    private void MVVLVASetup() {
+
+        ArrayList<Character> piecesWhite = new ArrayList<>();
+        ArrayList<Character> piecesBlack = new ArrayList<>();
+        for (char c : chessGame.getPieceList()) {
+            if(Character.isUpperCase(c))
+                piecesWhite.add(c);
+            else
+                piecesBlack.add(c);
+        }
+
+        for (Character piece : piecesWhite) {
+            for (Character targetPiece : piecesBlack) {
+                pieceCapturePiece.put(piece, targetPiece);
+            }
+        }
+        for (Character piece : piecesBlack) {
+            for (Character targetPiece : piecesWhite) {
+                pieceCapturePiece.put(piece, targetPiece);
+            }
+        }
+
+
+    }
     /* Constructor */
     public Algorithm(Game chessGame) {
         this.chessGame = chessGame;
@@ -315,6 +341,7 @@ public class Algorithm {
         setUpPieceValues();
         setUpPieceSquareTables();
         setCalculatedPosition();
+        MVVLVASetup();
     }
 
 
@@ -340,6 +367,7 @@ public class Algorithm {
         double beta = Double.POSITIVE_INFINITY;
 
         /* Running alphabeta on current positions moves */
+        counter = 0;
         for (Move m : moves) {
             makeMove(m);
             tempValue = alphaBeta(DEPTH, alpha, beta, false);
@@ -356,7 +384,8 @@ public class Algorithm {
         }
 
         System.out.println("best move: " + bestMove.moveToString() + " bestValue: " + bestValue);
-
+        System.out.println("EVALUATED MOVES: " + counter);
+        counter = 0;
         /*try {
             FileWriter myWriter = new FileWriter("C:\\Users\\2100m\\Documents\\Code Projects\\SkakbotAI\\src\\main\\java\\Chess\\aI\\performanceTest.txt", true);
             myWriter.write("TIME OF FIRST MOVE WITH HASHMAP: " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " SECONDS\n");
@@ -375,6 +404,7 @@ public class Algorithm {
     int matchcount = 0, mismatchcount = 0;
 
     public double alphaBeta(int depth, double alpha, double beta, boolean maximizing) {
+        counter += 1;
         //check if already calculated
        /* String stateKey = keyGen(depth);
         Double preValue = evaluatedStates.get(stateKey);
@@ -415,13 +445,16 @@ public class Algorithm {
         }
 
         if (depth == 0) {
+            counter++;
             eval = evaluatePosition();
+//            eval = quiescentSearch(alpha,beta);
             //evaluatedStates.put(stateKey, eval);
             return eval;
         }
 
         /* Check if game is over or something*/
         ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
+//        counter += moves.size();
 //        ArrayList<Move> moves = chessGame.getAllMoves();
         /*if(moves.isEmpty()) {
             if(chessGame.playerInCheck()) {
@@ -498,17 +531,20 @@ public class Algorithm {
         double evaluation = evaluatePosition();
         if (evaluation >= beta)
             return beta;
-        alpha = max(alpha,evaluation);
+        if(evaluation > alpha)
+            alpha = evaluation;
+//        alpha = max(alpha,evaluation);
 
         ArrayList<Move> captureMoves = sortMoves(chessGame.getCaptureMoves());
-
+        counter += captureMoves.size();
         for (Move m : captureMoves) {
             makeMove(m);
             evaluation = -quiescentSearch(-beta, -alpha);
             unmakeMove();
             if(evaluation >= beta)
                 return beta;
-            alpha = max(evaluation, alpha);
+            if(evaluation > alpha)
+                alpha = evaluation;
         }
         return alpha;
     }
@@ -572,14 +608,16 @@ public class Algorithm {
         return evaluation * pointPerspective;
     }
 
-    private ArrayList<Move> sortMoves(ArrayList<Move> movesToSort) {
+    public ArrayList<Move> sortMoves(ArrayList<Move> movesToSort) {
         char movingPiece;
         char targetPiece;
+        int valueFactor;
 
         for (Move m : movesToSort) {
             movingPiece = m.getPiece();
             targetPiece = m.getKillPiece();
 
+            /* MOST VALUEABLE VICTIM / LEAST VALUABLE ATTACKER  (MVV/LVA) SORTING*/
             if(targetPiece != ' ' && targetPiece != '0')
                 m.setMoveScoreGuess(10 * pieceValues.get(targetPiece) - pieceValues.get(movingPiece));
 
@@ -634,40 +672,10 @@ public class Algorithm {
         return keyBuilder.toString();
     }
 
-    private int[] reverseArrays(int[] array) {
-        int[] y = new int[64];
-        int p = 64;
-        for (int i = 0; i < 64; i++) {
-            y[p - 1] = array[i];
-            p = p - 1;
-        }
-        return y;
-    }
 
-    private int[] reverseArrays(int[] array, int num) {
-        int[] y = new int[num];
-        int p = num;
-        for (int i = 0; i < num; i++) {
-            y[p - 1] = array[i];
-            p = p - 1;
-        }
-        return y;
-    }
 
-    public void logBoard(boardState bs) {
-        char[] temp = chessGame.get8By8Board(bs.getBoard());
-        System.out.print("\n|");
-        for (int i = 0; i < 64; i++) {
-            if (i != 0 && i % 8 == 0)
-                System.out.print("\n|");
 
-            System.out.print(temp[i] + "|");
-//            System.out.print(temp[i] + "|" );
-        }
-        System.out.println();
-    }
-
-    public int getNumberOfPositions(int depth) {
+    public int getShannonNumbers(int depth) {
         if (depth == 0)
             return 1;
 
@@ -676,10 +684,59 @@ public class Algorithm {
 
         for (Move m : moves) {
             makeMove(m);
-            numberOfPositions += getNumberOfPositions(depth-1);
+            numberOfPositions += getShannonNumbers(depth-1);
             unmakeMove();
         }
 
         return numberOfPositions;
+    }
+    public int getCounter() {
+        return counter;
+    }
+    public void resetCounter() {
+        counter = 0;
+    }
+    public double minMax(int depth, boolean maximizing) {
+        if(chessGame.isBlackIsWinner()){
+            if(chessGame.isAIwhite())
+                return Double.NEGATIVE_INFINITY;
+            else
+                return Double.POSITIVE_INFINITY;
+        }
+        else if(chessGame.isWhiteIsWinner()){
+            if(chessGame.isAIwhite())
+                return Double.POSITIVE_INFINITY;
+            else
+                return Double.NEGATIVE_INFINITY;
+        }
+
+        if (depth == 0) {
+            counter++;
+            eval = evaluatePosition();
+            return eval;
+        }
+
+        ArrayList<Move> moves = sortMoves(chessGame.getAllMoves());
+        double max = Double.NEGATIVE_INFINITY;
+        if (maximizing) {
+            for (Move move : moves) {
+                makeMove(move);
+                eval = minMax(depth-1,false);
+                unmakeMove();
+                if(eval > max)
+                    max = eval;
+            }
+            return max;
+        } else {
+            double min = Double.POSITIVE_INFINITY;
+            for (Move move : moves) {
+                makeMove(move);
+                eval = minMax(depth - 1, true);
+                unmakeMove();
+                if (eval < min)
+                    min = eval;
+            }
+            return min;
+        }
     }
 }

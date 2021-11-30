@@ -21,8 +21,8 @@ public class MoveGen {
     char[] board, rank, pinnedPieces;
     boolean whitesTurn = true, isInCheck = false, doubleCheck = false, bKingMoved = false, wKingMoved = false;
     boolean brRookMoved = false, blRookMoved = false, wrRookMoved = false, wlRookMoved = false;
-    int startSquare;
-    int targetSquare;
+    int startSquare , targetSquare, enPassant;
+
     char targetPiece;
     Move lastMove;
 
@@ -67,6 +67,7 @@ public class MoveGen {
     ArrayList<Integer> attacks;
 
 
+
     //constructor
     public MoveGen(int[] boardIndex, char[] board, boolean whitesTurn) {
         this.boardIndex = boardIndex;
@@ -89,6 +90,7 @@ public class MoveGen {
         moves = new ArrayList<>();
         char piece;
         generateDefenseAndAttacks();
+
         if(isInCheck) {
             if(whitesTurn)
                 wKingMoved = true;
@@ -415,17 +417,20 @@ public class MoveGen {
                     }
                     continue;
                 }
-                // If we are in check only add moves that prevent the check
-                if (isInCheck) {
-                    if (attackingPieces.contains(targetSquare) || checkLines.contains(targetSquare))
-                        if (!pinnedSquares.contains(startSquare)) {
-                            moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
-                        }
-                    continue;
-                }
             }
-
-
+                // If we are in check only add moves that prevent the check
+            if (isInCheck) {
+                if (attackingPieces.contains(targetSquare) || checkLines.contains(targetSquare))
+                    if (!pinnedSquares.contains(startSquare)) {
+                        if(isKing && attacks.contains(targetSquare)) {
+                            // dumb fucking fix for king not allowed to take checking pieces that are defended kill me
+                        }
+                        else
+                            moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                    }
+                    if(!isKing)
+                        continue;
+                }
 
             /* if target piece is friendly break */
             if (isFriendlyFire(targetPiece))
@@ -462,7 +467,7 @@ public class MoveGen {
                 continue;
 
             if(isInCheck) {
-                if(attackingPieces.contains(targetSquare) || checkLines.contains(targetSquare) && i == 0)
+                if(attackingPieces.contains(targetSquare) && i != 0 || checkLines.contains(targetSquare) && i == 0)
                     if(!pinnedSquares.contains(startSquare))
                         moves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
                     else
@@ -512,6 +517,19 @@ public class MoveGen {
                 /* Diagonal pawn captures */
                 if(isEnemyFire(targetPiece))
                     tempMoves.add(genericMove(startSquare, targetSquare, piece, targetPiece));
+                if(startSquare + 1 == enPassant) {
+                    if(whitesTurn)
+                        tempMoves.add(genericMove(startSquare, startSquare-11, piece, ' '));
+                    else
+                        tempMoves.add(genericMove(startSquare, startSquare+13, piece, ' '));
+                }
+                if(startSquare - 1 == enPassant) {
+                    if(whitesTurn)
+                        tempMoves.add(genericMove(startSquare, startSquare-13, piece, ' '));
+                    else
+                        tempMoves.add(genericMove(startSquare, startSquare+11, piece, ' '));
+
+                }
             }
 
         }
@@ -618,6 +636,10 @@ public class MoveGen {
 
     public void setLastMove(Move move) {
         lastMove = move;
+    }
+
+    public void setEnPassant(int enPassant) {
+        this.enPassant = enPassant;
     }
     
 
