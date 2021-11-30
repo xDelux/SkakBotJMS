@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4733c162-8267-4945-9017-d43e8c427f12" name="Changes" comment="fixed some movegen bugs, and added en passant still need to remove pawn who got attacked after en passant">
+      <change beforePath="$PROJECT_DIR$/src/main/java/Chess/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Chess/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Chess/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Chess/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Chess/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Chess/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Chess/Moves/MoveGen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Chess/Moves/MoveGen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Chess/NewGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Chess/NewGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Chess/aI/Algorithm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Chess/aI/Algorithm.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="ProjectId" id="21Bcn8LPZ6fackdWh1ThY8dKw9G" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.idea" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="project.structure.last.edited" value="Problems" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.smartKeys" />
+  </component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Chess.Main" />
+      <module name="SkakBotJMS" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="Chess.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4733c162-8267-4945-9017-d43e8c427f12" name="Changes" comment="" />
+      <created>1637418084118</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1637418084118</updated>
+      <workItem from="1637418086324" duration="41000" />
+      <workItem from="1637418154243" duration="56000" />
+      <workItem from="1637418224221" duration="471000" />
+      <workItem from="1637946862454" duration="104000" />
+      <workItem from="1637948224724" duration="2000" />
+      <workItem from="1637948291603" duration="2411000" />
+      <workItem from="1638099321641" duration="22000" />
+      <workItem from="1638107033876" duration="9437000" />
+      <workItem from="1638133153721" duration="11173000" />
+      <workItem from="1638190197358" duration="393000" />
+      <workItem from="1638190617048" duration="28880000" />
+      <workItem from="1638223697565" duration="46000" />
+      <workItem from="1638232493685" duration="706000" />
+      <workItem from="1638271262635" duration="12751000" />
+      <workItem from="1638300805658" duration="7653000" />
+    </task>
+    <task id="LOCAL-00001" summary="best fix evar omg poggers">
+      <created>1637949509773</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1637949509773</updated>
+    </task>
+    <task id="LOCAL-00002" summary="promotions working">
+      <created>1638116875594</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1638116875594</updated>
+    </task>
+    <task id="LOCAL-00003" summary="working on checkmate moves">
+      <created>1638157606130</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1638157606130</updated>
+    </task>
+    <task id="LOCAL-00004" summary="only legal moves should be legal now">
+      <created>1638217565889</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1638217565889</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fixed knights and pawns castling still no work&#10;am god of program">
+      <created>1638223739134</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1638223739134</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fixed some movegen bugs, and added en passant still need to remove pawn who got attacked after en passant">
+      <created>1638290923647</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1638290923647</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="best fix evar omg poggers" />
+    <MESSAGE value="promotions working" />
+    <MESSAGE value="working on checkmate moves" />
+    <MESSAGE value="only legal moves should be legal now" />
+    <MESSAGE value="fixed knights and pawns castling still no work&#10;am god of program" />
+    <MESSAGE value="fixed some movegen bugs, and added en passant still need to remove pawn who got attacked after en passant" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed some movegen bugs, and added en passant still need to remove pawn who got attacked after en passant" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Chess/Moves/MoveGen.java</url>
+          <line>540</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="m" />
+        <watch expression="moves.get(13)" />
+        <watch expression="attackingPieces" language="JAVA" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>
