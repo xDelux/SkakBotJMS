@@ -74,7 +74,6 @@ public class MoveGen {
         this.board = board;
         this.whitesTurn = whitesTurn;
         setupRanksAndFiles();
-
     }
 
     public ArrayList<Move> updateAndGenerateMoves(char[] board, boolean isWhitesTurn) {
