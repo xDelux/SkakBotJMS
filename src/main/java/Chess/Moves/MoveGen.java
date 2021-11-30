@@ -90,13 +90,6 @@ public class MoveGen {
         moves = new ArrayList<>();
         char piece;
         generateDefenseAndAttacks();
-
-        if(isInCheck) {
-            if(whitesTurn)
-                wKingMoved = true;
-            else
-                bKingMoved = true;
-        }
         if(doubleCheck) {
             for (int j = 0; j < 64; j++) {
                 startSquare = boardIndex[j];
