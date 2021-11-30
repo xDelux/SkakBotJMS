@@ -87,7 +87,7 @@ public class Game {
         char killPiece = move.getKillPiece();
 
         movePieceOnChessboard(startSquare, targetSquare, isCastleMove(piece, startSquare, targetSquare));
-
+        checkEnPassant(move);
         lastMoveExecuted = move;
         moveGen.setLastMove(lastMoveExecuted);
 
@@ -146,6 +146,24 @@ public class Game {
         }
         /* if killed piece is king declare winner */
 
+    }
+
+    public void checkEnPassant(Move move) {
+        if((move.getStartSquare() + 24 == move.getTargetSquare() || move.getStartSquare()-24 == move.getTargetSquare()) && (move.getPiece() == 'p' || move.getPiece() == 'P')) {
+            moveGen.setEnPassant(move.getTargetSquare());
+        }
+        if( move.getPiece() == 'P' && move.getStartSquare()+11 ==move.getTargetSquare() && move.getPiece() == ' ') {
+            boardClass.getBoard()[boardClass.getBoardIndex()[move.getTargetSquare()-12]] = ' ';
+        }
+        if(move.getPiece() == 'P' && (move.getStartSquare()+13 ==move.getTargetSquare() && move.getPiece() == ' ')) {
+            boardClass.getBoard()[boardClass.getBoardIndex()[move.getTargetSquare()-12]] = ' ';
+        }
+        if( move.getPiece() == 'p' && move.getStartSquare()-11 ==move.getTargetSquare() && move.getPiece() == ' ') {
+            boardClass.getBoard()[boardClass.getBoardIndex()[move.getTargetSquare()+12]] = ' ';
+        }
+        if(move.getPiece() == 'p' && (move.getStartSquare()-13 ==move.getTargetSquare() && move.getPiece() == ' ')) {
+            boardClass.getBoard()[boardClass.getBoardIndex()[move.getTargetSquare()+12]] = ' ';
+        }
     }
 
     public void updateEssentials() {
